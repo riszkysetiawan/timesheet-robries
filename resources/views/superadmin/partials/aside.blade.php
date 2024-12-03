@@ -159,19 +159,19 @@
                             <a href="{{ route('kategori.admin.index') }}"> Kategori</a>
                         </li>
                         <li class="">
-                            <a href="/produk/admin"> Data Barang </a>
+                            <a href="{{ route('produk.admin.index') }}"> Data Barang </a>
                         </li>
-                        {{-- <li class="">
+                        <li class="">
                             <a href="/stock/barang/admin"> Stock Barang </a>
                         </li>
                         <li class="">
                             <a href=""> Barcode Barang</a>
-                        </li> --}}
+                        </li>
                     </ul>
                 </li>
 
                 <!-- Reject Stock Menu -->
-                {{-- <li class="menu ">
+                <li class="menu ">
                     <a href="#wastes" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -200,7 +200,7 @@
                             <a href="/waste/barang/admin"> Waste Barang</a>
                         </li>
                     </ul>
-                </li> --}}
+                </li>
 
                 <!-- Laporan Menu -->
                 {{-- <li class="menu ">

@@ -1,12 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardAdminController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\WarnaController;
-use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\ProductionController;
+use App\Http\Controllers\Admin\DashboardAdminController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\WarnaController;
+use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\ProductionController;
+use App\Http\Controllers\Admin\ProdukController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,6 +46,7 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::delete('/delete/warna/admin/{id}', [WarnaController::class, 'destroy'])->name('warna.admin.destroy');
     Route::get('/edit/warna/admin/{id}', [WarnaController::class, 'edit'])->name('warna.admin.edit');
     Route::post('/update/warna/admin/{id}', [WarnaController::class, 'update'])->name('warna.admin.update');
+    Route::get('/warna/download-excel/admin', [WarnaController::class, 'downloadExcel'])->name('warna.download.excel.admin');
     //  end kategori barang
     // kategori barang
     Route::get('/kategori/admin', [KategoriController::class, 'index'])->name('kategori.admin.index');
@@ -55,6 +57,21 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::post('/update/kategori/admin/{id}', [KategoriController::class, 'update'])->name('kategori.admin.update');
     Route::get('/kategori/download-excel/admin', [KategoriController::class, 'downloadExcel'])->name('kategori.download.excel.admin');
     //  end kategori barang
+    // produk
+    Route::get('/produk/admin', [ProdukController::class, 'index'])->name('produk.admin.index');
+    Route::get('/tambah/produk/admin', [ProdukController::class, 'create'])->name('produk.admin.create');
+    Route::post('/simpan/produk/admin/store', [ProdukController::class, 'store'])->name('produk.admin.store');
+    Route::delete('/delete/produk/admin/{id}', [ProdukController::class, 'destroy'])->name('produk.admin.destroy');
+    Route::get('/edit/produk/admin/{id}', [ProdukController::class, 'edit'])->name('produk.admin.edit');
+    Route::post('/update/produk/admin/{id}', [ProdukController::class, 'update'])->name('produk.admin.update');
+    Route::get('/produk/download-excel/admin', [ProdukController::class, 'downloadExcel'])->name('produk.download.excel.admin');
+    Route::get('/upload/files/produk/admin', [ProdukController::class, 'uploadFile'])->name('upload.produk.files.admin');
+    Route::get('/download-template/produk/admin', function () {
+        $file = storage_path('app/public/barcode.xlsx');
+        return Response::download($file, 'barcode.xlsx');
+    })->name('download.template.upload.produk.admin');
+    Route::post('/upload-produk-excel/admin', [ProdukController::class, 'uploadExcel'])->name('upload.produk.admin');
+    //  end produk
     Route::get('/production/admin', [ProductionController::class, 'index'])->name('production.admin.index');
     Route::get('/tambah/production/admin', [ProductionController::class, 'create'])->name('production.admin.create');
     Route::post('/simpan/production/admin/store', [ProductionController::class, 'store'])->name('production.admin.store');

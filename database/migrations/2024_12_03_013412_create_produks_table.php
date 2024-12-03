@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('gambar')->nullable();
             $table->string('kode_barcode')->nullable();
             $table->string('harga');
-            $table->string('proses');
             $table->string('keterangan')->nullable();
             $table->unsignedBigInteger('id_kategori')->nullable();
             $table->unsignedBigInteger('id_warna')->nullable();

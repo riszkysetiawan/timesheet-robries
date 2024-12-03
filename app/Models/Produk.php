@@ -13,18 +13,18 @@ class Produk extends Model
     protected $guarded = [];
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class, 'id_kategori');
+        return $this->belongsTo(Kategori::class, 'id_kategori', 'id');
     }
-
     public function warna()
     {
-        return $this->belongsTo(Warna::class, 'id_warna');
+        return $this->belongsTo(Warna::class, 'id_warna', 'id');
     }
 
-    public function stock()
+    public function stocks()
     {
-        return $this->hasOne(Stock::class, 'kode_produk', 'kode_produk');
+        return $this->hasMany(Stock::class, 'kode_produk', 'kode_produk');
     }
+
 
     public function waste()
     {
