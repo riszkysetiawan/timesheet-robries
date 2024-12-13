@@ -164,9 +164,9 @@
                 const qrCodeSuccessCallback = (decodedText, decodedResult) => {
                     console.log(`QR Code detected: ${decodedText}`);
 
-                    // Encode barcode sebelum redirect
-                    const encodedBarcode = btoa(decodedText); // Menggunakan Base64 untuk encode
-                    window.location.href = `/production/admin/timerbarcode/${encodedBarcode}`;
+                    // Ganti "/" dengan "." sebelum dikirim ke backend
+                    const cleanedBarcode = decodedText.replace(/\//g, '.');
+                    window.location.href = `/production/admin/timerbarcode/${cleanedBarcode}`;
 
                     $('#scanModal').modal('hide');
                     html5QrCode.stop().catch(err => console.log(err));
@@ -191,9 +191,6 @@
             });
         });
     </script>
-
-
-
 
     <script>
         $(document).ready(function() {

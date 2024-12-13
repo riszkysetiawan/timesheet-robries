@@ -536,43 +536,30 @@ class ProductionController extends Controller
     }
     public function timerbarcode($barcode)
     {
-        try {
-            // Decode barcode menggunakan Base64
-            $decodedBarcode = base64_decode($barcode);
-            \Log::info("Decoded Barcode: " . $decodedBarcode); // Debugging log
-
-            // Decrypt decoded barcode
-            $decryptedId = Crypt::decryptString($decodedBarcode);
-            \Log::info("Decrypted ID: " . $decryptedId); // Debugging log
-        } catch (\Exception $e) {
-            \Log::error("Error decoding or decrypting barcode: " . $e->getMessage());
-            return redirect()->back()->with('error', 'Invalid barcode.');
-        }
+        // Log barcode yang diterima
+        \Log::info("Received Barcode: " . $barcode);
 
         try {
-            // Fetch production data
-            $production = Production::findOrFail($decryptedId);
-        } catch (\Exception $e) {
-            \Log::error("Error fetching production data: " . $e->getMessage());
+            // Cari data menggunakan barcode yang diterima
+            $production = Production::where('barcode', $barcode)->firstOrFail();
+            \Log::info("Production Data Found: " . $production->id); // Debugging log
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Log::error("Production data not found for barcode: " . $barcode);
             return redirect()->back()->with('error', 'Production data not found.');
         }
 
         // Fetch processes and their status
-        $prosess = Proses::all()->map(function ($proses) use ($decryptedId) {
-            $proses->is_done = Timer::where('id_production', $decryptedId)
+        $prosess = Proses::all()->map(function ($proses) use ($production) {
+            $proses->is_done = Timer::where('id_production', $production->id)
                 ->where('id_proses', $proses->id)
                 ->exists();
             return $proses;
         });
 
-        // Fetch other related data
         $produks = Produk::all();
         $sizes = Size::all();
         $warnas = Warna::all();
 
-        \Log::info("Returning view with data."); // Debugging log
-
-        // Return the view
         return view('superadmin.production.timer', compact(
             'production',
             'produks',
@@ -581,8 +568,6 @@ class ProductionController extends Controller
             'prosess'
         ));
     }
-
-
 
 
     public function startTimer(Request $request)
