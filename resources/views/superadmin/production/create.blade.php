@@ -66,10 +66,10 @@
                                                                 <th>Size</th>
                                                                 <th>Color</th>
                                                                 <th>Qty</th>
-                                                                @foreach ($prosess as $proses)
+                                                                {{-- @foreach ($prosess as $proses)
                                                                     <th>Progres {{ $proses->nama }}
                                                                     </th>
-                                                                @endforeach
+                                                                @endforeach --}}
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -124,7 +124,7 @@
                                                                         class="form-control form-control-sm size_select">
                                                                         <option value="">Pilih Ukuran</option>
                                                                         @foreach ($sizes as $size)
-                                                                            <option value="{{ $size->size }}">
+                                                                            <option value="{{ $size->id }}">
                                                                                 {{ $size->size }}
                                                                             </option>
                                                                         @endforeach
@@ -135,7 +135,7 @@
                                                                         class="form-control form-control-sm warna_select">
                                                                         <option value="">Warna</option>
                                                                         @foreach ($warnas as $warna)
-                                                                            <option value="{{ $warna->warna }}">
+                                                                            <option value="{{ $warna->id }}">
                                                                                 {{ $warna->warna }}</option>
                                                                         @endforeach
                                                                     </select>
@@ -145,7 +145,7 @@
                                                                         class="form-control form-control-sm"
                                                                         placeholder="Quantity" name="qty[]" />
                                                                 </td>
-                                                                @foreach ($prosess as $proses)
+                                                                {{-- @foreach ($prosess as $proses)
                                                                     <td class="text-right qty">
                                                                         <div class="d-flex flex-column">
                                                                             <input type="hidden" name="id_proses[]"
@@ -155,7 +155,7 @@
                                                                                 name="waktu_proses[]" />
                                                                         </div>
                                                                     </td>
-                                                                @endforeach
+                                                                @endforeach --}}
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -420,8 +420,8 @@
         <td class="description">
             <select name="size[]"  class="form-control form-control-sm size_select">
                 <option value="">Pilih Produk</option>
-                @foreach ($sizes as $size)
-                    <option value="{{ $size->size }}">
+                @foreach ($sizes as $id)
+                    <option value="{{ $size->id }}">
                         {{ $size->size }}
                     </option>
                 @endforeach
@@ -431,7 +431,7 @@
                 <select name="warna[]" class="form-control form-control-sm warna_select">
                     <option value="">Pilih warna</option>
                     @foreach ($warnas as $warna)
-                        <option value="{{ $warna->warna }}">{{ $warna->warna }}</option>
+                        <option value="{{ $warna->id }}">{{ $warna->warna }}</option>
                     @endforeach
                 </select>
             </td>
@@ -439,17 +439,6 @@
         <td class="text-right qty">
             <input type="text" class="form-control form-control-sm" placeholder="Quantity" name="qty[]" />
         </td>
-         @foreach ($prosess as $proses)
-                                                                    <td class="text-right qty">
-                                                                        <div class="d-flex flex-column">
-                                                                             <input type="hidden" name="id_proses[]"
-                                                                                value="{{ $proses->id }}">
-                                                                            <input type="time"
-                                                                                class="form-control form-control-sm"
-                                                                                name="waktu_proses[]" />
-                                                                        </div>
-                                                                    </td>
-                                                                @endforeach
     </tr>`;
 
             $('table.item-table tbody').append(newRow);

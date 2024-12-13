@@ -13,6 +13,15 @@ class Production extends Model
     {
         return $this->hasMany(DetailProduction::class, 'so_number', 'so_number');
     }
+    public function warna()
+    {
+        return $this->belongsTo(Warna::class, 'id_color', 'id');
+    }
+    public function size()
+    {
+        return $this->belongsTo(Size::class, 'id_size', 'id');
+    }
+
     public function proses()
     {
         return $this->hasMany(Proses::class);

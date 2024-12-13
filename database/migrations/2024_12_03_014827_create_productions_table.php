@@ -24,8 +24,8 @@ return new class extends Migration
             $table->id();
             $table->string('so_number');
             $table->date('tgl_production');
-            $table->string('size');
-            $table->string('color');
+            $table->unsignedBigInteger('id_size');
+            $table->unsignedBigInteger('id_color');
             $table->string('qty');
             $table->string('barcode')->unique();
             // $table->datetime('oven_start')->nullable();
@@ -50,7 +50,8 @@ return new class extends Migration
             $table->string('progress')->nullable();
             $table->string('kode_produk');
             $table->foreign('kode_produk')->references('kode_produk')->on('produk')->onDelete('restrict')->onUpdate('cascade');
-            // $table->foreign('id_production')->references('id')->on('production')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('id_color')->references('id')->on('warna')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('id_size')->references('id')->on('size')->onDelete('restrict')->onUpdate('cascade');
 
             // $table->foreign('id_proses')->references('id')->on('proses')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();

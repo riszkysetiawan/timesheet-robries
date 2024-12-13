@@ -34,7 +34,7 @@ class ProductionController extends Controller
     {
         if ($request->ajax()) {
             // Ambil data dari tabel production beserta timers dan proses
-            $productions = Production::with(['timers.proses', 'timers.user'])
+            $productions = Production::with(['timers.proses', 'timers.user', 'warna', 'size'])
                 ->orderBy('created_at', 'desc')
                 ->select('production.*'); // Pastikan mengambil data dari production table
 
@@ -48,13 +48,32 @@ class ProductionController extends Controller
             return DataTables::of($productions)
                 ->addIndexColumn() // Menambahkan index untuk DataTables
                 ->addColumn('action', function ($row) {
-                    $editUrl = route('production.admin.edit', Crypt::encryptString($row->so_number));
-                    $detailUrl = route('detail.production.admin', Crypt::encryptString($row->so_number));
+                    $editUrl = route('production.admin.edit', Crypt::encryptString($row->id));
                     return '
-                        <a href="' . $editUrl . '" class="btn btn-outline-primary">Edit</a>
-                        <a href="' . $detailUrl . '" class="btn btn-outline-info">Detail</a>';
+                        <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)" onclick="confirmDelete(' . $row->id . ')" type="button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6l-2 14H7L5 6"></path>
+                                <path d="M10 11v6"></path>
+                                <path d="M14 11v6"></path>
+                            </svg>
+                            Delete
+                        </a>
+                        <a href="' . $editUrl . '" class="btn btn-outline-primary btn-rounded mb-2 me-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            Edit
+                        </a>';
                 })
                 // Kolom untuk masing-masing waktu proses dan operator
+                ->addColumn('warna', function ($row) {
+                    return $row->warna ? $row->warna->warna : '-'; // Access the 'warna' attribute from the related model
+                })
+                ->addColumn('size', function ($row) {
+                    return $row->size ? $row->size->size : '-';
+                })
                 ->addColumn('oven_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 1); // Oven Start
                     return $timer ? \Carbon\Carbon::parse($timer->waktu)->format('Y-m-d H:i:s') : '-';
@@ -381,14 +400,22 @@ class ProductionController extends Controller
             'so_number.*' => 'required',
             'tgl_production' => 'required|date',
             'kode_produk.*' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
-            'qty.*' => 'required|numeric|min:1',
+            'qty.*' => 'required|string',
             'warna.*' => 'required|string',
             'size.*' => 'required|string',
             'barcode.*' => 'required|string',
-            'id_proses.*' => 'required|exists:proses,id',
         ], [
-            // Pesan validasi seperti sebelumnya
+            'so_number.*.required' => 'Nomor SO wajib diisi.',
+            'tgl_production.required' => 'Tanggal produksi wajib diisi.',
+            'tgl_production.date' => 'Tanggal produksi harus berupa tanggal yang valid.',
+            'kode_produk.*.required' => 'Kode produk wajib diisi.',
+            'kode_produk.*.exists' => 'Kode produk tidak ditemukan di dalam database.',
+            'qty.*.required' => 'Kuantitas wajib diisi.',
+            'warna.*.required' => 'Warna wajib diisi.',
+            'size.*.required' => 'Ukuran wajib diisi.',
+            'barcode.*.required' => 'Barcode wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -402,8 +429,8 @@ class ProductionController extends Controller
                 $production = new Production();
                 $production->so_number = $so_number;
                 $production->tgl_production = $request->tgl_production;
-                $production->size = $request->size[$key];
-                $production->color = $request->warna[$key];
+                $production->id_size = $request->size[$key];
+                $production->id_color = $request->warna[$key];
                 $production->qty = $request->qty[$key];
                 $production->barcode = $request->barcode[$key];
                 $production->kode_produk = $request->kode_produk[$key]; // Setiap item dari array
@@ -460,128 +487,98 @@ class ProductionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($encryptedId)
+    public function edit($id)
     {
-        try {
-            $id = Crypt::decryptString($encryptedId);
-            $productions = Production::with('detailProductions')->findOrFail($id);
-            $produks = Produk::all();
-            $warnas = Warna::all();
-            return view('superadmin.production.update', compact('productions', 'produks', 'warnas'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Data tidak ditemukan');
-        }
+        $decryptedId = Crypt::decryptString($id);
+        $production = Production::findOrFail($decryptedId);
+        $produks = Produk::all();
+        $sizes = Size::all();
+        $warnas = Warna::all();
+        return view('superadmin.production.update', compact('production', 'produks', 'sizes', 'warnas'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-
-
     public function update(Request $request, $encryptedId)
     {
         try {
             // Dekripsi ID
             $id = Crypt::decryptString($encryptedId);
 
+            // Validasi input
             $request->validate([
-                // Bagian yang wajib diisi
-                'so_number' => 'required|unique:production,so_number',
-                'tgl_production' => 'required|date',
-                'kode_produk.*' => 'required|exists:produk,kode_produk',
-                'qty.*' => 'required|numeric|min:1',
-                'color.*' => 'required|string',
-                'size.*' => 'required|string',
-                'barcode.*' => 'required|string',
-                'progress.*' => 'required|string',
+                'so_number' => 'required',
+                'kode_produk' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
+                'qty' => 'required|string',
+                'warna' => 'required|string',
+                'size' => 'required|string',
+                'barcode' => 'required|string',
             ], [
-                // Pesan error untuk input yang wajib
-                'so_number.required' => 'SO Number wajib diisi.',
-                'so_number.unique' => 'SO Number sudah terdaftar.',
+                'so_number.required' => 'Nomor SO wajib diisi.',
                 'tgl_production.required' => 'Tanggal produksi wajib diisi.',
-                'tgl_production.date' => 'Format tanggal produksi tidak valid.',
-                'kode_produk.*.required' => 'Kode produk wajib diisi.',
-                'kode_produk.*.exists' => 'Kode produk tidak ditemukan di database.',
-                'qty.*.required' => 'Jumlah barang (Qty) wajib diisi.',
-                'qty.*.numeric' => 'Jumlah barang (Qty) harus berupa angka.',
-                'qty.*.min' => 'Jumlah barang (Qty) tidak boleh kurang dari 1.',
-                'color.*.required' => 'Kolom warna wajib diisi.',
-                'size.*.required' => 'Kolom ukuran wajib diisi.',
-                'barcode.*.required' => 'Kolom barcode wajib diisi.',
-                'progress.*.required' => 'Kolom progress wajib diisi.',
+                'tgl_production.date' => 'Tanggal produksi harus berupa tanggal yang valid.',
+                'kode_produk.required' => 'Kode produk wajib diisi.',
+                'kode_produk.exists' => 'Kode produk tidak ditemukan di dalam database.',
+                'qty.required' => 'Kuantitas wajib diisi.',
+                'warna.required' => 'Warna wajib diisi.',
+                'size.required' => 'Ukuran wajib diisi.',
+                'barcode.required' => 'Barcode wajib diisi.',
             ]);
 
-
-            // Mulai Transaksi
             DB::beginTransaction();
-            // Ambil Data Production
+
+            // Cari data production berdasarkan ID
             $production = Production::findOrFail($id);
             $production->so_number = $request->so_number;
-            $production->tgl_production = $request->tgl_production;
+            // $production->tgl_production = $request->tgl_production;
+            $production->id_size = $request->size;
+            $production->id_color = $request->warna;
+            $production->qty = $request->qty;
+            $production->barcode = $request->barcode;
+            $production->kode_produk = $request->kode_produk;
             $production->save();
-            // Hapus Detail Lama
-            $production->detailProductions()->delete();
-            // Tambahkan Detail Baru
-            foreach ($request->kode_produk as $index => $kode_produk) {
-                $detailProduction = new DetailProduction();
-                $detailProduction->so_number = $production->so_number;
-                $detailProduction->kode_produk = $kode_produk;
-                $detailProduction->qty = $request->qty[$index];
-                $detailProduction->color = $request->color[$index] ?? null;
-                $detailProduction->size = $request->size[$index] ?? null;
-                $detailProduction->barcode = $request->barcode[$index] ?? null;
-                $detailProduction->progress = $request->progress[$index] ?? null;
-                $detailProduction->save();
-            }
 
-            // Commit Transaksi
             DB::commit();
-
-            // Enkripsi SO Number
-            $encryptedSoNumber = Crypt::encryptString($production->so_number);
 
             // Kembalikan Response JSON
             return response()->json([
                 'status' => 'success',
-                'message' => 'Data berhasil diupdate!',
-                'encrypted_so_number' => $encryptedSoNumber,
+                'message' => 'Data berhasil diperbarui!',
             ]);
         } catch (\Exception $e) {
             // Rollback Transaksi jika Ada Error
             DB::rollBack();
 
             // Logging Error
-            \Log::error('Error saat update SO: ' . $e->getMessage());
+            \Log::error('Error saat memperbarui data production: ' . $e->getMessage());
 
             // Kembalikan Response Error
             return response()->json([
                 'status' => 'error',
-                'message' => 'Terjadi kesalahan saat mengupdate data: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage(),
             ], 500);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy($id)
     {
-        try {
-            DB::transaction(function () use ($id) {
-                $production = Production::findOrFail($id);
-                DetailProduction::where('kode_so', $penjualan->kode_so)->delete();
-                $penjualan->delete();
-            });
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Penjualan Order berhasil dihapus.'
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error('Error saat menghapus Production : ' . $e->getMessage());
+        $production = Production::find($id);
+        if (!$production) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Terjadi kesalahan saat menghapus Penjualan.'
-            ], 500);
+                'message' => 'produk tidak ditemukan!'
+            ], 404);
         }
+        $production->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'produk berhasil dihapus!'
+        ]);
     }
 }

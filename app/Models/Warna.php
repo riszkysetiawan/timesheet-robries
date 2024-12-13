@@ -12,7 +12,10 @@ class Warna extends Model
     {
         return $this->hasMany(Produk::class, 'id_warna', 'id');
     }
-
+    public function productions()
+    {
+        return $this->hasMany(Production::class, 'id_color', 'id');
+    }
     public function waste()
     {
         return $this->hasMany(Waste::class, 'id_warna', 'id');

@@ -12,6 +12,10 @@ class Size extends Model
     protected $guarded = ['id'];
     public function produk()
     {
-        return $this->hasMany(Produk::class, 'id_kategori', 'id');
+        return $this->hasMany(Produk::class, 'id_size', 'id');
+    }
+    public function productions()
+    {
+        return $this->hasMany(Production::class, 'id_size', 'id');
     }
 }

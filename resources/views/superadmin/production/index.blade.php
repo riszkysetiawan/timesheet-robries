@@ -17,6 +17,41 @@
                     </a>
                 </nav>
             </div>
+            <!-- Scan Button -->
+            <div class="page-meta">
+                <nav class="breadcrumb-style-one" aria-label="breadcrumb">
+                    <button id="scanButton" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" class="feather feather-camera">
+                            <path
+                                d="M23 19v-11a2 2 0 0 0-2-2h-3.17l-1.84-2.76A2 2 0 0 0 14.2 3H9.8a2 2 0 0 0-1.79 1.24L6.17 7H3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2z">
+                            </path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                        Camera
+                    </button>
+                </nav>
+            </div>
+
+
+            <!-- Scan Modal -->
+            <div class="modal fade" id="scanModal" tabindex="-1" aria-labelledby="scanModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="scanModalLabel">Scan QR Code</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="reader" style="width: 100%;"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Modal Preview -->
             <div class="modal fade" id="modalPreview" tabindex="-1" role="dialog" aria-labelledby="modalPreviewLabel"
@@ -52,9 +87,11 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Tanggal</th>
                                         <th>SO Number</th>
                                         <th>Size</th>
                                         <th>Qty</th>
+                                        <th>Warna</th>
                                         <th>Kode Barcode</th>
                                         <th>Barcode</th>
                                         <th>Oven Start</th>
@@ -111,12 +148,47 @@
     </div>
 
     <!-- Scripts -->
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#scanButton').on('click', function() {
+                $('#scanModal').modal('show');
+
+                const html5QrCode = new Html5Qrcode("reader");
+                const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+                    console.log(`QR Code detected: ${decodedText}`);
+                    alert(`QR Code detected: ${decodedText}`);
+                    $('#scanModal').modal('hide');
+                    html5QrCode.stop().catch(err => console.log(err));
+                };
+
+                const config = {
+                    fps: 10,
+                    qrbox: {
+                        width: 250,
+                        height: 250
+                    }
+                };
+
+                html5QrCode.start({
+                        facingMode: "environment"
+                    }, config, qrCodeSuccessCallback)
+                    .catch(err => console.log(`Error starting camera: ${err}`));
+
+                $('#scanModal').on('hidden.bs.modal', function() {
+                    html5QrCode.stop().catch(err => console.log(err));
+                });
+            });
+        });
+    </script>
+
+
     <script>
         $(document).ready(function() {
             var table = $('#penjualan-table').DataTable({
@@ -140,6 +212,10 @@
                         searchable: false
                     },
                     {
+                        data: 'tgl_production',
+                        name: 'tgl_production',
+                    },
+                    {
                         data: 'so_number',
                         name: 'so_number'
                     },
@@ -151,6 +227,11 @@
                     {
                         data: 'qty',
                         name: 'qty',
+                        defaultContent: '-'
+                    },
+                    {
+                        data: 'warna',
+                        name: 'warna',
                         defaultContent: '-'
                     },
                     {
@@ -422,13 +503,9 @@
         //     });
         // });
 
-        // Format Rupiah Helper Function
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID').format(angka);
-        }
 
         // Delete Confirmation Handler
-        function confirmDelete(kode_so) {
+        function confirmDelete(id) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 text: "Data ini akan dihapus secara permanen!",
@@ -440,15 +517,15 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    deleteProduction(kode_so);
+                    deleteProduction(id);
                 }
             });
         }
 
         // Delete Production Handler
-        function deleteProduction(kode_so) {
+        function deleteProduction(id) {
             $.ajax({
-                url: '/production/admin/delete/' + kode_so,
+                url: '/delete/production/admin/' + id,
                 method: 'DELETE',
                 data: {
                     _token: '{{ csrf_token() }}'
