@@ -56,6 +56,7 @@
                                         <th>Size</th>
                                         <th>Qty</th>
                                         <th>Kode Barcode</th>
+                                        <th>Barcode</th>
                                         <th>Oven Start</th>
                                         <th>Nama Operator</th>
                                         <th>Oven Finish</th>
@@ -110,6 +111,8 @@
     </div>
 
     <!-- Scripts -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
@@ -153,6 +156,18 @@
                     {
                         data: 'barcode',
                         name: 'barcode',
+                        defaultContent: '-'
+                    },
+                    {
+                        data: 'barcode',
+                        name: 'barcode',
+                        render: function(data, type, row) {
+                            if (type === 'display') {
+                                // Use a library to generate QR code
+                                return `<div class="qrcode" data-barcode="${data}"></div>`;
+                            }
+                            return data;
+                        },
                         defaultContent: '-'
                     },
                     {
@@ -317,7 +332,18 @@
                         orderable: false,
                         searchable: false
                     }
-                ]
+                ],
+                drawCallback: function(settings) {
+                    // Generate QR codes after the table is drawn
+                    $('.qrcode').each(function() {
+                        var barcode = $(this).data('barcode');
+                        new QRCode(this, {
+                            text: barcode,
+                            width: 128,
+                            height: 128
+                        });
+                    });
+                }
             });
 
             // Date Range Picker logic
