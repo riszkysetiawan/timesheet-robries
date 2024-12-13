@@ -2,35 +2,43 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Proses;
-use App\Http\Requests\StoreProsesRequest;
-use App\Http\Requests\UpdateProsesRequest;
+use App\Models\Size;
+use App\Http\Requests\UpdateSizeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Crypt;
-use Yajra\DataTables\Facades\DataTables;
-use App\Exports\KategoriExport;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Maatwebsite\Excel\Facades\Excel;
+use PDF;
+use App\Exports\SizeExport;
+use App\Imports\SizeImport;
+use App\Models\Produk;
+use Yajra\DataTables\Facades\DataTables;
 
-class ProsesController extends Controller
+class SizeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
 
+    public function downloadExcel()
+    {
+        return Excel::download(new SizeExport, 'size.xlsx');
+    }
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $prosess = Proses::all();
+            $sizes = Size::all();
 
-            return DataTables::of($prosess)
+            return DataTables::of($sizes)
                 ->addIndexColumn() // Tambahkan baris ini untuk kolom nomor urut
-                ->addColumn('action', function ($proses) {
-                    $editUrl = route('proses.admin.edit', Crypt::encryptString($proses->id));
+                ->addColumn('action', function ($size) {
+                    $editUrl = route('size-produk.admin.edit', Crypt::encryptString($size->id));
                     return '
-                        <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)" onclick="confirmDelete(' . $proses->id . ')" type="button">
+                        <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)" onclick="confirmDelete(' . $size->id . ')" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
                                 <polyline points="3 6 5 6 21 6"></polyline>
                                 <path d="M19 6l-2 14H7L5 6"></path>
@@ -51,14 +59,14 @@ class ProsesController extends Controller
                 ->make(true);
         }
 
-        return view('superadmin.proses.index');
+        return view('superadmin.size.index');
     }
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('superadmin.proses.create');
+        return view('superadmin.size.create');
     }
 
     /**
@@ -67,9 +75,11 @@ class ProsesController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required|string|max:255',
+            'size' => 'required|string|max:255',
         ], [
-            'nama.required' => 'Nama Proses wajib diisi.',
+            'size.required' => 'Size wajib diisi.',
+            'size.string' => 'Size harus berupa teks.',
+            'size.max' => 'Size tidak boleh lebih dari 255 karakter.',
         ]);
 
         if ($validator->fails()) {
@@ -78,12 +88,13 @@ class ProsesController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-        $proses = new Proses();
-        $proses->nama = $request->nama;
-        $proses->save();
+        $size = new Size();
+        $size->size = $request->size;
+        $size->save();
+
         return response()->json([
             'status' => 'success',
-            'message' => 'Proses Barang berhasil ditambahkan!'
+            'message' => 'Size Barang berhasil ditambahkan!'
         ]);
     }
 
@@ -102,9 +113,9 @@ class ProsesController extends Controller
     public function edit($id)
     {
         $decryptedId = Crypt::decryptString($id);
-        $proses = Proses::findOrFail($decryptedId);
+        $size = Size::findOrFail($decryptedId);
 
-        return view('superadmin.proses.update', compact('proses'));
+        return view('superadmin.size.update', compact('size'));
     }
 
     /**
@@ -114,10 +125,10 @@ class ProsesController extends Controller
     {
         $decryptedId = Crypt::decryptString($id);
         $validator = Validator::make($request->all(), [
-            'nama' => 'required|string|max:255',
+            'size' => 'required|string|max:255',
         ], [
-            'nama.required' => 'Nama  wajib diisi.',
-            'nama.string' => 'Nama  harus berupa teks.',
+            'size.required' => 'Nama size wajib diisi.',
+            'size.string' => 'Nama size harus berupa teks.',
         ]);
 
         if ($validator->fails()) {
@@ -126,13 +137,13 @@ class ProsesController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-        $proses = Proses::findOrFail($decryptedId);
-        $proses->nama = $request->nama;
-        $proses->save();
+        $size = Size::findOrFail($decryptedId);
+        $size->size = $request->size;
+        $size->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Proses berhasil diupdate!'
+            'message' => 'size berhasil diupdate!'
         ]);
     }
 
@@ -141,18 +152,19 @@ class ProsesController extends Controller
      */
     public function destroy($id)
     {
-        $proses = Proses::find($id);
-        if (!$proses) {
+        $size = Size::find($id);
+        if (!$size) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Proses tidak ditemukan!'
+                'message' => 'size tidak ditemukan!'
             ], 404);
         }
 
-        $proses->delete();
+        $size->delete();
+
         return response()->json([
             'status' => 'success',
-            'message' => 'Proses berhasil dihapus!'
+            'message' => 'size berhasil dihapus!'
         ]);
     }
 }

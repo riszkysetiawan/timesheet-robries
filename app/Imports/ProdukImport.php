@@ -22,6 +22,7 @@ class ProdukImport implements ToModel, WithHeadingRow, WithCalculatedFormulas
                 'harga' => $row['harga'],
                 'id_warna' => $row['warna'],
                 'id_kategori' => $row['kategori'],
+                'id_size' => $row['size'],
                 'keterangan' => $row['keterangan'],
             ]);
         } else {
@@ -31,6 +32,7 @@ class ProdukImport implements ToModel, WithHeadingRow, WithCalculatedFormulas
                 'kode_barcode' => $row['kode_barcode'],
                 'harga' => $row['harga'],
                 'id_warna' => $row['warna'],
+                'id_size' => $row['size'],
                 'id_kategori' => $row['kategori'],
                 'keterangan' => $row['keterangan'],
             ]);

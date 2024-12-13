@@ -17,6 +17,7 @@ use PDF;
 use App\Exports\ProdukExport;
 use App\Imports\ProdukImport;
 use App\Exports\LaporanprodukExport;
+use App\Models\Size;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use Illuminate\Support\Facades\Response;
 use Yajra\DataTables\Facades\DataTables;
@@ -207,8 +208,9 @@ class ProdukController extends Controller
     {
         $kategoris = Kategori::all();
         $warnas = Warna::all();
+        $sizes = Size::all();
 
-        return view('superadmin.produk.create', compact('kategoris', 'warnas',));
+        return view('superadmin.produk.create', compact('kategoris', 'warnas', 'sizes'));
     }
 
     /**
@@ -225,6 +227,7 @@ class ProdukController extends Controller
             'harga' => 'required|string|max:255',
             'keterangan' => 'nullable|string|max:255',
             'id_kategori' => 'nullable|exists:kategori_barang,id',
+            'id_size' => 'nullable|exists:size,id',
             'id_warna' => 'nullable|exists:warna,id',
         ], [
             'kode_produk.required' => 'Kode produk wajib diisi.',
@@ -243,9 +246,9 @@ class ProdukController extends Controller
             'keterangan.max' => 'Keterangan tidak boleh lebih dari 255 karakter.',
             'id_kategori.exists' => 'Kategori yang dipilih tidak valid.',
             'id_warna.exists' => 'Warna yang dipilih tidak valid.',
+            'id_size.exists' => 'Ukuran yang dipilih tidak valid.',
         ]);
 
-        // Jika validasi gagal, kirim response error
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -260,6 +263,7 @@ class ProdukController extends Controller
         $produk->kode_barcode = $request->kode_barcode;
         $produk->harga = $request->harga;
         $produk->keterangan = $request->keterangan;
+        $produk->id_size = $request->id_size;
         $produk->id_kategori = $request->id_kategori;
         $produk->id_warna = $request->id_warna;
 
@@ -299,8 +303,9 @@ class ProdukController extends Controller
         $produk = produk::with(['stocks'])->findOrFail($decryptedId);
         $kategoris = Kategori::all();
         $warnas = Warna::all();
+        $sizes = Size::all();
 
-        return view('superadmin.produk.update', compact('produk', 'kategoris', 'warnas'));
+        return view('superadmin.produk.update', compact('produk', 'kategoris', 'warnas', 'sizes'));
     }
 
     /**
@@ -320,6 +325,7 @@ class ProdukController extends Controller
             'keterangan' => 'nullable|string|max:255',
             'id_kategori' => 'nullable|exists:kategori_barang,id',
             'id_warna' => 'nullable|exists:warna,id',
+            'id_size' => 'nullable|exists:size,id',
         ], [
             'nama_barang.required' => 'Nama barang wajib diisi.',
             'nama_barang.string' => 'Nama barang harus berupa teks.',
@@ -335,6 +341,7 @@ class ProdukController extends Controller
             'keterangan.max' => 'Keterangan tidak boleh lebih dari 255 karakter.',
             'id_kategori.exists' => 'Kategori yang dipilih tidak valid.',
             'id_warna.exists' => 'Warna yang dipilih tidak valid.',
+            'id_size.exists' => 'Ukuran yang dipilih tidak valid.',
         ]);
 
         // Jika validasi gagal, kirim response error
@@ -355,6 +362,7 @@ class ProdukController extends Controller
         $produk->keterangan = $request->keterangan;
         $produk->id_kategori = $request->id_kategori;
         $produk->id_warna = $request->id_warna;
+        $produk->id_size = $request->id_size;
 
         // Jika ada file gambar yang di-upload, hapus gambar lama dan simpan gambar baru
         if ($request->hasFile('gambar')) {

@@ -5,14 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Kategori extends Model
+class Mapping extends Model
 {
     use HasFactory;
-    protected $table = 'kategori_barang';
-    protected $primaryKey = 'id';
+    protected $table = 'mapping';
     protected $guarded = ['id'];
     public function produk()
     {
-        return $this->hasMany(Produk::class, 'id_kategori', 'id');
+        return $this->belongsTo(Produk::class, 'kode_produk', 'kode_produk');
     }
 }

@@ -18,6 +18,11 @@ class Timer extends Model
         return $this->belongsTo(Production::class, 'so_number', 'so_number');
     }
 
+    public function detailProduction()
+    {
+        return $this->belongsTo(DetailProduction::class, 'barcode', 'barcode');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'id_users', 'id');

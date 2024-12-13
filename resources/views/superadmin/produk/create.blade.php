@@ -95,6 +95,18 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="id_kategori" class="form-label">Ukuran</label>
+                                        <select id="id_size" name="id_size" class="form-control">
+                                            <option value="">Pilih Ukuran</option>
+                                            @foreach ($sizes as $size)
+                                                <option value="{{ $size->id }}"> {{ $size->size }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
 
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
@@ -112,7 +124,8 @@
                                     id="submitButton">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle">
+                                        stroke-linecap="round" stroke-linejoin="round"
+                                        class="feather feather-check-circle">
                                         <path d="M9 11l3 3L22 4"></path>
                                         <circle cx="12" cy="12" r="10"></circle>
                                     </svg>

@@ -14,10 +14,14 @@ return new class extends Migration
         Schema::create('timer', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_proses');
-            $table->string('so_number');
+            $table->unsignedBigInteger('id_production');
+            // $table->string('so_number');
+            // $table->string('barcode');
+            $table->time('waktu')->nullable();
             $table->unsignedBigInteger('id_users');
             $table->foreign('id_proses')->references('id')->on('proses')->onDelete('restrict')->onUpdate('cascade');
-            $table->foreign('so_number')->references('so_number')->on('production')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('id_production')->references('id')->on('production')->onDelete('restrict')->onUpdate('cascade');
+            // $table->foreign('barcode')->references('barcode')->on('production')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_users')->references('id')->on('users')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });

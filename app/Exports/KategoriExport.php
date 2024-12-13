@@ -22,7 +22,7 @@ class KategoriExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'ID Warna',
+            'ID ',
             'Kategori',
             'Keterangan',
         ];

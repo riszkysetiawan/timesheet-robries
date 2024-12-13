@@ -13,6 +13,10 @@ class Proses extends Model
     {
         return $this->hasMany(Produk::class, 'proses', 'id');
     }
+    public function timer()
+    {
+        return $this->hasOne(Timer::class);
+    }
 
     public function timers()
     {

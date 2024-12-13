@@ -15,6 +15,17 @@ class DetailProduction extends Model
     {
         return $this->belongsTo(Production::class, 'so_number', 'so_number');
     }
+    // Relasi ke Timer
+    public function timers()
+    {
+        return $this->hasMany(Timer::class, 'barcode', 'barcode'); // Pastikan ini benar
+    }
+
+    // Relasi ke Proses
+    public function proses()
+    {
+        return $this->belongsTo(Proses::class, 'id_proses', 'id'); // Pastikan id_proses sesuai
+    }
 
     public function produk()
     {

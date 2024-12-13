@@ -15,6 +15,10 @@ class Produk extends Model
     {
         return $this->belongsTo(Kategori::class, 'id_kategori', 'id');
     }
+    public function size()
+    {
+        return $this->belongsTo(Kategori::class, 'id_size', 'id');
+    }
     public function warna()
     {
         return $this->belongsTo(Warna::class, 'id_warna', 'id');
@@ -25,6 +29,10 @@ class Produk extends Model
         return $this->hasMany(Stock::class, 'kode_produk', 'kode_produk');
     }
 
+    public function mapping()
+    {
+        return $this->hasMany(Stock::class, 'kode_produk', 'kode_produk');
+    }
 
     public function waste()
     {
@@ -41,8 +49,8 @@ class Produk extends Model
         return $this->hasMany(DetailInbond::class, 'kode_produk');
     }
 
-    public function productionDetails()
+    public function production()
     {
-        return $this->hasMany(DetailProduction::class, 'kode_produk');
+        return $this->hasMany(Production::class, 'kode_produk');
     }
 }

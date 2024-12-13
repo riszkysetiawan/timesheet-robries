@@ -9,16 +9,6 @@
             </div>
         @endif
 
-        <!-- BREADCRUMB -->
-        {{-- <div class="page-meta">
-            <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Form</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Layouts</li>
-                </ol>
-            </nav>
-        </div> --}}
-        <!-- /BREADCRUMB -->
 
         <div class="row">
             <div id="flStackForm" class="col-lg-12 layout-spacing layout-top-spacing">
@@ -44,11 +34,11 @@
                                     </div>
                                     <div class="row mb-4">
                                         <div class="col-sm-12">
-                                            <label for="kode_barang" class="form-label">Nama Barang</label>
-                                            <select name="kode_barang[]" class="form-control kode_barang">
+                                            <label for="kode_produk" class="form-label">Nama Barang</label>
+                                            <select name="kode_produk[]" class="form-control kode_produk">
                                                 <option value="">Pilih Barang</option>
-                                                @foreach ($barangs as $barang)
-                                                    <option value="{{ $barang->kode_barang }}"> {{ $barang->nama_barang }}
+                                                @foreach ($produks as $produk)
+                                                    <option value="{{ $produk->kode_produk }}"> {{ $produk->nama_barang }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -83,7 +73,7 @@
                                 </svg>
                                 Simpan</button>
                             <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
-                                onclick="window.location.href='{{ route('stock-barang.admin.index') }}'">
+                                onclick="window.location.href='{{ route('stock-produk.admin.index') }}'">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" class="feather feather-arrow-left">
@@ -129,7 +119,7 @@
                 var formData = new FormData(this);
 
                 $.ajax({
-                    url: "{{ route('stock-barang.admin.store') }}",
+                    url: "{{ route('stock-produk.admin.store') }}",
                     method: "POST",
                     data: formData,
                     contentType: false,
@@ -144,7 +134,8 @@
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     $('#simpan')[0].reset();
-                                    window.location.href = '/stock/barang/admin';
+                                    window.location.href =
+                                        '{{ route('stock-produk.admin.index') }}';
                                 }
                             });
                         }
@@ -199,15 +190,15 @@
 
                 if (barcode.length > 0) {
                     $.ajax({
-                        url: "/get-barang-by-barcode/stock/" +
+                        url: "/get-produk-by-barcode/stock/" +
                             barcode, // Route untuk mengambil barang
                         method: "GET",
                         success: function(response) {
                             if (response) {
-                                parent.find('select[name="kode_barang[]"]').val(response
-                                    .kode_barang).trigger('change'); // Update value select
+                                parent.find('select[name="kode_produk[]"]').val(response
+                                    .kode_produk).trigger('change'); // Update value select
                             } else {
-                                parent.find('select[name="kode_barang[]"]').val('').trigger(
+                                parent.find('select[name="kode_produk[]"]').val('').trigger(
                                     'change');
                             }
                         },

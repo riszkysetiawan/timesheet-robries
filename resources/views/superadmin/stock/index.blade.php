@@ -5,7 +5,7 @@
         <div class="middle-content container-xxl p-0">
             <div class="page-meta">
                 <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                    <a href="{{ route('stock-barang.admin.create') }}" class="btn btn-outline-primary btn-rounded mb-2 me-4">
+                    <a href="{{ route('stock-produk.admin.create') }}" class="btn btn-outline-primary btn-rounded mb-2 me-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round" class="feather feather-plus">
@@ -25,7 +25,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Kode Barang</th>
+                                        <th>Kode Produk</th>
                                         <th>Nama Barang</th>
                                         <th>Stock</th>
                                         <th class="text-center">Action</th>
@@ -46,15 +46,6 @@
                             <polyline points="10 9 9 9 8 9"></polyline>
                         </svg>
                         Download Excel</button>
-                    <button class="btn btn-outline-info btn-rounded mb-2 me-4"
-                        onclick="window.location.href='{{ route('stock.download.pdf.admin') }}'">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" class="feather feather-file">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2-2H12a2 2 0 0 0 2-2v-6"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
-                        Download PDF</button>
                     <button class="btn btn-outline-success btn-rounded mb-2 me-4"
                         onclick="window.location.href='{{ route('upload.stock.files.admin') }}'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -75,7 +66,7 @@
             $('#stock-barang-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('stock-barang.admin.index') }}",
+                ajax: "{{ route('stock-produk.admin.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -83,12 +74,12 @@
                         searchable: false
                     },
                     {
-                        data: 'kode_barang',
-                        name: 'kode_barang'
+                        data: 'kode_produk',
+                        name: 'kode_produk'
                     },
                     {
                         data: 'nama_barang',
-                        name: 'barang.nama_barang'
+                        name: 'produk.nama_barang'
                     },
                     {
                         data: 'stock',
@@ -124,7 +115,7 @@
 
         function deleteUser(id) {
             $.ajax({
-                url: '/delete/stock/barang/admin/' + id,
+                url: '/delete/stock/produk/admin/' + id,
                 method: 'DELETE',
                 data: {
                     _token: '{{ csrf_token() }}'

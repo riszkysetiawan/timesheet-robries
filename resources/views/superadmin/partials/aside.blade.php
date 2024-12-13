@@ -62,6 +62,19 @@
                         </div>
                     </a>
                 </li>
+                <li class="menu">
+                    <a href="{{ route('proses.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
+                        <div class="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-user">
+                                <path d="M20.7 17.29a10.94 10.94 0 0 0-9.7-6.29 10.94 10.94 0 0 0-9.7 6.29"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span>Progress</span>
+                        </div>
+                    </a>
+                </li>
 
 
                 <!-- Supplier Menu -->
@@ -83,7 +96,7 @@
                 </li> --}}
 
                 <li class="menu active">
-                    <a href="" aria-expanded="false" class="dropdown-toggle">
+                    <a href="{{ route('production.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -131,9 +144,9 @@
                 <li class="menu ">
                     <a href="#invoice" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="feather feather-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-box">
                                 <path
                                     d="M21 16V8a2 2 0 0 0-1-1.73L13 2.73a2 2 0 0 0-2 0L4 6.27A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73z">
                                 </path>
@@ -162,10 +175,16 @@
                             <a href="{{ route('produk.admin.index') }}"> Data Barang </a>
                         </li>
                         <li class="">
-                            <a href="/stock/barang/admin"> Stock Barang </a>
+                            <a href="{{ route('stock-produk.admin.index') }}"> Stock Produk </a>
+                        </li>
+                        <li class="">
+                            <a href="{{ route('size-produk.admin.index') }}"> Size Produk </a>
                         </li>
                         <li class="">
                             <a href=""> Barcode Barang</a>
+                        </li>
+                        <li class="">
+                            <a href=""> Mapping Barang</a>
                         </li>
                     </ul>
                 </li>

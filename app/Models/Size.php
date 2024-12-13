@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Kategori extends Model
+class Size extends Model
 {
     use HasFactory;
-    protected $table = 'kategori_barang';
-    protected $primaryKey = 'id';
+    protected $table = 'size';
     protected $guarded = ['id'];
     public function produk()
     {

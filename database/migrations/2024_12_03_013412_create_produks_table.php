@@ -19,11 +19,13 @@ return new class extends Migration
             $table->string('harga');
             $table->string('keterangan')->nullable();
             $table->unsignedBigInteger('id_kategori')->nullable();
+            $table->unsignedBigInteger('id_size')->nullable();
             $table->unsignedBigInteger('id_warna')->nullable();
             $table->timestamps();
 
             $table->foreign('id_kategori')->references('id')->on('kategori_barang')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_warna')->references('id')->on('warna')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('id_size')->references('id')->on('size')->onDelete('restrict')->onUpdate('cascade');
         });
     }
 

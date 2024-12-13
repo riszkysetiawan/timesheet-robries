@@ -122,6 +122,20 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="id_kategori" class="form-label">Ukuran</label>
+                                        <select id="id_kategori" name="id_kategori" class="form-control">
+                                            <option value="">Pilih Ukuran</option>
+                                            @foreach ($sizes as $size)
+                                                <option value="{{ $size->id }}"
+                                                    {{ $produk->id_size == $size->id ? 'selected' : '' }}>
+                                                    {{ $size->size }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
 
                                 <!-- Satuan -->
                                 <div class="row mb-4">

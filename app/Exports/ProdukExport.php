@@ -10,7 +10,7 @@ class ProdukExport implements FromCollection, WithHeadings
 {
     public function collection()
     {
-        return Produk::with('kategori', 'warna')->get()->map(function ($produk) {
+        return Produk::with('kategori', 'warna', 'size')->get()->map(function ($produk) {
             return [
                 'kode_produk'    => $produk->kode_produk,
                 'nama_produk'    => $produk->nama_barang,
@@ -18,6 +18,7 @@ class ProdukExport implements FromCollection, WithHeadings
                 'harga_jual'          => $produk->harga ?? '',
                 'keterangan'     => $produk->keterangan ?? '',
                 'kategori'       => $produk->kategori->nama_kategori ?? '',
+                'size'       => $produk->size->size ?? '',
                 'warna'         => $produk->warna->warna ?? '',
                 'stock'          => $produk->stocks->sum('stock') ?? '',
                 'waste'          => $produk->waste->sum('waste') ?? '',
@@ -35,6 +36,7 @@ class ProdukExport implements FromCollection, WithHeadings
             'Keterangan',
             'Kategori',
             'Warna',
+            'Ukuran',
             'Stock',
             'Waste',
         ];

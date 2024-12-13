@@ -7,17 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 class Production extends Model
 {
     protected $table = 'production';
-    protected $primaryKey = 'so_number';
-    public $incrementing = false;
-    protected $keyType = 'string';
-    protected $guarded = [];
+    protected $primaryKey = 'id';
+    protected $guarded = ['id'];
     public function detailProductions()
     {
         return $this->hasMany(DetailProduction::class, 'so_number', 'so_number');
     }
+    public function proses()
+    {
+        return $this->hasMany(Proses::class);
+    }
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class, 'kode_produk', 'kode_produk');
+    }
 
     public function timers()
     {
-        return $this->hasMany(Timer::class, 'so_number', 'so_number');
+        return $this->hasMany(Timer::class, 'id_production'); // Make sure this matches your foreign key
     }
 }

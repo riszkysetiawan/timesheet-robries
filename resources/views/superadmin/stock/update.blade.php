@@ -39,10 +39,10 @@
                                     <label for="kode_barang" class="form-label">Nama Barang</label>
                                     <select id="kode_barang" class="form-control" disabled>
                                         <option value="">Pilih Barang</option>
-                                        @foreach ($barangs as $barang)
-                                            <option value="{{ $barang->kode_barang }}"
-                                                {{ old('kode_barang', $stock->kode_barang) == $barang->kode_barang ? 'selected' : '' }}>
-                                                {{ $barang->nama_barang }}
+                                        @foreach ($produks as $produk)
+                                            <option value="{{ $produk->kode_barang }}"
+                                                {{ old('kode_barang', $stock->kode_barang) == $produk->kode_barang ? 'selected' : '' }}>
+                                                {{ $produk->nama_barang }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -75,7 +75,7 @@
                                 </svg>
                                 Update</button>
                             <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
-                                onclick="window.location.href='{{ route('stock-barang.admin.index') }}'">
+                                onclick="window.location.href='{{ route('stock-produk.admin.index') }}'">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" class="feather feather-arrow-left">
@@ -98,7 +98,7 @@
             e.preventDefault();
             var formData = $(this).serialize();
             $.ajax({
-                url: "{{ route('stock-barang.admin.update', Crypt::encryptString($stock->id)) }}",
+                url: "{{ route('stock-produk.admin.update', Crypt::encryptString($stock->id)) }}",
                 method: 'POST',
                 data: formData,
                 success: function(response) {
@@ -107,7 +107,7 @@
                             .then(() => {
                                 $('#updateData')[0].reset();
                                 window.location.href =
-                                    '/stock/barang/admin';
+                                    '{{ route('stock-produk.admin.index') }}';
                             });
                     }
                 },
