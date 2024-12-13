@@ -51,6 +51,7 @@ class ProductionController extends Controller
                 ->addColumn('action', function ($row) {
                     $editUrl = route('production.admin.edit', Crypt::encryptString($row->id));
                     $tambahTimer = route('timer-start.production.admin', Crypt::encryptString($row->id));
+                    $editTimer = route('production.admin.edit.timer', Crypt::encryptString($row->id));
                     return '
                         <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)" onclick="confirmDelete(' . $row->id . ')" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
@@ -74,6 +75,13 @@ class ProductionController extends Controller
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                             Mulai Timer
+                        </a>
+                        <a href="' . $editTimer . '" class="btn btn-outline-primary btn-rounded mb-2 me-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            Edit Timer
                         </a>
 
                         ';
@@ -506,6 +514,77 @@ class ProductionController extends Controller
         $warnas = Warna::all();
         return view('superadmin.production.update', compact('production', 'produks', 'sizes', 'warnas'));
     }
+    public function editTimer($id)
+    {
+        $decryptedId = Crypt::decryptString($id);
+        $production = Production::findOrFail($decryptedId);
+        $produks = Produk::all();
+        $sizes = Size::all();
+        $warnas = Warna::all();
+        $prosess = Proses::all();
+        // dd($prosess);
+        return view('superadmin.production.updatetimer', compact('production', 'produks', 'sizes', 'warnas', 'prosess'));
+    }
+    public function updateTimer(Request $request)
+    {
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'timer_id' => 'required|exists:timer,id',
+                'waktu' => 'required|date_format:H:i:s', // Format waktu harus sesuai
+            ]);
+
+            // Update timer
+            $timer = Timer::findOrFail($validated['timer_id']);
+            $timer->waktu = $validated['waktu'];
+            $timer->updated_at = now();
+            $timer->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Waktu timer berhasil diperbarui!',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validasi gagal: ' . implode(', ', $e->errors()),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function deleteTimer(Request $request)
+    {
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'timer_id' => 'required|exists:timers,id', // Pastikan tabel dan kolom sesuai
+            ]);
+
+            // Cari timer berdasarkan ID
+            $timer = Timer::findOrFail($validated['timer_id']);
+            $timer->delete(); // Hapus timer
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Timer berhasil dihapus!',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validasi gagal: ' . implode(', ', $e->errors()),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function timer($id)
     {
         $decryptedId = Crypt::decryptString($id);
@@ -570,6 +649,51 @@ class ProductionController extends Controller
     }
 
 
+    // public function startTimer(Request $request)
+    // {
+    //     try {
+    //         // Validasi input
+    //         $validated = $request->validate([
+    //             'process_id' => 'required|exists:proses,id',
+    //             'production_id' => 'required|exists:production,id',
+    //         ]);
+
+    //         // Simpan data ke tabel timer
+    //         Timer::create([
+    //             'id_proses' => $validated['process_id'],
+    //             'id_production' => $validated['production_id'],
+    //             'id_users' => auth()->id(), // Pastikan user sudah login
+    //             'waktu' => now()->format('H:i:s'), // Format waktu sesuai kolom tipe `time`
+    //             'created_at' => now(),
+    //             'updated_at' => now(),
+    //         ]);
+
+    //         // Berhasil
+    //         return response()->json([
+    //             'status' => 'success',
+    //             'message' => 'Timer berhasil dimulai!',
+    //         ]);
+    //     } catch (\Illuminate\Validation\ValidationException $e) {
+    //         // Kesalahan validasi
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Validasi gagal: ' . implode(', ', $e->errors()),
+    //         ], 422);
+    //     } catch (\Illuminate\Database\QueryException $e) {
+    //         // Kesalahan query database
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Kesalahan database: ' . $e->getMessage(),
+    //         ], 500);
+    //     } catch (\Exception $e) {
+    //         // Kesalahan umum lainnya
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Kesalahan: ' . $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
     public function startTimer(Request $request)
     {
         try {
@@ -579,20 +703,24 @@ class ProductionController extends Controller
                 'production_id' => 'required|exists:production,id',
             ]);
 
-            // Simpan data ke tabel timer
-            Timer::create([
-                'id_proses' => $validated['process_id'],
-                'id_production' => $validated['production_id'],
-                'id_users' => auth()->id(), // Pastikan user sudah login
-                'waktu' => now()->format('H:i:s'), // Format waktu sesuai kolom tipe `time`
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // Cek apakah timer untuk proses dan produksi ini sudah ada
+            $timer = Timer::updateOrCreate(
+                [
+                    'id_proses' => $validated['process_id'],
+                    'id_production' => $validated['production_id'],
+                ],
+                [
+                    'id_users' => auth()->id(), // Simpan ID user yang memulai timer
+                    'waktu' => now()->format('H:i:s'), // Format waktu sesuai tipe kolom `time`
+                    'updated_at' => now(), // Perbarui waktu terakhir
+                ]
+            );
 
             // Berhasil
             return response()->json([
                 'status' => 'success',
                 'message' => 'Timer berhasil dimulai!',
+                'timer' => $timer, // Kirim data timer ke frontend untuk pembaruan UI
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Kesalahan validasi
@@ -614,7 +742,6 @@ class ProductionController extends Controller
             ], 500);
         }
     }
-
 
 
     /**
