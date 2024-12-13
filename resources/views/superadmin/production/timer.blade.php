@@ -1,48 +1,236 @@
-@foreach ($penjualans as $index => $penjualan)
-    <tr>
-        <td>{{ $index + 1 }}</td>
-        <td>{{ $penjualan->kode_invoice }}</td>
-        <td>{{ $penjualan->nama_kasir }}</td>
-        <td>{{ \Carbon\Carbon::parse($penjualan->tgl_buat)->format('d-m-Y') }}</td>
-        <td>Rp {{ number_format($penjualan->total, 0, ',', '.') }}</td>
-        <td class="text-center">
-            <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)"
-                onclick="confirmDelete('{{ $penjualan->kode_invoice }}')" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="feather feather-trash-2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6l-2 14H7L5 6"></path>
-                    <path d="M10 11v6"></path>
-                    <path d="M14 11v6"></path>
-                </svg>
-                Delete
-            </a>
-            <a href="{{ route('penjualan.admin.edit', Crypt::encryptString($penjualan->kode_invoice)) }}"
-                class="btn btn-outline-primary btn-rounded mb-2 me-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="feather feather-edit">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
-                    </path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
-                    </path>
-                </svg>
-                Edit
-            </a>
-            <button type="button" class="btn btn-outline-info btn-rounded mb-2 me-4 btn-preview"
-                data-id="{{ $penjualan->kode_invoice }}">
-                Preview
-            </button>
-            <a href="{{ route('detail.penjualan.admin', Crypt::encryptString($penjualan->kode_invoice)) }}"
-                class="btn btn-outline-info btn-rounded mb-2 me-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-eye" viewBox="0 0 16 16">
-                    <path
-                        d="M8 3C4.5 3 1.757 6.325 1 8c.757 1.675 3.5 5 7 5s6.243-3.325 7-5c-.757-1.675-3.5-5-7-5zm0 1c2.635 0 5.015 2.055 5.732 3-.717.945-3.097 3-5.732 3-2.635 0-5.015-2.055-5.732-3 .717-.945 3.097-3 5.732-3zm0 1.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z" />
-                </svg>
-                Detail
-            </a>
-        </td>
-    </tr>
-@endforeach
+@extends('superadmin.partials.createuser')
+@section('title', 'Mulai Timer')
+@section('container')
+    <div class="container">
+        <div class="container">
+            <!-- FLASH MESSAGE -->
+            <div id="flash-message"></div>
+
+            <div class="row">
+                <div id="flStackForm" class="col-lg-12 layout-spacing layout-top-spacing">
+                    <div class="statbox widget box box-shadow">
+                        <div class="widget-header">
+                            <div class="row">
+                                <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                                    <h4>Edit Data Production</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="widget-content widget-content-area">
+                            <form id="BarangForm" enctype="multipart/form-data">
+                                @csrf
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="so_number" class="form-label">SO Number</label>
+                                        <input type="text" id="so_number" name="so_number" class="form-control"
+                                            value="{{ old('so_number', $production->so_number) }}" readonly />
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="kode_produk" class="form-label">Nama Produk</label>
+                                        <select id="kode_produk" name="kode_produk" class="form-control">
+                                            <option value="">Pilih Produk</option>
+                                            @foreach ($produks as $produk)
+                                                <option value="{{ $produk->kode_produk }}"
+                                                    {{ $production->kode_produk == $produk->kode_produk ? 'selected' : '' }}>
+                                                    {{ $produk->nama_barang }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="id_color" class="form-label">Warna</label>
+                                        <select id="warna" name="warna" class="form-control">
+                                            <option value="">Pilih Warna</option>
+                                            @foreach ($warnas as $warna)
+                                                <option value="{{ $warna->id }}"
+                                                    {{ $production->id_color == $warna->id ? 'selected' : '' }}>
+                                                    {{ $warna->warna }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="id_kategori" class="form-label">Ukuran</label>
+                                        <select id="size" name="size" class="form-control">
+                                            <option value="">Pilih Ukuran</option>
+                                            @foreach ($sizes as $size)
+                                                <option value="{{ $size->id }}"
+                                                    {{ $produk->id_size == $size->id ? 'selected' : '' }}>
+                                                    {{ $size->size }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="size" class="form-label">qty</label>
+                                        <input type="text" id="qty" name="qty" class="form-control"
+                                            value="{{ old('qty', $production->qty) }}" placeholder="Jumlah *" readonly />
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="size" class="form-label">barcode</label>
+                                        <input type="text" id="barcode" name="barcode" class="form-control"
+                                            value="{{ old('barcode', $production->barcode) }}" placeholder="Barcode *"
+                                            readonly />
+                                    </div>
+                                </div>
+                                <!-- Kategori -->
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="unfinished_processes" class="form-label">Proses yang Belum
+                                            Dikerjakan</label>
+                                        <ul class="list-group">
+                                            @php
+                                                $enableNext = true; // Variabel untuk mengaktifkan tombol pertama
+                                            @endphp
+                                            @foreach ($prosess as $process)
+                                                <li class="list-group-item">
+                                                    {{ $process->nama }}
+                                                    <button class="btn btn-primary btn-sm float-end start-timer"
+                                                        data-process-id="{{ $process->id }}"
+                                                        {{ $process->is_done || !$enableNext ? 'disabled' : '' }}>
+                                                        Mulai Timer
+                                                    </button>
+                                                    @php
+                                                        if (!$process->is_done) {
+                                                            $enableNext = false; // Nonaktifkan tombol berikutnya setelah tombol pertama ditemukan
+                                                        }
+                                                    @endphp
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Tombol Update -->
+                                {{-- <button type="submit" class="btn btn-outline-success btn-rounded mb-2 me-4"
+                                    id="submitButton">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-save">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                    Update
+                                </button> --}}
+
+                                <!-- Tombol Kembali -->
+                                <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
+                                    onclick="window.location.href='{{ route('production.admin.index') }}'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+                                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                                        <polyline points="12 19 5 12 12 5"></polyline>
+                                    </svg>
+                                    Kembali
+                                </button>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).on('click', '.start-timer', function() {
+            var processId = $(this).data('process-id');
+            var productionId = "{{ $production->id }}";
+            var requestData = {
+                _token: "{{ csrf_token() }}",
+                process_id: processId,
+                production_id: productionId,
+            };
+
+            // Log data yang dikirim ke backend
+            console.log('Data yang dikirim ke backend:', requestData);
+
+            // Kirim AJAX request
+            $.ajax({
+                url: "{{ route('production.startTimer') }}", // Ganti dengan URL backend Anda
+                method: 'POST',
+                data: requestData,
+                success: function(response) {
+                    if (response.status === 'success') {
+                        // Log respons untuk debugging
+                        console.log('Response:', response);
+
+                        // Tampilkan pesan sukses
+                        Swal.fire('Berhasil!', response.message, 'success');
+
+                        // Perbarui UI secara dinamis tanpa reload
+                        $('[data-process-id="' + processId + '"]').prop('disabled',
+                            true); // Disable tombol yang diklik
+                    }
+                },
+                error: function(xhr) {
+                    // Log error untuk debugging
+                    console.error('Error Response:', xhr);
+                    var errorMessage = xhr.responseJSON?.message ||
+                        'Terjadi kesalahan saat memulai timer.';
+                    Swal.fire('Error!', errorMessage, 'error');
+                }
+            });
+        });
+    </script>
+
+
+    {{-- <script>
+        $('#BarangForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: "{{ route('production.admin.update', Crypt::encryptString($production->id)) }}",
+                method: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.status === 'success') {
+                        Swal.fire(
+                            'Berhasil!',
+                            response.message,
+                            'success'
+                        ).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '{{ route('production.admin.index') }}';
+                            }
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        var errorMessage = '';
+                        $.each(errors, function(key, value) {
+                            errorMessage += value + '<br>';
+                        });
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Kesalahan Validasi',
+                            html: errorMessage,
+                        });
+                    } else {
+                        Swal.fire('Error!', 'Terjadi kesalahan saat memproses permintaan.', 'error');
+                    }
+                }
+            });
+        });
+    </script> --}}
+
+@endsection

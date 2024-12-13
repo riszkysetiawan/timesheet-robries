@@ -90,6 +90,9 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::post('/simpan/production/admin/store', [ProductionController::class, 'store'])->name('production.admin.store');
     Route::delete('/delete/production/admin/{id}', [ProductionController::class, 'destroy'])->name('production.admin.destroy');
     Route::get('/edit/production/admin/{id}', [ProductionController::class, 'edit'])->name('production.admin.edit');
+    Route::get('/mulai-timer/production/admin/{id}', [ProductionController::class, 'timer'])->name('timer-start.production.admin');
+    Route::get('/production/admin/timerbarcode/{barcode}', [ProductionController::class, 'timerbarcode'])->name('production.admin.timerbarcode');
+    Route::post('/production/start-timer', [ProductionController::class, 'startTimer'])->name('production.startTimer');
     Route::post('/update/production/admin/{id}', [ProductionController::class, 'update'])->name('production.admin.update');
     Route::get('/production/download-excel/admin', [ProductionController::class, 'downloadExcel'])->name('production.download.excel.admin');
     Route::get('/penjualan/{id}/preview/admin', [ProductionController::class, 'preview'])->name('purchase-order.preview');

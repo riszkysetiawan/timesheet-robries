@@ -17,6 +17,7 @@ use PDF;
 use App\Exports\ProductionExport;
 use App\Models\Proses;
 use App\Models\Size;
+use App\Models\Timer;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
@@ -49,6 +50,7 @@ class ProductionController extends Controller
                 ->addIndexColumn() // Menambahkan index untuk DataTables
                 ->addColumn('action', function ($row) {
                     $editUrl = route('production.admin.edit', Crypt::encryptString($row->id));
+                    $tambahTimer = route('timer-start.production.admin', Crypt::encryptString($row->id));
                     return '
                         <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)" onclick="confirmDelete(' . $row->id . ')" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
@@ -65,9 +67,17 @@ class ProductionController extends Controller
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                             Edit
-                        </a>';
+                        </a>
+                        <a href="' . $tambahTimer . '" class="btn btn-outline-primary btn-rounded mb-2 me-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            Mulai Timer
+                        </a>
+
+                        ';
                 })
-                // Kolom untuk masing-masing waktu proses dan operator
                 ->addColumn('warna', function ($row) {
                     return $row->warna ? $row->warna->warna : '-'; // Access the 'warna' attribute from the related model
                 })
@@ -496,6 +506,131 @@ class ProductionController extends Controller
         $warnas = Warna::all();
         return view('superadmin.production.update', compact('production', 'produks', 'sizes', 'warnas'));
     }
+    public function timer($id)
+    {
+        $decryptedId = Crypt::decryptString($id);
+
+        // Ambil data production
+        $production = Production::findOrFail($decryptedId);
+
+        // Ambil semua proses dengan status selesai atau belum
+        $prosess = Proses::all()->map(function ($proses) use ($decryptedId) {
+            $proses->is_done = Timer::where('id_production', $decryptedId)
+                ->where('id_proses', $proses->id)
+                ->exists();
+            return $proses;
+        });
+
+        // Ambil semua data lain
+        $produks = Produk::all();
+        $sizes = Size::all();
+        $warnas = Warna::all();
+
+        return view('superadmin.production.timer', compact(
+            'production',
+            'produks',
+            'sizes',
+            'warnas',
+            'prosess'
+        ));
+    }
+    public function timerbarcode($barcode)
+    {
+        try {
+            // Decode barcode menggunakan Base64
+            $decodedBarcode = base64_decode($barcode);
+            \Log::info("Decoded Barcode: " . $decodedBarcode); // Debugging log
+
+            // Decrypt decoded barcode
+            $decryptedId = Crypt::decryptString($decodedBarcode);
+            \Log::info("Decrypted ID: " . $decryptedId); // Debugging log
+        } catch (\Exception $e) {
+            \Log::error("Error decoding or decrypting barcode: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Invalid barcode.');
+        }
+
+        try {
+            // Fetch production data
+            $production = Production::findOrFail($decryptedId);
+        } catch (\Exception $e) {
+            \Log::error("Error fetching production data: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Production data not found.');
+        }
+
+        // Fetch processes and their status
+        $prosess = Proses::all()->map(function ($proses) use ($decryptedId) {
+            $proses->is_done = Timer::where('id_production', $decryptedId)
+                ->where('id_proses', $proses->id)
+                ->exists();
+            return $proses;
+        });
+
+        // Fetch other related data
+        $produks = Produk::all();
+        $sizes = Size::all();
+        $warnas = Warna::all();
+
+        \Log::info("Returning view with data."); // Debugging log
+
+        // Return the view
+        return view('superadmin.production.timer', compact(
+            'production',
+            'produks',
+            'sizes',
+            'warnas',
+            'prosess'
+        ));
+    }
+
+
+
+
+    public function startTimer(Request $request)
+    {
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'process_id' => 'required|exists:proses,id',
+                'production_id' => 'required|exists:production,id',
+            ]);
+
+            // Simpan data ke tabel timer
+            Timer::create([
+                'id_proses' => $validated['process_id'],
+                'id_production' => $validated['production_id'],
+                'id_users' => auth()->id(), // Pastikan user sudah login
+                'waktu' => now()->format('H:i:s'), // Format waktu sesuai kolom tipe `time`
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Berhasil
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Timer berhasil dimulai!',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Kesalahan validasi
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validasi gagal: ' . implode(', ', $e->errors()),
+            ], 422);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Kesalahan query database
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kesalahan database: ' . $e->getMessage(),
+            ], 500);
+        } catch (\Exception $e) {
+            // Kesalahan umum lainnya
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 
     /**
      * Update the specified resource in storage.

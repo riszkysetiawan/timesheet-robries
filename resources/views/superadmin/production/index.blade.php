@@ -163,7 +163,11 @@
                 const html5QrCode = new Html5Qrcode("reader");
                 const qrCodeSuccessCallback = (decodedText, decodedResult) => {
                     console.log(`QR Code detected: ${decodedText}`);
-                    alert(`QR Code detected: ${decodedText}`);
+
+                    // Encode barcode sebelum redirect
+                    const encodedBarcode = btoa(decodedText); // Menggunakan Base64 untuk encode
+                    window.location.href = `/production/admin/timerbarcode/${encodedBarcode}`;
+
                     $('#scanModal').modal('hide');
                     html5QrCode.stop().catch(err => console.log(err));
                 };
@@ -171,8 +175,8 @@
                 const config = {
                     fps: 10,
                     qrbox: {
-                        width: 250,
-                        height: 250
+                        width: 500,
+                        height: 500
                     }
                 };
 
@@ -187,6 +191,8 @@
             });
         });
     </script>
+
+
 
 
     <script>
