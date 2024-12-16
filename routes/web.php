@@ -12,6 +12,10 @@ use App\Http\Controllers\Admin\StockController;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\Admin\ProsesController;
 use App\Http\Controllers\Admin\SizeController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\VendorPengirimanController;
+use App\Http\Controllers\Admin\MappingController;
+use App\Http\Controllers\Admin\AreaMappingController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -69,6 +73,38 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::post('/update/kategori/admin/{id}', [KategoriController::class, 'update'])->name('kategori.admin.update');
     Route::get('/kategori/download-excel/admin', [KategoriController::class, 'downloadExcel'])->name('kategori.download.excel.admin');
     //  end kategori barang
+    // role
+    Route::get('/role/admin', [RoleController::class, 'index'])->name('role.admin.index');
+    Route::get('/tambah/role/admin', [RoleController::class, 'create'])->name('role.admin.create');
+    Route::post('/simpan/role/admin/store', [RoleController::class, 'store'])->name('role.admin.store');
+    Route::delete('/delete/role/admin/{id}', [RoleController::class, 'destroy'])->name('role.admin.destroy');
+    Route::get('/edit/role/admin/{id}', [RoleController::class, 'edit'])->name('role.admin.edit');
+    Route::post('/update/role/admin/{id}', [RoleController::class, 'update'])->name('role.admin.update');
+    // end role
+    // vendor pengiriman
+    Route::get('/vendor-pengiriman/admin', [VendorPengirimanController::class, 'index'])->name('vendor-pengiriman.admin.index');
+    Route::get('/tambah/vendor-pengiriman/admin', [VendorPengirimanController::class, 'create'])->name('vendor-pengiriman.admin.create');
+    Route::post('/simpan/vendor-pengiriman/admin/store', [VendorPengirimanController::class, 'store'])->name('vendor-pengiriman.admin.store');
+    Route::delete('/delete/vendor-pengiriman/admin/{id}', [VendorPengirimanController::class, 'destroy'])->name('vendor-pengiriman.admin.destroy');
+    Route::get('/edit/vendor-pengiriman/admin/{id}', [VendorPengirimanController::class, 'edit'])->name('vendor-pengiriman.admin.edit');
+    Route::post('/update/vendor-pengiriman/admin/{id}', [VendorPengirimanController::class, 'update'])->name('vendor-pengiriman.admin.update');
+    // end vendor penngiriman
+    // area mapping
+    Route::get('/area-mapping/admin', [AreaMappingController::class, 'index'])->name('area-mapping.admin.index');
+    Route::get('/tambah/area-mapping/admin', [AreaMappingController::class, 'create'])->name('area-mapping.admin.create');
+    Route::post('/simpan/area-mapping/admin/store', [AreaMappingController::class, 'store'])->name('area-mapping.admin.store');
+    Route::delete('/delete/area-mapping/admin/{id}', [AreaMappingController::class, 'destroy'])->name('area-mapping.admin.destroy');
+    Route::get('/edit/area-mapping/admin/{id}', [AreaMappingController::class, 'edit'])->name('area-mapping.admin.edit');
+    Route::post('/update/area-mapping/admin/{id}', [AreaMappingController::class, 'update'])->name('area-mapping.admin.update');
+    // end area mapping
+    // mapping area
+    Route::get('/mapping/admin', [MappingController::class, 'index'])->name('mapping.admin.index');
+    Route::get('/tambah/mapping/admin', [MappingController::class, 'create'])->name('mapping.admin.create');
+    Route::post('/simpan/mapping/admin/store', [MappingController::class, 'store'])->name('mapping.admin.store');
+    Route::delete('/delete/mapping/admin/{id}', [MappingController::class, 'destroy'])->name('mapping.admin.destroy');
+    Route::get('/edit/mapping/admin/{id}', [MappingController::class, 'edit'])->name('mapping.admin.edit');
+    Route::post('/update/mapping/admin/{id}', [MappingController::class, 'update'])->name('mapping.admin.update');
+    // end mapping area
     // produk
     Route::get('/produk/admin', [ProdukController::class, 'index'])->name('produk.admin.index');
     Route::get('/tambah/produk/admin', [ProdukController::class, 'create'])->name('produk.admin.create');

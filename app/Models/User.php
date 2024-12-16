@@ -48,4 +48,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Timer::class, 'id_users');
     }
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'id_role'); // assuming 'id_role' is the foreign key
+    }
 }

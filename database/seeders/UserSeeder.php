@@ -14,10 +14,11 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        $roles = DB::table('role')->pluck('id', 'nama')->toArray();
         $users = [
             [
                 'nama' => 'Super Admin',
-                'role' => 'Superadmin',
+                'id_role' => $roles['Superadmin'],
                 'foto' => 'https://via.placeholder.com/150',
                 'no_hp' => '081234567890',
                 'email' => 'admin@gmail.com',
@@ -29,7 +30,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'nama' => 'Purchasing User',
-                'role' => 'Purchasing',
+                'id_role' => $roles['PPIC'],
                 'foto' => 'https://via.placeholder.com/150',
                 'no_hp' => '081234567891',
                 'email' => 'purchasing@gmail.com',
@@ -41,7 +42,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'nama' => 'Inventory User',
-                'role' => 'Inventory',
+                'id_role' => '2',
                 'foto' => 'https://via.placeholder.com/150',
                 'no_hp' => '081234567892',
                 'email' => 'inventory@gmail.com',
@@ -53,22 +54,10 @@ class UserSeeder extends Seeder
             ],
             [
                 'nama' => 'Kasir User',
-                'role' => 'Kasir',
+                'id_role' => '3',
                 'foto' => 'https://via.placeholder.com/150',
                 'no_hp' => '081234567893',
                 'email' => 'kasir@gmail.com',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password'),
-                'remember_token' => Str::random(10),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nama' => 'Receiving User',
-                'role' => 'Receiving',
-                'foto' => 'https://via.placeholder.com/150',
-                'no_hp' => '081234567894',
-                'email' => 'receiving@gmail.com',
                 'email_verified_at' => now(),
                 'password' => Hash::make('password'),
                 'remember_token' => Str::random(10),

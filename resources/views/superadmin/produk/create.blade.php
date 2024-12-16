@@ -1,5 +1,5 @@
 @extends('superadmin.partials.createuser')
-@section('title', 'Tambah Barang')
+@section('title', 'Tambah Produk')
 @section('container')
     @if (session('success'))
         <script>

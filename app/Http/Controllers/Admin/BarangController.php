@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\Mapping;
-use App\Http\Requests\StoreMappingRequest;
-use App\Http\Requests\UpdateMappingRequest;
+use App\Models\Barang;
+use App\Http\Requests\StoreBarangRequest;
+use App\Http\Requests\UpdateBarangRequest;
 
-class MappingController extends Controller
+class BarangController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class MappingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMappingRequest $request)
+    public function store(StoreBarangRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class MappingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Mapping $mapping)
+    public function show(Barang $barang)
     {
         //
     }
@@ -43,7 +43,7 @@ class MappingController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Mapping $mapping)
+    public function edit(Barang $barang)
     {
         //
     }
@@ -51,7 +51,7 @@ class MappingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMappingRequest $request, Mapping $mapping)
+    public function update(UpdateBarangRequest $request, Barang $barang)
     {
         //
     }
@@ -59,7 +59,7 @@ class MappingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Mapping $mapping)
+    public function destroy(Barang $barang)
     {
         //
     }

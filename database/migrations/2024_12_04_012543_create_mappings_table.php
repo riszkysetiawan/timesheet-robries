@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('mapping', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_produk');
+            $table->string('kode_barang');
+            $table->unsignedBigInteger('id_area');
             $table->string('stock')->nullable();
             $table->timestamps();
-            $table->foreign('kode_produk')->references('kode_produk')->on('produk')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('kode_barang')->references('kode_barang')->on('barang')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('id_area')->references('id')->on('area_mapping')->onDelete('restrict')->onUpdate('cascade');
         });
     }
 

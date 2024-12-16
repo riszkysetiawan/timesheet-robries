@@ -22,33 +22,36 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
+        // Validate the input
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|min:6',
         ]);
+
+        // If validation fails, return errors
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        // Attempt to log in with email and password
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
-            switch ($user->role) {
+
+            // Check user role and redirect accordingly
+            switch ($user->role->nama) { // Ensure 'role' is properly loaded with the 'role' relation
                 case 'Superadmin':
                     return response()->json(['status' => 'success', 'redirect' => route('dashboard.superadmin')]);
-                    // case 'PPIC':
-                    //     return response()->json(['status' => 'success', 'redirect' => route('dashboard.purchasing')]);
-                    // case 'Operator':
-                    //     return response()->json(['status' => 'success', 'redirect' => route('dashboard.receiving')]);
-                    // case 'Warehouse':
-                    //     return response()->json(['status' => 'success', 'redirect' => route('dashboard.kasir')]);
+                    // Add other cases as needed
                 default:
-                    Auth::logout();
+                    Auth::logout(); // Log out the user if the role doesn't match
                     return response()->json(['errors' => ['role' => 'Role tidak valid.']], 403);
             }
         }
 
+        // If authentication fails, return an error message
         return response()->json(['errors' => ['email' => 'Email atau password salah.']], 422);
     }
+
     /**
      * Show the form for creating a new resource.
      */

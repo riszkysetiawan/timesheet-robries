@@ -1,5 +1,5 @@
 @extends('superadmin.partials.createuser')
-@section('title', 'Tambah Kategori Barang')
+@section('title', 'Tambah Proses Produksi')
 @section('container')
     <div class="container">
         <!-- FLASH MESSAGE -->

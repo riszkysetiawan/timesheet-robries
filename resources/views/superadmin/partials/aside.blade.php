@@ -62,6 +62,20 @@
                         </div>
                     </a>
                 </li>
+                <li
+                    class="menu {{ Request::is('users*') || Request::is('edit/user*') || Request::is('tambah/user/admin*') ? 'active' : '' }}">
+                    <a href="{{ route('role.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
+                        <div class="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-user">
+                                <path d="M20.7 17.29a10.94 10.94 0 0 0-9.7-6.29 10.94 10.94 0 0 0-9.7 6.29"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span>Role </span>
+                        </div>
+                    </a>
+                </li>
                 <li class="menu">
                     <a href="{{ route('proses.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
@@ -94,13 +108,29 @@
                         </div>
                     </a>
                 </li> --}}
-
+                <li
+                    class="menu {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') ? 'active' : '' }}">
+                    <a href="{{ route('vendor-pengiriman.admin.index') }}" aria-expanded="false"
+                        class="dropdown-toggle">
+                        <div class="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-truck">
+                                <path d="M1 3h15v13H1z"></path>
+                                <path d="M16 8h5l2 3v5h-7z"></path>
+                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                            </svg>
+                            <span>Vendor Pengiriman</span>
+                        </div>
+                    </a>
+                </li>
                 <li class="menu active">
                     <a href="{{ route('production.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="feather feather-shopping-cart">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
                                 <circle cx="9" cy="21" r="1"></circle>
                                 <circle cx="20" cy="21" r="1"></circle>
                                 <path d="M1 1h4l2.68 13.39a1 1 0 0 0 1 0.88h9.72a1 1 0 0 0 1-0.88L23 6H6"></path>
@@ -183,9 +213,6 @@
                         <li class="">
                             <a href=""> Barcode Barang</a>
                         </li>
-                        <li class="">
-                            <a href=""> Mapping Barang</a>
-                        </li>
                     </ul>
                 </li>
 
@@ -217,6 +244,36 @@
                         </li>
                         <li class="">
                             <a href="/waste/barang/admin"> Waste Barang</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu ">
+                    <a href="#mapping" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <div class="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6l-2 14H7L5 6"></path>
+                                <path d="M10 11v6"></path>
+                                <path d="M14 11v6"></path>
+                            </svg>
+                            <span>Mapping Stock</span>
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    </a>
+                    <ul class="collapse submenu list-unstyled " id="mapping" data-bs-parent="#accordionExample">
+                        <li class="">
+                            <a href="{{ route('area-mapping.admin.index') }}"> Area</a>
+                        </li>
+                        <li class="">
+                            <a href="{{ route('mapping.admin.index') }}"> Mapping Barang</a>
                         </li>
                     </ul>
                 </li>
