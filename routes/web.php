@@ -190,9 +190,14 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/get-produk/admin',  [ProductionController::class, 'getAllProduk'])->name('get.all-produk-admin');
     Route::get('/get-ukuran/admin',  [ProductionController::class, 'getAllUkuran'])->name('get.all-ukuran-admin');
     Route::get('/get-warna/admin', [ProductionController::class, 'getWarna'])->name('get.all-warna.produk-admin');
-    Route::get('/timer/download-excel/admin', [ProductionController::class, 'downloadExcel'])->name('timer.download.excel.admin');
-    // Route::get('/produk/download-excel/admin', [ProdukController::class, 'downloadExcel'])->name('produk.download.excel.admin');
-    // Route::get('/produk/download-excel/admin', [ProdukController::class, 'downloadExcel'])->name('produk.download.excel.admin');
+    // Route::get('/timer/download-excel/admin', [ProductionController::class, 'downloadExcel'])->name('timer.download.excel.admin');
+    Route::get('/upload/production/admin', [ProductionController::class, 'uploadFile'])->name('upload.production.files.admin');
+    Route::get('/download-template/production/admin', function () {
+        $file = storage_path('app/public/production.xlsx');
+        return Response::download($file, 'production.xlsx');
+    })->name('download.template.upload.production.admin');
+    Route::post('production/{id}/update-finish-rework', [ProductionController::class, 'updateFinishRework'])->name('production.updateFinishRework');
+    Route::post('/upload-production-excel/admin', [ProductionController::class, 'uploadExcel'])->name('upload.production.excel.admin');
     // end production
     // Stock
     Route::get('/stock/produk/admin', [StockController::class, 'index'])->name('stock-produk.admin.index');

@@ -29,7 +29,7 @@
                             </path>
                             <circle cx="12" cy="13" r="4"></circle>
                         </svg>
-                        Camera
+                        Scan QR Code
                     </button>
                 </nav>
             </div>
@@ -147,18 +147,17 @@
                                         <th>Nama Operator</th>
                                         <th>Durasi</th>
                                         <th>Progress</th>
-                                        <th>Action</th>
+                                        <th>Hasil Akhir</th>
+                                        <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
                             </table>
                         </div>
                     </div>
-                    <button class="btn btn-outline-success btn-rounded mb-2 me-4"
-                        onclick="window.location.href='{{ route('timer.download.excel.admin') }}'">
-                        Download Excel</button>
+                    <button id="downloadExcel" class="btn btn-success">Download Excel</button>
                     <button class="btn btn-outline-secondary btn-rounded mb-2 me-4"
-                        onclick="window.location.href='{{ route('upload.waste.files.admin') }}'">
+                        onclick="window.location.href='{{ route('upload.production.files.admin') }}'">
                         Upload File</button>
                 </div>
             </div>
@@ -172,11 +171,10 @@
 
     <!-- Moment.js (Required by Date Range Picker) -->
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
-
-    <!-- Date Range Picker JS -->
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" defer></script>
 
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -218,7 +216,6 @@
                 console.log('Selected Rows:', Array.from(selectedRows));
             });
         });
-
         $(document).ready(function() {
             $('#scanButton').on('click', function() {
                 $('#scanModal').modal('show');
@@ -253,324 +250,36 @@
                 });
             });
         });
-    </script>
+        $('#downloadExcel').on('click', function() {
+            const dateRange = $('#filterTanggal').val();
+            let url = "{{ route('production.download.excel.admin') }}";
 
-    {{-- <script>
-        $(document).ready(function() {
-            var table = $('#penjualan-table').DataTable({
-                processing: true,
-                serverSide: true,
-                responsive: true,
-                ajax: {
-                    url: "{{ route('production.admin.index') }}",
-                    data: function(d) {
-                        var dates = $('#filterTanggal').val().split(' - ');
-                        if (dates.length === 2) {
-                            d.startDate = dates[0];
-                            d.endDate = dates[1];
-                        }
-                    }
-                },
-                columns: [{
-                        data: null,
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row) {
-                            return `<input type="checkbox" class="rowCheckbox" data-id="${row.id}">`;
-                        }
-                    }, {
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'tgl_production',
-                        name: 'tgl_production',
-                    },
-                    {
-                        data: 'so_number',
-                        name: 'so_number'
-                    },
-                    {
-                        data: 'size',
-                        name: 'size',
-                        defaultContent: '-'
-                    },
-                    {
-                        data: 'qty',
-                        name: 'qty',
-                        defaultContent: '-'
-                    },
-                    {
-                        data: 'warna',
-                        name: 'warna',
-                        defaultContent: '-'
-                    },
-                    {
-                        data: 'barcode',
-                        name: 'barcode',
-                        defaultContent: '-'
-                    },
-                    {
-                        data: 'barcode',
-                        name: 'barcode',
-                        render: function(data, type, row) {
-                            if (type === 'display') {
-                                // Use a library to generate QR code
-                                return `<div class="qrcode" data-barcode="${data}"></div>`;
-                            }
-                            return data;
-                        },
-                        defaultContent: '-'
-                    },
-                    {
-                        data: 'oven_start',
-                        name: 'oven_start'
-                    },
-                    {
-                        data: 'oven_start_operator',
-                        name: 'oven_start_operator'
-                    },
-                    {
-                        data: 'oven_finish',
-                        name: 'oven_finish'
-                    },
-                    {
-                        data: 'oven_finish_operator',
-                        name: 'oven_finish_operator'
-                    },
-                    {
-                        data: 'oven_duration',
-                        name: 'oven_duration'
-                    },
-                    {
-                        data: 'press_start',
-                        name: 'press_start'
-                    },
-                    {
-                        data: 'press_start_operator',
-                        name: 'press_start_operator'
-                    },
-                    {
-                        data: 'press_finish',
-                        name: 'press_finish'
-                    },
-                    {
-                        data: 'press_finish_operator',
-                        name: 'press_finish_operator',
-                    },
-                    {
-                        data: 'press_duration',
-                        name: 'press_duration'
-                    },
-                    {
-                        data: 'wbs_start',
-                        name: 'wbs_start'
-                    },
-                    {
-                        data: 'wbs_start_operator',
-                        name: 'wbs_start_operator',
-                    },
-                    {
-                        data: 'wbs_finish',
-                        name: 'wbs_finish'
-                    },
-                    {
-                        data: 'wbs_finish_operator',
-                        name: 'wbs_finish_operator',
-                    },
-                    {
-                        data: 'wbs_duration',
-                        name: 'wbs_duration',
-                    },
-                    {
-                        data: 'weld_start',
-                        name: 'weld_start'
-                    },
-                    {
-                        data: 'weld_start_operator',
-                        name: 'weld_start_operator',
-                    },
-                    {
-                        data: 'weld_finish',
-                        name: 'weld_finish'
-                    },
-                    {
-                        data: 'weld_finish_operator',
-                        name: 'weld_finish_operator',
-                    },
-                    {
-                        data: 'weld_duration',
-                        name: 'weld_duration',
-                    },
-                    {
-                        data: 'vbs_start',
-                        name: 'vbs_start'
-                    },
-                    {
-                        data: 'vbs_start_operator',
-                        name: 'vbs_start_operator'
-                    },
-                    {
-                        data: 'vbs_finish',
-                        name: 'vbs_finish'
-                    },
-                    {
-                        data: 'vbs_finish_operator',
-                        name: 'vbs_finish_operator'
-                    },
-                    {
-                        data: 'vbs_duration',
-                        name: 'vbs_duration',
-                    },
-                    {
-                        data: 'hbs_start',
-                        name: 'hbs_start'
-                    },
-                    {
-                        data: 'hbs_start_operator',
-                        name: 'hbs_start_operator',
-                    },
-                    {
-                        data: 'hbs_finish',
-                        name: 'hbs_finish'
-                    },
-                    {
-                        data: 'hbs_finish_operator',
-                        name: 'hbs_finish_operator',
-                    },
-                    {
-                        data: 'hbs_duration',
-                        name: 'hbs_duration'
-                    },
-                    {
-                        data: 'poles_start',
-                        name: 'poles_start',
-                    },
-                    {
-                        data: 'poles_start_operator',
-                        name: 'poles_start_operator',
-                    },
-                    {
-                        data: 'poles_finish',
-                        name: 'poles_finish'
-                    },
-                    {
-                        data: 'poles_finish_operator',
-                        name: 'poles_finish_operator',
-                    },
-                    {
-                        data: 'poles_duration',
-                        name: 'poles_duration',
-                    },
-                    {
-                        data: 'assembly_start',
-                        name: 'assembly_start',
-                    },
-                    {
-                        data: 'assembly_start_operator',
-                        name: 'assembly_start_operator',
-                    },
-                    {
-                        data: 'assembly_finish',
-                        name: 'assembly_finish',
-                    },
-                    {
-                        data: 'assembly_finish_operator',
-                        name: 'assembly_finish_operator',
-                    },
-                    {
-                        data: 'assembly_duration',
-                        name: 'assembly_duration',
-                    },
-                    {
-                        data: 'finishing_start',
-                        name: 'finishing_start',
-                    },
-                    {
-                        data: 'finishing_start_operator',
-                        name: 'finishing_start_operator',
-                    },
-                    {
-                        data: 'finishing_finish',
-                        name: 'finishing_finish',
-                    },
-                    {
-                        data: 'finishing_finish_operator',
-                        name: 'finishing_finish_operator',
-                    },
-                    {
-                        data: 'finishing_duration',
-                        name: 'finishing_duration',
-                    },
-                    {
-                        data: 'rework_start',
-                        name: 'rework_start'
-                    },
-                    {
-                        data: 'rework_start_operator',
-                        name: 'rework_start_operator',
-                    },
-                    {
-                        data: 'rework_finish',
-                        name: 'rework_finish'
-                    },
-                    {
-                        data: 'rework_finish_operator',
-                        name: 'rework_finish_operator',
-                    },
-                    {
-                        data: 'rework_duration',
-                        name: 'rework_duration',
-                    },
+            if (dateRange) {
+                const dates = dateRange.split(" - ");
+                url += `?startDate=${dates[0]}&endDate=${dates[1]}`;
+            }
 
-                    {
-                        data: 'progress',
-                        name: 'progress'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
-                ],
-                drawCallback: function(settings) {
-                    // Generate QR codes after the table is drawn
-                    $('.qrcode').each(function() {
-                        var barcode = $(this).data('barcode');
-                        new QRCode(this, {
-                            text: barcode,
-                            width: 128,
-                            height: 128
-                        });
-                    });
-                }
-            });
-
-            // Date Range Picker logic
-            $('#filterTanggal').daterangepicker({
-                locale: {
-                    format: 'YYYY-MM-DD',
-                    cancelLabel: 'Clear'
-                },
-                autoUpdateInput: false
-            });
-
-            $('#filterTanggal').on('apply.daterangepicker', function(ev, picker) {
-                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format(
-                    'YYYY-MM-DD'));
-                table.ajax.reload();
-            });
-
-            $('#filterTanggal').on('cancel.daterangepicker', function(ev, picker) {
-                $(this).val('');
-                table.ajax.reload();
-            });
+            // Jika tidak ada filter, tetap lanjutkan ke URL tanpa parameter tanggal
+            window.location.href = url; // Redirect to download route
         });
-    </script> --}}
+    </script>
     <script>
+        // $('#filterTanggal').daterangepicker({
+        //     locale: {
+        //         format: 'YYYY-MM-DD',
+        //         cancelLabel: 'Clear'
+        //     },
+        //     autoUpdateInput: false
+        // });
+
+        // $('#filterTanggal').on('apply.daterangepicker', function(ev, picker) {
+        //     $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        // });
+
+        // $('#filterTanggal').on('cancel.daterangepicker', function(ev, picker) {
+        //     $(this).val('');
+        // });
+
         $(document).ready(function() {
             var table = $('#penjualan-table').DataTable({
                 processing: true,
@@ -846,6 +555,10 @@
                         name: 'progress'
                     },
                     {
+                        data: 'finish_rework',
+                        name: 'finish_rework'
+                    },
+                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
@@ -853,8 +566,7 @@
                     }
                 ],
             });
-
-            // Inisialisasi Date Range Picker
+            // // Inisialisasi Date Range Picker
             $('#filterTanggal').daterangepicker({
                 locale: {
                     format: 'YYYY-MM-DD',
@@ -880,58 +592,6 @@
 
 
     <script>
-        // Preview Modal Handler
-        // $(document).on('click', '.btn-preview', function() {
-        //     var so_number = $(this).data('id');
-        //     $.ajax({
-        //         url: '/production/admin/' + so_number + '/preview',
-        //         method: 'GET',
-        //         success: function(data) {
-        //             $('#modalPreview .modal-body').html(`
-    //                 <h5>Kode Invoice: ${data.penjualan.kode_invoice}</h5>
-    //                 <p>Nama Kasir: ${data.penjualan.nama_kasir}</p>
-    //                 <p>Tanggal: ${new Date(data.penjualan.created_at).toLocaleDateString()}</p>
-    //                 <h6>Detail Penjualan:</h6>
-    //                 <div class="table-responsive">
-    //                     <table class="table table-bordered">
-    //                         <thead>
-    //                             <tr>
-    //                                 <th>Kode Barang</th>
-    //                                 <th>Nama Barang</th>
-    //                                 <th>Qty</th>
-    //                                 <th>Satuan</th>
-    //                                 <th>Harga</th>
-    //                                 <th>Sub Total</th>
-    //                             </tr>
-    //                         </thead>
-    //                         <tbody>
-    //                             ${data.details.map(detail => `
-        //                                     <tr>
-        //                                         <td>${detail.kode_barang}</td>
-        //                                         <td>${detail.barang.nama_barang}</td>
-        //                                         <td>${detail.qty}</td>
-        //                                         <td>${detail.satuan}</td>
-        //                                         <td>Rp ${formatRupiah(detail.harga)}</td>
-        //                                         <td>Rp ${formatRupiah(detail.sub_total)}</td>
-        //                                     </tr>
-        //                                 `).join('')}
-    //                         </tbody>
-    //                     </table>
-    //                 </div>
-    //                 <h6>Total: Rp ${formatRupiah(data.penjualan.total)}</h6>
-    //                 <h6>Jumlah Bayar: Rp ${formatRupiah(data.penjualan.jumlah_bayar)}</h6>
-    //                 <h6>Jumlah Kembalian: Rp ${formatRupiah(data.penjualan.kembali)}</h6>
-    //             `);
-        //             $('#modalPreview').modal('show');
-        //         },
-        //         error: function(xhr, status, error) {
-        //             console.error('Error:', error);
-        //             alert('Terjadi kesalahan saat mengambil data.');
-        //         }
-        //     });
-        // });
-
-
         // Delete Confirmation Handler
         function confirmDelete(id) {
             Swal.fire({

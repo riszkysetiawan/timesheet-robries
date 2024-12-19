@@ -110,13 +110,7 @@
                                                                 data-timer-id="{{ $timer->id ?? '' }}" placeholder="Waktu"
                                                                 readonly />
                                                         </div>
-                                                        <!-- Tombol Mulai Timer -->
-                                                        {{-- <button class="btn btn-danger btn-sm start-timer"
-                                                            data-process-id="{{ $process->id }}"
-                                                            {{ $process->is_done || !$enableNext ? 'disabled' : '' }}>
-                                                            Hapus Timer
-                                                        </button> --}}
-                                                        <!-- Tombol Update Timer -->
+
                                                         <button class="btn btn-success btn-sm update-timer"
                                                             data-process-id="{{ $process->id }}"
                                                             data-timer-id="{{ $timer->id ?? '' }}">

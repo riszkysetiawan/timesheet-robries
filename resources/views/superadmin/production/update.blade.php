@@ -83,6 +83,23 @@
                                     </div>
                                 </div>
                                 <!-- Kategori -->
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="finish_rework" class="form-label">Rework/ Finish</label>
+                                        <select name="finish_rework" id="finish_rework" class="form-control">
+                                            <option value="">Pilih</option>
+                                            <option value="Finish"
+                                                {{ old('finish_rework', $production->finish_rework) === 'Finish' ? 'selected' : '' }}>
+                                                Finish</option>
+                                            <option value="Rework"
+                                                {{ old('finish_rework', $production->finish_rework) === 'Rework' ? 'selected' : '' }}>
+                                                Rework</option>
+                                            <option value="Reject"
+                                                {{ old('finish_rework', $production->finish_rework) === 'Reject' ? 'selected' : '' }}>
+                                                Reject</option>
+                                        </select>
+                                    </div>
+                                </div>
 
                                 <!-- Tombol Update -->
                                 <button type="submit" class="btn btn-outline-success btn-rounded mb-2 me-4"
@@ -102,7 +119,8 @@
                                     onclick="window.location.href='{{ route('production.admin.index') }}'">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+                                        stroke-linecap="round" stroke-linejoin="round"
+                                        class="feather feather-arrow-left">
                                         <line x1="19" y1="12" x2="5" y2="12"></line>
                                         <polyline points="12 19 5 12 12 5"></polyline>
                                     </svg>

@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use PDF;
+use Illuminate\Support\Facades\Validator;
 use App\Exports\ProductionExport;
+use App\Imports\ProductionImport;
 use App\Models\Proses;
 use App\Models\Size;
 use App\Models\Timer;
@@ -110,6 +112,10 @@ class ProductionController extends Controller
                 ->addColumn('warna', function ($row) {
                     return $row->warna ? $row->warna->warna : '-'; // Access the 'warna' attribute from the related model
                 })
+                // ->addColumn('keterangan', function ($row) {
+                //     return $row->finish_rework ? '-' : '';
+                // })
+
                 ->addColumn('size', function ($row) {
                     return $row->size ? $row->size->size : '-';
                 })
@@ -446,9 +452,16 @@ class ProductionController extends Controller
                     return '-';
                 })
                 ->addColumn('progress', function ($row) {
-                    // Format progress dengan 1 angka desimal
+                    // Periksa apakah rework_finish memiliki nilai "Finish"
+                    $reworkFinishTimer = $row->timers->firstWhere('id_proses', 20); // Rework Finish
+                    if ($reworkFinishTimer && $reworkFinishTimer->status == 'Finish') {
+                        return '100%'; // Jika rework_finish adalah "Finish", progress = 100%
+                    }
+
+                    // Jika tidak, gunakan nilai progress dari row atau default 0%
                     return $row->progress ? number_format($row->progress, 1) . ' %' : '0 %';
                 })
+
                 ->make(true);
         }
 
@@ -468,24 +481,32 @@ class ProductionController extends Controller
     //     return $pdf->download('penjualan_' . $penjualan->kode_invoice . '.pdf');
     // }
     // PenjualanController.php
-    public function preview($id)
-    {
-        // Mengambil data penjualan beserta detailnya
-        $production = Production::with('detailProductions.barang')->findOrFail($id);
 
-        return response()->json([
-            'production' => $production,
-            'details' => $production->detailProductions
-        ]);
-    }
 
     public function downloadExcel(Request $request)
     {
-        $startDate = $request->query('start_date');
-        $endDate = $request->query('end_date');
+        \Log::info("Request Parameters: ", $request->all()); // Logging
+        $startDate = $request->query('startDate'); // Pastikan ini konsisten dengan parameter di URL
+        $endDate = $request->query('endDate');
 
-        return Excel::download(new  ProductionExport($startDate, $endDate), 'penjualans.xlsx');
+        if ($startDate && $endDate) {
+            try {
+                $startDate = Carbon::parse($startDate)->startOfDay();
+                $endDate = Carbon::parse($endDate)->endOfDay();
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Tanggal tidak valid.');
+            }
+        } else {
+            // Jika tidak ada filter tanggal, set $startDate dan $endDate ke null
+            $startDate = null;
+            $endDate = null;
+        }
+
+        // Panggil export dengan parameter tanggal (bisa null)
+        return Excel::download(new ProductionExport($startDate, $endDate), 'production.xlsx');
     }
+
+
 
     public function getBarangByBarcode($barcode)
     {
@@ -624,9 +645,31 @@ class ProductionController extends Controller
             ], 500);
         }
     }
-
-
-
+    public function uploadFile()
+    {
+        return view('superadmin.production.upload');
+    }
+    public function uploadExcel(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|mimes:xlsx,xls|max:20480'
+        ], [
+            'file.required' => 'File Excel wajib diunggah.',
+            'file.mimes' => 'Format file harus berupa .xlsx atau .xls.',
+            'file.max' => 'Ukuran file tidak boleh lebih dari 20MB.'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        Excel::import(new ProductionImport, $request->file('file'));
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data Produksi berhasil diupload!'
+        ], 200);
+    }
     /**
      * Display the specified resource.
      */
@@ -725,42 +768,6 @@ class ProductionController extends Controller
             ], 500);
         }
     }
-
-
-    // public function timer($id)
-    // {
-    //     $decryptedId = Crypt::decryptString($id);
-
-    //     // Ambil data production
-    //     $production = Production::findOrFail($decryptedId);
-
-    //     // Ambil semua proses dengan status selesai atau belum
-    //     $prosess = Proses::all()->map(function ($proses) use ($decryptedId) {
-    //         $proses->is_done = Timer::where('id_production', $decryptedId)
-    //             ->where('id_proses', $proses->id)
-    //             ->exists();
-    //         return $proses;
-    //     });
-
-    //     // Jika finish_rework adalah Rework, tambahkan proses Rework Start dan Rework Finish
-    //     if ($production->finish_rework === 'Rework') {
-    //         $reworkProcesses = Proses::whereIn('id', [19, 20])->get();
-    //         $prosess = $prosess->concat($reworkProcesses);
-    //     }
-
-    //     // Ambil semua data lain
-    //     $produks = Produk::all();
-    //     $sizes = Size::all();
-    //     $warnas = Warna::all();
-
-    //     return view('superadmin.production.timer', compact(
-    //         'production',
-    //         'produks',
-    //         'sizes',
-    //         'warnas',
-    //         'prosess'
-    //     ));
-    // }
     public function timer($id)
     {
         $decryptedId = Crypt::decryptString($id);
@@ -830,6 +837,35 @@ class ProductionController extends Controller
             'prosess'
         ));
     }
+    public function updateFinishRework(Request $request, $id)
+    {
+        $decryptedId = Crypt::decryptString($id);
+
+        // Find the production entry
+        $production = Production::findOrFail($decryptedId);
+
+        // Validate the incoming request
+        $request->validate([
+            'finish_rework' => 'required|in:Finish,Rework',
+        ]);
+
+        // Determine if we need to update the progress
+        if ($request->finish_rework === 'Finish') {
+            // If it's set to 'Finish', set progress to 100%
+            $production->progress = 100;
+        } elseif ($request->finish_rework === 'Rework') {
+            // If it's set to 'Rework', reduce progress by 30%
+            $production->progress = max(0, $production->progress - 30);
+        }
+
+        // Update the finish_rework field
+        $production->finish_rework = $request->finish_rework;
+        $production->save();
+
+        // Return success response
+        return response()->json(['status' => 'success', 'message' => 'Finish/Rework status updated successfully']);
+    }
+
 
     public function timerbarcode($barcode)
     {

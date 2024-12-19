@@ -133,16 +133,21 @@
                                             <option value="">Pilih</option>
                                             <option value="Finish">Finish</option>
                                             <option value="Rework">Rework</option>
+                                            <option value="Reject">Reject</option>
                                         </select>
                                     </div>
                                 </div>
-
+                                <button type="button" class="btn btn-success btn-rounded mb-2 me-4"
+                                    id="updateFinishReworkButton">
+                                    Update
+                                </button>
                                 <!-- Tombol Kembali -->
                                 <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
                                     onclick="window.location.href='{{ route('production.admin.index') }}'">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+                                        stroke-linecap="round" stroke-linejoin="round"
+                                        class="feather feather-arrow-left">
                                         <line x1="19" y1="12" x2="5" y2="12"></line>
                                         <polyline points="12 19 5 12 12 5"></polyline>
                                     </svg>
@@ -158,6 +163,45 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Handle the click event for the Update button
+        $('#updateFinishReworkButton').on('click', function() {
+            // Get the value of the finish_rework field
+            var finishRework = $('#finish_rework').val();
+
+            // Check if a valid option is selected
+            if (!finishRework) {
+                Swal.fire('Error!', 'Please select Rework or Finish.', 'error');
+                return;
+            }
+
+            // Submit the form to update the finish_rework
+            var formData = {
+                _token: "{{ csrf_token() }}", // CSRF Token
+                finish_rework: finishRework, // Value of finish_rework dropdown
+            };
+
+            // Send AJAX request to update the finish_rework
+            $.ajax({
+                url: "{{ route('production.updateFinishRework', Crypt::encryptString($production->id)) }}", // Adjust this route
+                method: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.status === 'success') {
+                        Swal.fire('Updated!', 'Finish/Rework status has been updated.', 'success');
+                    } else {
+                        Swal.fire('Error!', response.message, 'error');
+                    }
+                },
+                error: function(xhr) {
+                    // Handle any errors
+                    var errorMessage = xhr.responseJSON?.message || 'Something went wrong.';
+                    Swal.fire('Error!', errorMessage, 'error');
+                }
+            });
+        });
+    </script>
+
     <script>
         $(document).on('click', '.start-timer', function() {
             var processId = $(this).data('process-id');

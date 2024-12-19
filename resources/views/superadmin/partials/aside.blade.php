@@ -407,7 +407,7 @@
                             class="  {{ Request::is('warna/admin*') || Request::is('tambah/warna/admin*') || Request::is('edit/warna/admin*')
                                 ? 'active'
                                 : '' }}">
-                            <a href="{{ route('produk.admin.index') }}"> Warna Produk </a>
+                            <a href="{{ route('warna.admin.index') }}"> Warna Produk </a>
                         </li>
                         <li
                             class=" {{ Request::is('produk/admin*') ||
