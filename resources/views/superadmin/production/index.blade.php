@@ -216,6 +216,39 @@
                 console.log('Selected Rows:', Array.from(selectedRows));
             });
         });
+        // $(document).ready(function() {
+        //     $('#scanButton').on('click', function() {
+        //         $('#scanModal').modal('show');
+
+        //         const html5QrCode = new Html5Qrcode("reader");
+        //         const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+        //             console.log(`QR Code detected: ${decodedText}`);
+
+        //             const cleanedBarcode = decodedText.replace(/\//g, '.');
+        //             window.location.href = `/production/admin/timerbarcode/${cleanedBarcode}`;
+
+        //             $('#scanModal').modal('hide');
+        //             html5QrCode.stop().catch(err => console.log(err));
+        //         };
+
+        //         const config = {
+        //             fps: 10,
+        //             qrbox: {
+        //                 width: 500,
+        //                 height: 500
+        //             }
+        //         };
+
+        //         html5QrCode.start({
+        //                 facingMode: "environment"
+        //             }, config, qrCodeSuccessCallback)
+        //             .catch(err => console.log(`Error starting camera: ${err}`));
+
+        //         $('#scanModal').on('hidden.bs.modal', function() {
+        //             html5QrCode.stop().catch(err => console.log(err));
+        //         });
+        //     });
+        // });
         $(document).ready(function() {
             $('#scanButton').on('click', function() {
                 $('#scanModal').modal('show');
@@ -224,9 +257,23 @@
                 const qrCodeSuccessCallback = (decodedText, decodedResult) => {
                     console.log(`QR Code detected: ${decodedText}`);
 
-                    // Ganti "/" dengan "." sebelum dikirim ke backend
-                    const cleanedBarcode = decodedText.replace(/\//g, '.');
-                    window.location.href = `/production/admin/timerbarcode/${cleanedBarcode}`;
+                    // Encode the barcode to ensure special characters like '/' are properly handled
+                    const encodedBarcode = encodeURIComponent(decodedText);
+
+                    // Redirect or fetch the view
+                    $.ajax({
+                        url: `/production/admin/timerbarcode/${encodedBarcode}`,
+                        method: 'GET',
+                        success: function(response) {
+                            console.log('Data fetched successfully:', response);
+                            // Replace the current page content with the response (render the view)
+                            $('body').html(response);
+                        },
+                        error: function(error) {
+                            console.error('Error fetching data:', error);
+                            alert('Failed to fetch data. Please try again.');
+                        }
+                    });
 
                     $('#scanModal').modal('hide');
                     html5QrCode.stop().catch(err => console.log(err));
@@ -242,14 +289,20 @@
 
                 html5QrCode.start({
                         facingMode: "environment"
-                    }, config, qrCodeSuccessCallback)
-                    .catch(err => console.log(`Error starting camera: ${err}`));
+                    },
+                    config,
+                    qrCodeSuccessCallback
+                ).catch(err => console.log(`Error starting camera: ${err}`));
 
                 $('#scanModal').on('hidden.bs.modal', function() {
                     html5QrCode.stop().catch(err => console.log(err));
                 });
             });
         });
+
+
+
+
         $('#downloadExcel').on('click', function() {
             const dateRange = $('#filterTanggal').val();
             let url = "{{ route('production.download.excel.admin') }}";

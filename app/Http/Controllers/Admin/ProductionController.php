@@ -867,18 +867,54 @@ class ProductionController extends Controller
     }
 
 
+    // public function timerbarcode($barcode)
+    // {
+    //     // Log barcode yang diterima
+    //     \Log::info("Received Barcode: " . $barcode);
+
+    //     try {
+    //         // Cari data menggunakan barcode yang diterima
+    //         $production = Production::where('barcode', $barcode)->firstOrFail();
+    //         \Log::info("Production Data Found: " . $production->id); // Debugging log
+    //     } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+    //         \Log::error("Production data not found for barcode: " . $barcode);
+    //         return redirect()->back()->with('error', 'Production data not found.');
+    //     }
+
+    //     // Fetch processes and their status
+    //     $prosess = Proses::all()->map(function ($proses) use ($production) {
+    //         $proses->is_done = Timer::where('id_production', $production->id)
+    //             ->where('id_proses', $proses->id)
+    //             ->exists();
+    //         return $proses;
+    //     });
+
+    //     $produks = Produk::all();
+    //     $sizes = Size::all();
+    //     $warnas = Warna::all();
+
+    //     return view('superadmin.production.timer', compact(
+    //         'production',
+    //         'produks',
+    //         'sizes',
+    //         'warnas',
+    //         'prosess'
+    //     ));
+    // }
     public function timerbarcode($barcode)
     {
-        // Log barcode yang diterima
-        \Log::info("Received Barcode: " . $barcode);
+        // Decode the barcode to handle encoded characters
+        $decodedBarcode = urldecode($barcode);
+
+        \Log::info("Received Barcode: " . $decodedBarcode);
 
         try {
-            // Cari data menggunakan barcode yang diterima
-            $production = Production::where('barcode', $barcode)->firstOrFail();
+            // Query the database with the decoded barcode
+            $production = Production::where('barcode', $decodedBarcode)->firstOrFail();
             \Log::info("Production Data Found: " . $production->id); // Debugging log
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            \Log::error("Production data not found for barcode: " . $barcode);
-            return redirect()->back()->with('error', 'Production data not found.');
+            \Log::error("Production data not found for barcode: " . $decodedBarcode);
+            return response()->view('errors.404', [], 404); // Return 404 error view
         }
 
         // Fetch processes and their status
@@ -893,6 +929,7 @@ class ProductionController extends Controller
         $sizes = Size::all();
         $warnas = Warna::all();
 
+        // Return the desired view
         return view('superadmin.production.timer', compact(
             'production',
             'produks',
@@ -901,6 +938,7 @@ class ProductionController extends Controller
             'prosess'
         ));
     }
+
 
     // public function startTimer(Request $request)
     // {
