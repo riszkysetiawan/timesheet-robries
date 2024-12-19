@@ -2,24 +2,6 @@
 @section('title', 'Tambah Alasan Reject')
 @section('container')
     <div class="container">
-        <!-- FLASH MESSAGE -->
-        @if (session()->has('message'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        <!-- BREADCRUMB -->
-        {{-- <div class="page-meta">
-            <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Form</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Layouts</li>
-                </ol>
-            </nav>
-        </div> --}}
-        <!-- /BREADCRUMB -->
 
         <div class="row">
             <div id="flStackForm" class="col-lg-12 layout-spacing layout-top-spacing">
@@ -52,7 +34,7 @@
                                 </svg>
                                 Submit</button>
                             <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
-                                onclick="window.location.href='{{ route('alasan.waste.admin.index') }}'">
+                                onclick="window.location.href='{{ route('alasan-waste.admin.index') }}'">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" class="feather feather-arrow-left">
@@ -79,7 +61,7 @@
                 var formData = new FormData(this);
 
                 $.ajax({
-                    url: "{{ route('alasan.waste.admin.store') }}", // Route to store
+                    url: "{{ route('alasan-waste.admin.store') }}", // Route to store
                     method: "POST",
                     data: formData,
                     contentType: false,
@@ -95,7 +77,7 @@
                                 if (result.isConfirmed) {
                                     $('#simpan')[0].reset();
                                     window.location.href =
-                                        '/alasan/waste/admin';
+                                        '{{ route('alasan-waste.admin.index') }}';
                                 }
                             });
                         }

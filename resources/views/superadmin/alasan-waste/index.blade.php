@@ -8,7 +8,7 @@
             <!-- BREADCRUMB -->
             <div class="page-meta">
                 <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                    <a href="{{ route('alasan.waste.admin.create') }}"
+                    <a href="{{ route('alasan-waste.admin.create') }}"
                         class="btn btn-outline-primary btn-rounded  me-4">Tambah Data</a>
                 </nav>
             </div>
@@ -40,7 +40,7 @@
             $('#alasan-waste').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('alasan.waste.admin.index') }}", // Sesuaikan dengan route Anda
+                ajax: "{{ route('alasan-waste.admin.index') }}", // Sesuaikan dengan route Anda
                 columns: [{
                         data: 'id',
                         name: 'id',
@@ -80,7 +80,7 @@
 
         function deleteData(id) {
             $.ajax({
-                url: '/delete/alasan/waste/admin/' + id,
+                url: '/delete/alasan-waste/admin/' + id,
                 method: 'DELETE',
                 data: {
                     _token: '{{ csrf_token() }}'

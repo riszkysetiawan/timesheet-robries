@@ -22,8 +22,8 @@ class StockImport implements ToModel, WithHeadingRow, WithCalculatedFormulas
         Log::info('Row Data:', $row);
 
         // Pastikan kolom "Kode Produk" dan "Jumlah Stock" ada
-        if (!isset($row['kode_produk']) || !isset($row['jumlah_stock'])) {
-            Log::error('Invalid Row: Missing required columns (kode_produk or jumlah_stock).');
+        if (!isset($row['kode_barang']) || !isset($row['jumlah_stock'])) {
+            Log::error('Invalid Row: Missing required columns (kode_barang or jumlah_stock).');
             return null;
         }
 
@@ -33,8 +33,8 @@ class StockImport implements ToModel, WithHeadingRow, WithCalculatedFormulas
             return null;
         }
 
-        // Cari data stock berdasarkan kode_produk
-        $stock = Stock::where('kode_produk', $row['kode_produk'])->first();
+        // Cari data stock berdasarkan kode_barang
+        $stock = Stock::where('kode_barang', $row['kode_barang'])->first();
 
         if ($stock) {
             // Jika data stock sudah ada, tambahkan jumlah stock
@@ -42,18 +42,18 @@ class StockImport implements ToModel, WithHeadingRow, WithCalculatedFormulas
             $stock->save();
 
             Log::info('Stock Updated:', [
-                'kode_produk' => $row['kode_produk'],
+                'kode_barang' => $row['kode_barang'],
                 'new_stock' => $stock->stock,
             ]);
         } else {
             // Jika data stock belum ada, buat data baru
             Stock::create([
-                'kode_produk' => $row['kode_produk'],
+                'kode_barang' => $row['kode_barang'],
                 'stock' => (int)$row['jumlah_stock']
             ]);
 
             Log::info('Stock Created:', [
-                'kode_produk' => $row['kode_produk'],
+                'kode_barang' => $row['kode_barang'],
                 'stock' => (int)$row['jumlah_stock'],
             ]);
         }

@@ -6,8 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title') | Store Management System</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('toko jali.jpg') }}" />
+    <title>@yield('title') | Warehouse Management System</title>
+
+    <link rel="icon" type="image/x-icon" href="{{ asset('logo.jpg') }}" />
     <link href="{{ asset('cork/html/layouts/vertical-light-menu/css/light/loader.css') }}" rel="stylesheet"
         type="text/css" />
     <link href="{{ asset('cork/html/layouts/vertical-light-menu/css/dark/loader.css') }}" rel="stylesheet"

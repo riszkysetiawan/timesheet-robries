@@ -8,9 +8,9 @@ class Waste extends Model
 {
     protected $table = 'waste';
     protected $guarded = ['id'];
-    public function produk()
+    public function barang()
     {
-        return $this->belongsTo(Produk::class, 'kode_produk', 'kode_produk');
+        return $this->belongsTo(Barang::class, 'kode_barang', 'kode_barang');
     }
 
     public function alasanWaste()

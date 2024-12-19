@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\ValidationException;
 use DataTables;
+use App\Models\Role;
 
 class UserController extends Controller
 {
@@ -20,10 +21,15 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $users = User::select(['id', 'nama', 'role', 'no_hp', 'email', 'foto']);
+            $users = User::with(['role:id,nama']) // Memuat relasi dengan kolom spesifik
+                ->select(['id', 'nama', 'no_hp', 'email', 'foto', 'id_role']) // role_id dibutuhkan untuk relasi
+                ->get();
 
             return DataTables::of($users)
                 ->addIndexColumn()
+                ->addColumn('role', function ($user) {
+                    return $user->role ? $user->role->nama : '-';
+                })
                 ->addColumn('action', function ($user) {
                     $editUrl = route('user.edit', Crypt::encryptString($user->id));
                     return '
@@ -59,12 +65,14 @@ class UserController extends Controller
         return view('superadmin.user.index');
     }
 
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('superadmin.user.create');
+        $roles = Role::all();
+        return view('superadmin.user.create', compact('roles'));
     }
 
     /**
@@ -79,7 +87,7 @@ class UserController extends Controller
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
-            'role' => 'required|in:Superadmin,Receiving,Purchasing,Inventory,Kasir'
+            'id_role' => 'required|exists:role,id' // Validasi id_role harus ada di tabel roles
         ], [
             'nama.required' => 'Nama lengkap wajib diisi.',
             'nama.max' => 'Nama lengkap tidak boleh lebih dari 255 karakter.',
@@ -92,8 +100,8 @@ class UserController extends Controller
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password harus memiliki minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'role.required' => 'Role wajib dipilih.',
-            'role.in' => 'Role yang dipilih tidak valid.'
+            'id_role.required' => 'Role wajib dipilih.',
+            'id_role.exists' => 'Role yang dipilih tidak valid.'
         ]);
 
         if ($validator->fails()) {
@@ -102,18 +110,24 @@ class UserController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
+
+        // Simpan data user
         $user = new User();
         $user->nama = $request->nama;
         $user->no_hp = $request->no_hp;
         $user->email = $request->email;
-        $user->role = $request->role;
+        $user->id_role = $request->id_role; // Simpan id_role dari tabel roles
         $user->password = Hash::make($request->password);
+
+        // Upload foto jika ada
         if ($request->hasFile('foto')) {
             $imageName = time() . '.' . $request->foto->extension();
             $filePath = $request->file('foto')->storeAs('public/photos', $imageName);
             $user->foto = 'photos/' . $imageName;
         }
+
         $user->save();
+
         return response()->json([
             'status' => 'success',
             'message' => 'User berhasil ditambahkan!'
@@ -137,9 +151,10 @@ class UserController extends Controller
     {
         $decryptedId = Crypt::decryptString($id);
         $user = User::findOrFail($decryptedId);
-
-        return view('superadmin.user.update', compact('user'));
+        $roles = Role::all(); // Ambil semua data role dari tabel roles
+        return view('superadmin.user.update', compact('user', 'roles'));
     }
+
 
 
     /**
@@ -147,12 +162,15 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Dekripsi ID
         $decryptedId = Crypt::decryptString($id);
+
+        // Validasi data yang dikirim dari form
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
             'no_hp' => 'required|numeric',
             'email' => 'required|email|unique:users,email,' . $decryptedId,
-            'role' => 'required|in:Superadmin,Receiving,Purchasing,Inventory,Kasir',
+            'id_role' => 'required|exists:role,id', // Validasi id_role harus ada di tabel roles
         ], [
             'nama.required' => 'Nama lengkap wajib diisi.',
             'nama.max' => 'Nama lengkap tidak boleh lebih dari 255 karakter.',
@@ -161,21 +179,26 @@ class UserController extends Controller
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah terdaftar.',
-            'role.required' => 'Role wajib dipilih.',
-            'role.in' => 'Role yang dipilih tidak valid.'
+            'id_role.required' => 'Role wajib dipilih.',
+            'id_role.exists' => 'Role yang dipilih tidak valid.'
         ]);
 
+        // Jika validasi gagal, kembalikan pesan error
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $validator->errors()
             ], 422);
         }
+
+        // Cari user berdasarkan ID yang didekripsi
         $user = User::findOrFail($decryptedId);
+
+        // Update data user
         $user->nama = $request->nama;
         $user->no_hp = $request->no_hp;
         $user->email = $request->email;
-        $user->role = $request->role;
+        $user->id_role = $request->id_role;
         $user->save();
 
         return response()->json([
@@ -183,6 +206,7 @@ class UserController extends Controller
             'message' => 'User berhasil diupdate!'
         ]);
     }
+
 
 
     /**

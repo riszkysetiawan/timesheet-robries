@@ -25,7 +25,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Kode Produk</th>
+                                        <th>Kode Barang</th>
                                         <th>Nama Barang</th>
                                         <th>Stock</th>
                                         <th class="text-center">Action</th>
@@ -74,12 +74,12 @@
                         searchable: false
                     },
                     {
-                        data: 'kode_produk',
-                        name: 'kode_produk'
+                        data: 'kode_barang',
+                        name: 'kode_barang'
                     },
                     {
                         data: 'nama_barang',
-                        name: 'produk.nama_barang'
+                        name: 'barang.nama_barang'
                     },
                     {
                         data: 'stock',

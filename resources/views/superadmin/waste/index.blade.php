@@ -5,7 +5,7 @@
         <div class="middle-content container-xxl p-0">
             <div class="page-meta">
                 <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                    <a href="{{ route('waste-barang.admin.create') }}" class="btn btn-primary">Tambah Data</a>
+                    <a href="{{ route('waste.admin.create') }}" class="btn btn-primary">Tambah Data</a>
                 </nav>
             </div>
 
@@ -32,9 +32,6 @@
                     <button class="btn btn-outline-success btn-rounded mb-2 me-4"
                         onclick="window.location.href='{{ route('waste.download.excel.admin') }}'">
                         Download Excel</button>
-                    {{-- <button class="btn btn-outline-primary btn-rounded mb-2 me-4"
-                        onclick="window.location.href='{{ route('waste.download.pdf.admin') }}'">
-                        Download PDF</button> --}}
                     <button class="btn btn-outline-secondary btn-rounded mb-2 me-4"
                         onclick="window.location.href='{{ route('upload.waste.files.admin') }}'">
                         Upload File</button>
@@ -67,7 +64,7 @@
             $('#waste-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('waste-barang.admin.index') }}",
+                ajax: "{{ route('waste.admin.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -83,8 +80,8 @@
                         name: 'barang.nama_barang'
                     },
                     {
-                        data: 'waste',
-                        name: 'waste'
+                        data: 'jumlah',
+                        name: 'jumlah'
                     },
                     {
                         data: 'total_waste',
@@ -130,7 +127,7 @@
 
         function deleteUser(id) {
             $.ajax({
-                url: '/delete/waste/barang/admin/' + id,
+                url: '/delete/waste/admin/' + id,
                 method: 'DELETE',
                 data: {
                     _token: '{{ csrf_token() }}'

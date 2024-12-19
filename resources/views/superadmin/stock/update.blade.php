@@ -9,16 +9,7 @@
             </div>
         @endif
 
-        <!-- BREADCRUMB -->
-        {{-- <div class="page-meta">
-            <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Form</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Layouts</li>
-                </ol>
-            </nav>
-        </div> --}}
-        <!-- /BREADCRUMB -->
+
 
         <div class="row">
             <div id="flStackForm" class="col-lg-12 layout-spacing layout-top-spacing">
@@ -39,10 +30,10 @@
                                     <label for="kode_barang" class="form-label">Nama Barang</label>
                                     <select id="kode_barang" class="form-control" disabled>
                                         <option value="">Pilih Barang</option>
-                                        @foreach ($produks as $produk)
-                                            <option value="{{ $produk->kode_barang }}"
-                                                {{ old('kode_barang', $stock->kode_barang) == $produk->kode_barang ? 'selected' : '' }}>
-                                                {{ $produk->nama_barang }}
+                                        @foreach ($barangs as $barang)
+                                            <option value="{{ $barang->kode_barang }}"
+                                                {{ old('kode_barang', $stock->kode_barang) == $barang->kode_barang ? 'selected' : '' }}>
+                                                {{ $barang->nama_barang }}
                                             </option>
                                         @endforeach
                                     </select>

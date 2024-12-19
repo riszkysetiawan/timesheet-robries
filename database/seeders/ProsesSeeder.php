@@ -32,7 +32,8 @@ class ProsesSeeder extends Seeder
             ['nama' => 'Assembly Finish',  'created_at' => now(), 'updated_at' => now()],
             ['nama' => 'Finishing Start',  'created_at' => now(), 'updated_at' => now()],
             ['nama' => 'Finising Finish',  'created_at' => now(), 'updated_at' => now()],
-            ['nama' => 'Finish / Rework',  'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'Rework Start',  'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'Rework Finish',  'created_at' => now(), 'updated_at' => now()],
         ];
 
         DB::table('proses')->insert($proses);

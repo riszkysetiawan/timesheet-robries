@@ -16,6 +16,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use App\Exports\StocksExport;
 use App\Imports\StockImport;
+use App\Models\Barang;
 use App\Models\Produk;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -55,7 +56,7 @@ class StockController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $stocks = Stock::with('produk')->select(['id', 'kode_produk', 'stock']);
+            $stocks = Stock::with('barang')->select(['id', 'kode_barang', 'stock']);
 
             return DataTables::of($stocks)
                 ->addIndexColumn()
@@ -81,7 +82,7 @@ class StockController extends Controller
                 ';
                 })
                 ->addColumn('nama_barang', function ($stock) {
-                    return $stock->produk->nama_barang ?? 'Belum Ada';
+                    return $stock->barang->nama_barang ?? 'Belum Ada';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -121,8 +122,8 @@ class StockController extends Controller
      */
     public function create()
     {
-        $produks = Produk::all();
-        return view('superadmin.stock.create', compact('produks'));
+        $barangs = Barang::all();
+        return view('superadmin.stock.create', compact('barangs'));
     }
 
     /**
@@ -136,17 +137,17 @@ class StockController extends Controller
     public function store(Request $request)
     {
         // Loop through the submitted data
-        foreach ($request->kode_produk as $index => $kode_produk) {
+        foreach ($request->kode_barang as $index => $kode_barang) {
             // Validate each entry
             $validator = Validator::make([
-                'kode_produk' => $kode_produk,
+                'kode_barang' => $kode_barang,
                 'stock' => $request->stock[$index]
             ], [
-                'kode_produk' => 'required|exists:produk,kode_produk',
+                'kode_barang' => 'required|exists:barang,kode_barang',
                 'stock' => 'required|numeric|min:1',
             ], [
-                'kode_produk.required' => 'Kode barang wajib diisi.',
-                'kode_produk.exists' => 'Barang yang dipilih tidak ditemukan.',
+                'kode_barang.required' => 'Kode barang wajib diisi.',
+                'kode_barang.exists' => 'Barang yang dipilih tidak ditemukan.',
                 'stock.required' => 'Jumlah stok wajib diisi.',
                 'stock.numeric' => 'Jumlah stok harus berupa angka.',
                 'stock.min' => 'Jumlah stok minimal 1.',
@@ -160,17 +161,13 @@ class StockController extends Controller
                 ], 422);
             }
 
-            // Find or create stock for each item
-            $stock = Stock::firstOrCreate(
-                ['kode_produk' => $kode_produk],
-                ['kode_produk' => $kode_produk, 'stock' => $request->stock[$index]]
-            );
-
-            // If stock exists, update the quantity
-            if (!$stock->wasRecentlyCreated) {
-                $stock->stock += $request->stock[$index];
-                $stock->save();
-            }
+            // Insert new stock data (even for duplicate kode_barang)
+            \DB::table('stock')->insert([
+                'kode_barang' => $kode_barang,
+                'stock' => $request->stock[$index],
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
         }
 
         // Return success message after processing all items
@@ -179,6 +176,7 @@ class StockController extends Controller
             'message' => 'Stok berhasil ditambahkan!'
         ]);
     }
+
 
     /**
      * Display the specified resource.
@@ -196,10 +194,10 @@ class StockController extends Controller
         try {
             $decryptedKodeBarang = Crypt::decryptString($id);
             $stock = Stock::where('id', $decryptedKodeBarang)->firstOrFail(); // Use firstOrFail to ensure valid data is returned
-            $produks = Produk::all();
+            $barangs = Barang::all();
 
             // Return the view with the stock and barang data
-            return view('superadmin.stock.update', compact('stock', 'produks'));
+            return view('superadmin.stock.update', compact('stock', 'barangs'));
         } catch (DecryptException $e) {
             return redirect()->route('stock-produk.admin.index')->withErrors('Invalid id.');
         } catch (ModelNotFoundException $e) {

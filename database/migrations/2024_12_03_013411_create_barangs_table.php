@@ -14,9 +14,12 @@ return new class extends Migration
         Schema::create('barang', function (Blueprint $table) {
             $table->string('kode_barang')->primary();
             $table->string('nama_barang');
-            $table->unsignedInteger('id_kategori');
-            $table->string('stock');
+            $table->unsignedBigInteger('id_satuan');
+            $table->string('type')->nullable();
+            $table->unsignedBigInteger('id_kategori')->nullable();
             $table->timestamps();
+            $table->foreign('id_satuan')->references('id')->on('satuan_barang')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreign('id_kategori')->references('id')->on('kategori_barang')->onDelete('restrict')->onUpdate('cascade');
         });
     }
 

@@ -98,16 +98,15 @@
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="role" class="form-label">Role</label>
-                                        <select id="role" name="role" class="form-control">
+                                        <select name="id_role" id="id_role" class="form-control" required>
                                             <option value="">Pilih Role</option>
-                                            <option value="Superadmin">Superadmin</option>
-                                            <option value="Receiving">Receiving</option>
-                                            <option value="Purchasing">Purchasing</option>
-                                            <option value="Inventory">Inventory</option>
-                                            <option value="Kasir">Kasir</option>
+                                            @foreach ($roles as $role)
+                                                <option value="{{ $role->id }}">{{ $role->nama }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
+
 
                                 <!-- Tombol Submit -->
                                 <button type="submit" class="btn btn-outline-success  btn-rounded mb-2 me-4"

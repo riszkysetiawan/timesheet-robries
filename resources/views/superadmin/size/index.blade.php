@@ -1,5 +1,5 @@
 @extends('superadmin.partials.user')
-@section('title', 'List Kategori Barang')
+@section('title', 'List Size Produk')
 @section('container')
     <div class="layout-px-spacing">
 

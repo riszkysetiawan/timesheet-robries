@@ -16,14 +16,14 @@ class RoleSeeder extends Seeder
     {
         $role = [
             ['nama' => 'Superadmin', 'keterangan' => 'null', 'created_at' => now(), 'updated_at' => now()],
-            ['nama' => 'PPIC',  'keterangan' => 'null',  'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'Staff Produksi',  'keterangan' => 'null',  'created_at' => now(), 'updated_at' => now()],
             ['nama' => 'Operator Warehouse',  'keterangan' => 'null', 'created_at' => now(), 'updated_at' => now()],
             ['nama' => 'Operator Produksi',  'keterangan' => 'null', 'created_at' => now(), 'updated_at' => now()],
-            ['nama' => 'Warehouse',   'keterangan' => 'null', 'created_at' => now(), 'updated_at' => now()],
-            ['nama' => 'Manajer Produksi',  'keterangan' => 'null', 'created_at' => now(), 'updated_at' => now()],
-            ['nama' => 'QC',  'keterangan' => 'null', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'Staff Warehouse',   'keterangan' => 'null', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'Purchasing',   'keterangan' => 'null', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'Quality Control',  'keterangan' => 'null', 'created_at' => now(), 'updated_at' => now()],
+            ['nama' => 'Sales',  'keterangan' => 'null', 'created_at' => now(), 'updated_at' => now()],
         ];
-
         DB::table('role')->insert($role);
     }
 }

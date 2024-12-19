@@ -30,7 +30,7 @@ class ProdukController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $produks = Produk::with(['kategori', 'warna', 'stocks', 'waste'])
+            $produks = Produk::with(['kategori', 'warna'])
                 ->get();
 
             return DataTables::of($produks)

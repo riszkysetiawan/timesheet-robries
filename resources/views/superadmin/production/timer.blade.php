@@ -29,7 +29,7 @@
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="kode_produk" class="form-label">Nama Produk</label>
-                                        <select id="kode_produk" name="kode_produk" class="form-control">
+                                        <select id="kode_produk" name="kode_produk" class="form-control" disabled>
                                             <option value="">Pilih Produk</option>
                                             @foreach ($produks as $produk)
                                                 <option value="{{ $produk->kode_produk }}"
@@ -43,7 +43,7 @@
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="id_color" class="form-label">Warna</label>
-                                        <select id="warna" name="warna" class="form-control">
+                                        <select id="warna" name="warna" class="form-control" disabled>
                                             <option value="">Pilih Warna</option>
                                             @foreach ($warnas as $warna)
                                                 <option value="{{ $warna->id }}"
@@ -57,7 +57,7 @@
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="id_kategori" class="form-label">Ukuran</label>
-                                        <select id="size" name="size" class="form-control">
+                                        <select id="size" name="size" class="form-control" disabled>
                                             <option value="">Pilih Ukuran</option>
                                             @foreach ($sizes as $size)
                                                 <option value="{{ $size->id }}"
@@ -84,45 +84,58 @@
                                     </div>
                                 </div>
                                 <!-- Kategori -->
+                                {{-- <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="unfinished_processes" class="form-label">Proses yang Belum
+                                            Dikerjakan</label>
+                                        <ul class="list-group">
+                                            @foreach ($prosess as $process)
+                                                <!-- Tampilkan proses Rework Start dan Rework Finish hanya jika finish_rework adalah Rework -->
+                                                @if (!in_array($process->id, [19, 20]) || $production->finish_rework === 'Rework')
+                                                    <li class="list-group-item">
+                                                        {{ $process->nama }}
+                                                        <button class="btn btn-primary btn-sm float-end start-timer"
+                                                            data-process-id="{{ $process->id }}">
+                                                            Mulai Timer
+                                                        </button>
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div> --}}
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="unfinished_processes" class="form-label">Proses yang Belum
                                             Dikerjakan</label>
                                         <ul class="list-group">
-                                            @php
-                                                $enableNext = true; // Variabel untuk mengaktifkan tombol pertama
-                                            @endphp
                                             @foreach ($prosess as $process)
-                                                <li class="list-group-item">
-                                                    {{ $process->nama }}
-                                                    <button class="btn btn-primary btn-sm float-end start-timer"
-                                                        data-process-id="{{ $process->id }}"
-                                                        {{ $process->is_done || !$enableNext ? 'disabled' : '' }}>
-                                                        Mulai Timer
-                                                    </button>
-                                                    @php
-                                                        if (!$process->is_done) {
-                                                            $enableNext = false; // Nonaktifkan tombol berikutnya setelah tombol pertama ditemukan
-                                                        }
-                                                    @endphp
-                                                </li>
+                                                <!-- Tampilkan proses Rework Start dan Rework Finish hanya jika finish_rework adalah Rework -->
+                                                @if (!in_array($process->id, [19, 20]) || $production->finish_rework === 'Rework')
+                                                    <li class="list-group-item">
+                                                        {{ $process->nama }}
+                                                        <button class="btn btn-primary btn-sm float-end start-timer"
+                                                            data-process-id="{{ $process->id }}"
+                                                            {{ $process->is_done ? 'disabled' : '' }}>
+                                                            {{ $process->is_done ? 'Sudah Dimulai' : 'Mulai Timer' }}
+                                                        </button>
+                                                    </li>
+                                                @endif
                                             @endforeach
                                         </ul>
                                     </div>
                                 </div>
 
-                                <!-- Tombol Update -->
-                                {{-- <button type="submit" class="btn btn-outline-success btn-rounded mb-2 me-4"
-                                    id="submitButton">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-save">
-                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                        <polyline points="7 3 7 8 15 8"></polyline>
-                                    </svg>
-                                    Update
-                                </button> --}}
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="size" class="form-label">Rework/ Finish</label>
+                                        <select name="finish_rework" id="finish_rework" class="form-control">
+                                            <option value="">Pilih</option>
+                                            <option value="Finish">Finish</option>
+                                            <option value="Rework">Rework</option>
+                                        </select>
+                                    </div>
+                                </div>
 
                                 <!-- Tombol Kembali -->
                                 <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"

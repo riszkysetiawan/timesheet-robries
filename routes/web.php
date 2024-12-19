@@ -16,6 +16,10 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\VendorPengirimanController;
 use App\Http\Controllers\Admin\MappingController;
 use App\Http\Controllers\Admin\AreaMappingController;
+use App\Http\Controllers\Admin\AlasanWasteController;
+use App\Http\Controllers\Admin\WasteController;
+use App\Http\Controllers\Admin\SatuanBarangController;
+use App\Http\Controllers\Admin\BarangController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -81,6 +85,14 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/edit/role/admin/{id}', [RoleController::class, 'edit'])->name('role.admin.edit');
     Route::post('/update/role/admin/{id}', [RoleController::class, 'update'])->name('role.admin.update');
     // end role
+    // Satuan Barang
+    Route::get('/satuan-barang/admin', [SatuanBarangController::class, 'index'])->name('satuan-barang.admin.index');
+    Route::get('/tambah/satuan-barang/admin', [SatuanBarangController::class, 'create'])->name('satuan-barang.admin.create');
+    Route::post('/simpan/satuan-barang/admin/store', [SatuanBarangController::class, 'store'])->name('satuan-barang.admin.store');
+    Route::delete('/delete/satuan-barang/admin/{id}', [SatuanBarangController::class, 'destroy'])->name('satuan-barang.admin.destroy');
+    Route::get('/edit/satuan-barang/admin/{id}', [SatuanBarangController::class, 'edit'])->name('satuan-barang.admin.edit');
+    Route::post('/update/satuan-barang/admin/{id}', [SatuanBarangController::class, 'update'])->name('satuan-barang.admin.update');
+    // end Satuan Barang
     // vendor pengiriman
     Route::get('/vendor-pengiriman/admin', [VendorPengirimanController::class, 'index'])->name('vendor-pengiriman.admin.index');
     Route::get('/tambah/vendor-pengiriman/admin', [VendorPengirimanController::class, 'create'])->name('vendor-pengiriman.admin.create');
@@ -105,6 +117,30 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/edit/mapping/admin/{id}', [MappingController::class, 'edit'])->name('mapping.admin.edit');
     Route::post('/update/mapping/admin/{id}', [MappingController::class, 'update'])->name('mapping.admin.update');
     // end mapping area
+    // alasan waste
+    Route::get('/alasan-waste/admin', [AlasanWasteController::class, 'index'])->name('alasan-waste.admin.index');
+    Route::get('/tambah/alasan-waste/admin', [AlasanWasteController::class, 'create'])->name('alasan-waste.admin.create');
+    Route::post('/simpan/alasan-waste/admin/store', [AlasanWasteController::class, 'store'])->name('alasan-waste.admin.store');
+    Route::delete('/delete/alasan-waste/admin/{id}', [AlasanWasteController::class, 'destroy'])->name('alasan-waste.admin.destroy');
+    Route::get('/edit/alasan-waste/admin/{id}', [AlasanWasteController::class, 'edit'])->name('alasan-waste.admin.edit');
+    Route::post('/update/alasan-waste/admin/{id}', [AlasanWasteController::class, 'update'])->name('alasan-waste.admin.update');
+    // end alasan waste
+    // waste admin
+    Route::get('/waste-barang/admin', [WasteController::class, 'index'])->name('waste.admin.index');
+    Route::get('/tambah/waste/admin', [WasteController::class, 'create'])->name('waste.admin.create');
+    Route::post('/simpan/waste/admin/store', [WasteController::class, 'store'])->name('waste.admin.store');
+    Route::delete('/delete/waste/admin/{id}', [WasteController::class, 'destroy'])->name('waste.admin.destroy');
+    Route::get('/edit/waste/admin/{id}', [WasteController::class, 'edit'])->name('waste.admin.edit');
+    Route::post('/update/waste/admin/{id}', [WasteController::class, 'update'])->name('waste.admin.update');
+    Route::get('/waste/download-excel/admin', [WasteController::class, 'downloadExcel'])->name('waste.download.excel.admin');
+    Route::get('/waste/download-pdf/admin', [WasteController::class, 'downloadPdf'])->name('waste.download.pdf.admin');
+    Route::get('/upload/files/waste/admin', [WasteController::class, 'uploadFile'])->name('upload.waste.files.admin');
+    Route::get('/download-template/waste/admin', function () {
+        $file = storage_path('app/public/waste.xlsx');
+        return Response::download($file, 'waste.xlsx');
+    })->name('download.template.upload.waste.admin');
+    Route::post('/upload-waste-excel/admin', [WasteController::class, 'uploadExcel'])->name('upload.waste.excel.admin');
+    // end waste admin
     // produk
     Route::get('/produk/admin', [ProdukController::class, 'index'])->name('produk.admin.index');
     Route::get('/tambah/produk/admin', [ProdukController::class, 'create'])->name('produk.admin.create');
@@ -120,6 +156,21 @@ Route::middleware(['role:Superadmin'])->group(function () {
     })->name('download.template.upload.produk.admin');
     Route::post('/upload-produk-excel/admin', [ProdukController::class, 'uploadExcel'])->name('upload.produk.admin');
     //  end produk
+    // barang
+    Route::get('/barang/admin', [BarangController::class, 'index'])->name('barang.admin.index');
+    Route::get('/tambah/barang/admin', [BarangController::class, 'create'])->name('barang.admin.create');
+    Route::post('/simpan/barang/admin/store', [BarangController::class, 'store'])->name('barang.admin.store');
+    Route::delete('/delete/barang/admin/{id}', [BarangController::class, 'destroy'])->name('barang.admin.destroy');
+    Route::get('/edit/barang/admin/{id}', [BarangController::class, 'edit'])->name('barang.admin.edit');
+    Route::post('/update/barang/admin/{id}', [BarangController::class, 'update'])->name('barang.admin.update');
+    Route::get('/barang/download-excel/admin', [BarangController::class, 'downloadExcel'])->name('barang.download.excel.admin');
+    Route::get('/upload/files/barang/admin', [BarangController::class, 'uploadFile'])->name('upload.barang.files.admin');
+    Route::get('/download-template/barang/admin', function () {
+        $file = storage_path('app/public/barcode.xlsx');
+        return Response::download($file, 'barcode.xlsx');
+    })->name('download.template.upload.barang.admin');
+    Route::post('/upload-barang-excel/admin', [BarangController::class, 'uploadExcel'])->name('upload.barang.admin');
+    // end barang
     // production
     Route::get('/production/admin', [ProductionController::class, 'index'])->name('production.admin.index');
     Route::get('/tambah/production/admin', [ProductionController::class, 'create'])->name('production.admin.create');
@@ -134,12 +185,14 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::post('/production/start-timer', [ProductionController::class, 'startTimer'])->name('production.startTimer');
     Route::post('/update/production/admin/{id}', [ProductionController::class, 'update'])->name('production.admin.update');
     Route::get('/production/download-excel/admin', [ProductionController::class, 'downloadExcel'])->name('production.download.excel.admin');
-    Route::get('/penjualan/{id}/preview/admin', [ProductionController::class, 'preview'])->name('purchase-order.preview');
     Route::get('/show/production/admin/{id}', [ProductionController::class, 'show'])->name('detail.production.admin');
     Route::get('/get-produk/admin/{so_number}', [ProductionController::class, 'getProduk'])->name('get.produk.admin');
     Route::get('/get-produk/admin',  [ProductionController::class, 'getAllProduk'])->name('get.all-produk-admin');
     Route::get('/get-ukuran/admin',  [ProductionController::class, 'getAllUkuran'])->name('get.all-ukuran-admin');
     Route::get('/get-warna/admin', [ProductionController::class, 'getWarna'])->name('get.all-warna.produk-admin');
+    Route::get('/timer/download-excel/admin', [ProductionController::class, 'downloadExcel'])->name('timer.download.excel.admin');
+    // Route::get('/produk/download-excel/admin', [ProdukController::class, 'downloadExcel'])->name('produk.download.excel.admin');
+    // Route::get('/produk/download-excel/admin', [ProdukController::class, 'downloadExcel'])->name('produk.download.excel.admin');
     // end production
     // Stock
     Route::get('/stock/produk/admin', [StockController::class, 'index'])->name('stock-produk.admin.index');

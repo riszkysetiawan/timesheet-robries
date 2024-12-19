@@ -3,18 +3,6 @@
 @section('container')
     <div class="container">
         <div class="container">
-            <!-- BREADCRUMB -->
-            {{-- <div class="page-meta">
-                <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Form</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            Layouts
-                        </li>
-                    </ol>
-                </nav>
-            </div> --}}
-            <!-- /BREADCRUMB -->
 
             <div class="row">
                 <div id="flStackForm" class="col-lg-12 layout-spacing layout-top-spacing">
@@ -40,7 +28,7 @@
                                     Submit
                                 </button>
                                 <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
-                                    onclick="window.location.href='{{ route('alasan.waste.admin.index') }}'">Kembali</button>
+                                    onclick="window.location.href='{{ route('alasan-waste.admin.index') }}'">Kembali</button>
                             </form>
                         </div>
                     </div>
@@ -57,7 +45,7 @@
             var formData = $(this).serialize();
 
             $.ajax({
-                url: "{{ route('alasan.waste.admin.update', Crypt::encryptString($alasan->id)) }}",
+                url: "{{ route('alasan-waste.admin.update', Crypt::encryptString($alasan->id)) }}",
                 method: 'POST',
                 data: formData,
                 success: function(response) {
@@ -69,7 +57,7 @@
                         ).then((result) => {
                             if (result.isConfirmed) {
                                 window.location.href =
-                                    '/alasan/waste/admin';
+                                    '{{ route('alasan-waste.admin.index') }}';
                             }
                         });
                     }

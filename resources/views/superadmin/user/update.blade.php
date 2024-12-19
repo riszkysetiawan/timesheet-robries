@@ -41,22 +41,18 @@
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="role" class="form-label">Role</label>
-                                        <select name="role" id="role" class="form-control">
+                                        <select name="id_role" id="role" class="form-control">
                                             <option value="">Pilih Role</option>
-                                            <option value="Superadmin" {{ $user->role == 'Superadmin' ? 'selected' : '' }}>
-                                                Superadmin</option>
-                                            <option value="Receiving" {{ $user->role == 'Receiving' ? 'selected' : '' }}>
-                                                Receiving</option>
-                                            <option value="Purchasing" {{ $user->role == 'Purchasing' ? 'selected' : '' }}>
-                                                Purchasing
-                                            </option>
-                                            <option value="Inventory" {{ $user->role == 'Inventory' ? 'selected' : '' }}>
-                                                Inventory</option>
-                                            <option value="Kasir" {{ $user->role == 'Kasir' ? 'selected' : '' }}>Kasir
-                                            </option>
+                                            @foreach ($roles as $role)
+                                                <option value="{{ $role->id }}"
+                                                    {{ $user->id_role == $role->id ? 'selected' : '' }}>
+                                                    {{ $role->nama }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
+
                                 <!-- Tombol Update -->
                                 <button type="submit" class="btn btn-outline-success btn-rounded mb-2 me-4">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"

@@ -48,6 +48,27 @@ class ProductionController extends Controller
 
             return DataTables::of($productions)
                 ->addIndexColumn() // Menambahkan index untuk DataTables
+                ->filter(function ($query) use ($request) {
+                    // Logika pencarian (searching)
+                    if ($request->has('search') && $request->search['value']) {
+                        $search = $request->search['value'];
+                        $query->where(function ($q) use ($search) {
+                            $q->where('so_number', 'like', "%{$search}%") // Pencarian berdasarkan SO Number
+                                ->orWhere('barcode', 'like', "%{$search}%") // Pencarian berdasarkan Barcode
+                                ->orWhereHas('warna', function ($q) use ($search) { // Pencarian berdasarkan Warna
+                                    $q->where('warna', 'like', "%{$search}%");
+                                })
+                                ->orWhereHas('size', function ($q) use ($search) { // Pencarian berdasarkan Ukuran
+                                    $q->where('size', 'like', "%{$search}%");
+                                })
+                                ->orWhereHas('timers.user', function ($q) use ($search) { // Pencarian berdasarkan Nama User
+                                    $q->where('nama', 'like', "%{$search}%");
+                                });
+                        });
+                    }
+                })
+
+
                 ->addColumn('action', function ($row) {
                     $editUrl = route('production.admin.edit', Crypt::encryptString($row->id));
                     $tambahTimer = route('timer-start.production.admin', Crypt::encryptString($row->id));
@@ -115,6 +136,18 @@ class ProductionController extends Controller
                     });
                     return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
                 })
+
+                ->addColumn('oven_duration', function ($row) {
+                    $start = $row->timers->firstWhere('id_proses', 1); // Oven Start
+                    $finish = $row->timers->firstWhere('id_proses', 2); // Oven Finish
+
+                    if ($start && $finish) {
+                        $startTime = \Carbon\Carbon::parse($start->waktu);
+                        $finishTime = \Carbon\Carbon::parse($finish->waktu);
+                        return $startTime->diffForHumans($finishTime, true); // Menghitung selisih waktu
+                    }
+                    return '-';
+                })
                 ->addColumn('press_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 3); // Press Start
                     return $timer ? \Carbon\Carbon::parse($timer->waktu)->format('Y-m-d H:i:s') : '-';
@@ -136,6 +169,17 @@ class ProductionController extends Controller
                         return $timer->user ? $timer->user->nama : '-';
                     });
                     return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
+                })
+                ->addColumn('press_duration', function ($row) {
+                    $start = $row->timers->firstWhere('id_proses', 3); // Press Start
+                    $finish = $row->timers->firstWhere('id_proses', 4); // Press Finish
+
+                    if ($start && $finish) {
+                        $startTime = \Carbon\Carbon::parse($start->waktu);
+                        $finishTime = \Carbon\Carbon::parse($finish->waktu);
+                        return $startTime->diffForHumans($finishTime, true); // Menghitung selisih waktu
+                    }
+                    return '-';
                 })
                 ->addColumn('wbs_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 5); // WBS Start
@@ -159,6 +203,17 @@ class ProductionController extends Controller
                     });
                     return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
                 })
+                ->addColumn('wbs_duration', function ($row) {
+                    $start = $row->timers->firstWhere('id_proses', 5); // WBS Start
+                    $finish = $row->timers->firstWhere('id_proses', 6); // WBS Finish
+
+                    if ($start && $finish) {
+                        $startTime = \Carbon\Carbon::parse($start->waktu);
+                        $finishTime = \Carbon\Carbon::parse($finish->waktu);
+                        return $startTime->diffForHumans($finishTime, true); // Menghitung selisih waktu
+                    }
+                    return '-';
+                })
                 ->addColumn('weld_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 7); // WELD Start
                     return $timer ? \Carbon\Carbon::parse($timer->waktu)->format('Y-m-d H:i:s') : '-';
@@ -180,6 +235,17 @@ class ProductionController extends Controller
                         return $timer->user ? $timer->user->nama : '-';
                     });
                     return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
+                })
+                ->addColumn('weld_duration', function ($row) {
+                    $start = $row->timers->firstWhere('id_proses', 7); // WBS Start
+                    $finish = $row->timers->firstWhere('id_proses', 8); // WBS Finish
+
+                    if ($start && $finish) {
+                        $startTime = \Carbon\Carbon::parse($start->waktu);
+                        $finishTime = \Carbon\Carbon::parse($finish->waktu);
+                        return $startTime->diffForHumans($finishTime, true); // Menghitung selisih waktu
+                    }
+                    return '-';
                 })
                 ->addColumn('vbs_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 9); // VBS Start
@@ -203,6 +269,17 @@ class ProductionController extends Controller
                     });
                     return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
                 })
+                ->addColumn('vbs_duration', function ($row) {
+                    $start = $row->timers->firstWhere('id_proses', 9); // WBS Start
+                    $finish = $row->timers->firstWhere('id_proses', 10); // WBS Finish
+
+                    if ($start && $finish) {
+                        $startTime = \Carbon\Carbon::parse($start->waktu);
+                        $finishTime = \Carbon\Carbon::parse($finish->waktu);
+                        return $startTime->diffForHumans($finishTime, true); // Menghitung selisih waktu
+                    }
+                    return '-';
+                })
                 ->addColumn('hbs_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 11); // HBS Start
                     return $timer ? \Carbon\Carbon::parse($timer->waktu)->format('Y-m-d H:i:s') : '-';
@@ -224,6 +301,17 @@ class ProductionController extends Controller
                         return $timer->user ? $timer->user->nama : '-';
                     });
                     return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
+                })
+                ->addColumn('hbs_duration', function ($row) {
+                    $start = $row->timers->firstWhere('id_proses', 10); // WBS Start
+                    $finish = $row->timers->firstWhere('id_proses', 11); // WBS Finish
+
+                    if ($start && $finish) {
+                        $startTime = \Carbon\Carbon::parse($start->waktu);
+                        $finishTime = \Carbon\Carbon::parse($finish->waktu);
+                        return $startTime->diffForHumans($finishTime, true); // Menghitung selisih waktu
+                    }
+                    return '-';
                 })
                 ->addColumn('poles_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 13); // HBS Finish
@@ -247,6 +335,17 @@ class ProductionController extends Controller
                     });
                     return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
                 })
+                ->addColumn('poles_duration', function ($row) {
+                    $start = $row->timers->firstWhere('id_proses', 13); // WBS Start
+                    $finish = $row->timers->firstWhere('id_proses', 14); // WBS Finish
+
+                    if ($start && $finish) {
+                        $startTime = \Carbon\Carbon::parse($start->waktu);
+                        $finishTime = \Carbon\Carbon::parse($finish->waktu);
+                        return $startTime->diffForHumans($finishTime, true); // Menghitung selisih waktu
+                    }
+                    return '-';
+                })
                 ->addColumn('assembly_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 15); // HBS Finish
                     return $timer ? \Carbon\Carbon::parse($timer->waktu)->format('Y-m-d H:i:s') : '-';
@@ -268,6 +367,17 @@ class ProductionController extends Controller
                         return $timer->user ? $timer->user->nama : '-';
                     });
                     return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
+                })
+                ->addColumn('assembly_duration', function ($row) {
+                    $start = $row->timers->firstWhere('id_proses', 15); // WBS Start
+                    $finish = $row->timers->firstWhere('id_proses', 16); // WBS Finish
+
+                    if ($start && $finish) {
+                        $startTime = \Carbon\Carbon::parse($start->waktu);
+                        $finishTime = \Carbon\Carbon::parse($finish->waktu);
+                        return $startTime->diffForHumans($finishTime, true); // Menghitung selisih waktu
+                    }
+                    return '-';
                 })
                 ->addColumn('finishing_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 17); // HBS Finish
@@ -291,28 +401,59 @@ class ProductionController extends Controller
                     });
                     return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
                 })
-                ->addColumn('finish_rework', function ($row) {
+                ->addColumn('finishing_duration', function ($row) {
+                    $start = $row->timers->firstWhere('id_proses', 17); // WBS Start
+                    $finish = $row->timers->firstWhere('id_proses', 18); // WBS Finish
+
+                    if ($start && $finish) {
+                        $startTime = \Carbon\Carbon::parse($start->waktu);
+                        $finishTime = \Carbon\Carbon::parse($finish->waktu);
+                        return $startTime->diffForHumans($finishTime, true); // Menghitung selisih waktu
+                    }
+                    return '-';
+                })
+                ->addColumn('rework_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 19); // Finish Rework
                     return $timer ? \Carbon\Carbon::parse($timer->waktu)->format('Y-m-d H:i:s') : '-';
                 })
-                ->addColumn('finish_rework_operator', function ($row) {
+                ->addColumn('rework_start_operator', function ($row) {
                     $operators = $row->timers->where('id_proses', 19); // Oven Start
                     $operatorNames = $operators->map(function ($timer) {
                         return $timer->user ? $timer->user->nama : '-';
                     });
                     return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
                 })
+                ->addColumn('rework_finish', function ($row) {
+                    $timer = $row->timers->firstWhere('id_proses', 20); // Finish Rework
+                    return $timer ? \Carbon\Carbon::parse($timer->waktu)->format('Y-m-d H:i:s') : '-';
+                })
+                ->addColumn('rework_finish_operator', function ($row) {
+                    $operators = $row->timers->where('id_proses', 20); // Oven Start
+                    $operatorNames = $operators->map(function ($timer) {
+                        return $timer->user ? $timer->user->nama : '-';
+                    });
+                    return $operatorNames->implode(', '); // Menggabungkan nama operator dengan koma
+                })
+                ->addColumn('rework_duration', function ($row) {
+                    $start = $row->timers->firstWhere('id_proses', 19); // WBS Start
+                    $finish = $row->timers->firstWhere('id_proses', 20); // WBS Finish
+
+                    if ($start && $finish) {
+                        $startTime = \Carbon\Carbon::parse($start->waktu);
+                        $finishTime = \Carbon\Carbon::parse($finish->waktu);
+                        return $startTime->diffForHumans($finishTime, true); // Menghitung selisih waktu
+                    }
+                    return '-';
+                })
                 ->addColumn('progress', function ($row) {
-                    $progress = $row->timers->where('status', 'progress')->count();
-                    return $progress ? $progress . ' %' : '0 %';
+                    // Format progress dengan 1 angka desimal
+                    return $row->progress ? number_format($row->progress, 1) . ' %' : '0 %';
                 })
                 ->make(true);
         }
 
         return view('superadmin.production.index');
     }
-
-
 
 
 
@@ -585,12 +726,82 @@ class ProductionController extends Controller
         }
     }
 
+
+    // public function timer($id)
+    // {
+    //     $decryptedId = Crypt::decryptString($id);
+
+    //     // Ambil data production
+    //     $production = Production::findOrFail($decryptedId);
+
+    //     // Ambil semua proses dengan status selesai atau belum
+    //     $prosess = Proses::all()->map(function ($proses) use ($decryptedId) {
+    //         $proses->is_done = Timer::where('id_production', $decryptedId)
+    //             ->where('id_proses', $proses->id)
+    //             ->exists();
+    //         return $proses;
+    //     });
+
+    //     // Jika finish_rework adalah Rework, tambahkan proses Rework Start dan Rework Finish
+    //     if ($production->finish_rework === 'Rework') {
+    //         $reworkProcesses = Proses::whereIn('id', [19, 20])->get();
+    //         $prosess = $prosess->concat($reworkProcesses);
+    //     }
+
+    //     // Ambil semua data lain
+    //     $produks = Produk::all();
+    //     $sizes = Size::all();
+    //     $warnas = Warna::all();
+
+    //     return view('superadmin.production.timer', compact(
+    //         'production',
+    //         'produks',
+    //         'sizes',
+    //         'warnas',
+    //         'prosess'
+    //     ));
+    // }
     public function timer($id)
     {
         $decryptedId = Crypt::decryptString($id);
 
         // Ambil data production
         $production = Production::findOrFail($decryptedId);
+
+        // Hitung total proses
+        $totalProses = 18;
+        if ($production->finish_rework === 'Rework') {
+            $totalProses += 2; // Tambahkan 2 untuk Rework Start dan Rework Finish
+        }
+
+        // Ambil semua proses yang sudah selesai
+        $completedProses = Timer::where('id_production', $decryptedId)
+            ->distinct('id_proses')
+            ->count('id_proses');
+
+        // Hitung progres awal
+        $progress = ($completedProses / $totalProses) * 100;
+
+        // Sesuaikan progres jika finish_rework adalah Rework atau Finishing Finish selesai
+        if ($production->finish_rework === 'Rework') {
+            $progress -= 30; // Kurangi 30% untuk Rework
+        }
+
+        // Cek apakah Finishing Finish selesai
+        $isFinishingFinished = Timer::where('id_production', $decryptedId)
+            ->where('id_proses', 18) // ID untuk Finishing Finish
+            ->exists();
+
+        if ($isFinishingFinished) {
+            $progress += 30; // Tambahkan 30% jika Finishing selesai
+        }
+
+        // Pastikan progres tidak kurang dari 0% atau lebih dari 100%
+        $progress = max(0, min(100, $progress));
+
+        // Simpan progres ke dalam kolom production
+        $production->progress = $progress;
+        $production->save();
 
         // Ambil semua proses dengan status selesai atau belum
         $prosess = Proses::all()->map(function ($proses) use ($decryptedId) {
@@ -599,6 +810,12 @@ class ProductionController extends Controller
                 ->exists();
             return $proses;
         });
+
+        // Jika finish_rework adalah Rework, tambahkan proses Rework Start dan Rework Finish
+        if ($production->finish_rework === 'Rework') {
+            $reworkProcesses = Proses::whereIn('id', [19, 20])->get();
+            $prosess = $prosess->concat($reworkProcesses);
+        }
 
         // Ambil semua data lain
         $produks = Produk::all();
@@ -613,6 +830,7 @@ class ProductionController extends Controller
             'prosess'
         ));
     }
+
     public function timerbarcode($barcode)
     {
         // Log barcode yang diterima
@@ -648,7 +866,6 @@ class ProductionController extends Controller
         ));
     }
 
-
     // public function startTimer(Request $request)
     // {
     //     try {
@@ -658,20 +875,24 @@ class ProductionController extends Controller
     //             'production_id' => 'required|exists:production,id',
     //         ]);
 
-    //         // Simpan data ke tabel timer
-    //         Timer::create([
-    //             'id_proses' => $validated['process_id'],
-    //             'id_production' => $validated['production_id'],
-    //             'id_users' => auth()->id(), // Pastikan user sudah login
-    //             'waktu' => now()->format('H:i:s'), // Format waktu sesuai kolom tipe `time`
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
+    //         // Cek apakah timer untuk proses dan produksi ini sudah ada
+    //         $timer = Timer::updateOrCreate(
+    //             [
+    //                 'id_proses' => $validated['process_id'],
+    //                 'id_production' => $validated['production_id'],
+    //             ],
+    //             [
+    //                 'id_users' => auth()->id(), // Simpan ID user yang memulai timer
+    //                 'waktu' => now()->format('H:i:s'), // Format waktu sesuai tipe kolom `time`
+    //                 'updated_at' => now(), // Perbarui waktu terakhir
+    //             ]
+    //         );
 
     //         // Berhasil
     //         return response()->json([
     //             'status' => 'success',
     //             'message' => 'Timer berhasil dimulai!',
+    //             'timer' => $timer, // Kirim data timer ke frontend untuk pembaruan UI
     //         ]);
     //     } catch (\Illuminate\Validation\ValidationException $e) {
     //         // Kesalahan validasi
@@ -693,7 +914,6 @@ class ProductionController extends Controller
     //         ], 500);
     //     }
     // }
-
     public function startTimer(Request $request)
     {
         try {
@@ -703,24 +923,75 @@ class ProductionController extends Controller
                 'production_id' => 'required|exists:production,id',
             ]);
 
-            // Cek apakah timer untuk proses dan produksi ini sudah ada
-            $timer = Timer::updateOrCreate(
-                [
-                    'id_proses' => $validated['process_id'],
-                    'id_production' => $validated['production_id'],
-                ],
-                [
-                    'id_users' => auth()->id(), // Simpan ID user yang memulai timer
-                    'waktu' => now()->format('H:i:s'), // Format waktu sesuai tipe kolom `time`
-                    'updated_at' => now(), // Perbarui waktu terakhir
-                ]
-            );
+            $productionId = $validated['production_id'];
+            $processId = $validated['process_id'];
+
+            // Cek apakah proses sudah selesai
+            $existingTimer = Timer::where('id_production', $productionId)
+                ->where('id_proses', $processId)
+                ->exists();
+
+            if ($existingTimer) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Timer untuk proses ini sudah dimulai sebelumnya.',
+                ], 400); // HTTP 400 Bad Request
+            }
+
+            // Simpan timer baru
+            $timer = Timer::create([
+                'id_proses' => $processId,
+                'id_production' => $productionId,
+                'id_users' => auth()->id(),
+                'waktu' => now()->format('H:i:s'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Hitung progress
+            $totalProses = 18; // Jumlah proses default
+            $production = Production::findOrFail($productionId);
+
+            // Jika rework diaktifkan, tambahkan 2 proses (Rework Start dan Rework Finish)
+            if ($production->finish_rework === 'Rework') {
+                $totalProses += 2;
+            }
+
+            // Hitung jumlah proses yang telah dimulai
+            $completedProses = Timer::where('id_production', $productionId)
+                ->distinct('id_proses')
+                ->count('id_proses');
+
+            // Hitung progres awal
+            $progress = ($completedProses / $totalProses) * 100;
+
+            // Kurangi 30% jika rework aktif
+            if ($production->finish_rework === 'Rework') {
+                $progress -= 30;
+            }
+
+            // Tambahkan 30% jika proses Finishing Finish sudah selesai
+            $isFinishingFinished = Timer::where('id_production', $productionId)
+                ->where('id_proses', 18) // ID untuk Finishing Finish
+                ->exists();
+
+            if ($isFinishingFinished) {
+                $progress += 30;
+            }
+
+            // Pastikan progres berada dalam rentang 0% hingga 100%
+            $progress = max(0, min(100, $progress));
+
+            // Perbarui progress di tabel production
+            $production->progress = $progress;
+            $production->save();
 
             // Berhasil
             return response()->json([
                 'status' => 'success',
                 'message' => 'Timer berhasil dimulai!',
-                'timer' => $timer, // Kirim data timer ke frontend untuk pembaruan UI
+                'progress' => $progress, // Kirim progress terbaru ke frontend
+                'timer' => $timer, // Kirim data timer ke frontend
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Kesalahan validasi

@@ -2,25 +2,6 @@
 @section('title', 'Tambah Waste Superadmin')
 @section('container')
     <div class="container">
-        <!-- FLASH MESSAGE -->
-        @if (session()->has('message'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        <!-- BREADCRUMB -->
-        {{-- <div class="page-meta">
-            <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Form</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Layouts</li>
-                </ol>
-            </nav>
-        </div> --}}
-        <!-- /BREADCRUMB -->
-
         <div class="row">
             <div id="flStackForm" class="col-lg-12 layout-spacing layout-top-spacing">
                 <div class="statbox widget box box-shadow">
@@ -39,18 +20,12 @@
                                 <div class="item-entry">
                                     <div class="row mb-4">
                                         <div class="col-sm-12">
-                                            <label for="barcode" class="form-label">Barcode Barang</label>
-                                            <input type="text" class="form-control barcode-input" name="barcode[]"
-                                                id="barcode">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-4">
-                                        <div class="col-sm-12">
                                             <label for="role" class="form-label">Nama Barang</label>
-                                            <select name="kode_barang[]" class="form-control kode_barang">
+                                            <select name="kode_barang[]" class="form-control kode_barang"
+                                                style="width: 100%">
                                                 <option value="">Pilih Barang</option>
                                                 @foreach ($barangs as $barang)
-                                                    <option value="{{ $barang->kode_barang }}"> 
+                                                    <option value="{{ $barang->kode_barang }}">
                                                         {{ $barang->nama_barang }}
                                                     </option>
                                                 @endforeach
@@ -112,7 +87,7 @@
                                 </svg>
                                 Simpan</button>
                             <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
-                                onclick="window.location.href='{{ route('waste-barang.admin.index') }}'">
+                                onclick="window.location.href='{{ route('waste.admin.index') }}'">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
@@ -140,26 +115,55 @@
 
     <script>
         $(document).ready(function() {
-            // Inisialisasi Select2 pada elemen dengan class .kode_barang
+            // Fungsi untuk inisialisasi Select2 pada elemen dropdown
             function initSelect2() {
-                $('.kode_barang').select2({
+                $('.kode_barang').not('.select2-hidden-accessible').select2({
                     placeholder: "Pilih Barang",
-                    allowClear: true
+                    allowClear: true,
+                    width: '100%' // Lebar mengikuti container
                 });
             }
 
-            initSelect2(); // Panggil untuk elemen yang sudah ada saat halaman dimuat
+            // Inisialisasi Select2 pada elemen yang sudah ada saat halaman dimuat
+            initSelect2();
 
-            // Add new item entry on "Tambah Barang" button click
+            // Tambahkan event untuk tombol "Tambah Barang"
             $('#add-item').on('click', function() {
-                var newItem = $('.item-entry:first').clone(); // Clone the first item entry
-                newItem.find('input').val(''); // Clear input values
-                newItem.find('select').val('').trigger('change'); // Reset select2 value
-                newItem.find('select').removeClass('select2-hidden-accessible'); // Remove old select2 class
-                newItem.find('.select2').remove(); // Remove select2 UI element
-                $('#item-list').append(newItem); // Append the cloned entry to the form
-                initSelect2(); // Re-initialize select2 on new element
+                // Clone elemen pertama
+                var newItem = $('.item-entry:first').clone();
+
+                // Reset nilai input dan select di elemen yang di-clone
+                newItem.find('input').val('');
+                newItem.find('select').val('').trigger('change'); // Reset nilai select
+
+                // Hapus Select2 instance lama
+                newItem.find('.select2').remove();
+                newItem.find('select').removeClass('select2-hidden-accessible');
+
+                // Tambahkan elemen yang di-clone ke dalam form
+                $('#item-list').append(newItem);
+
+                // Re-inisialisasi Select2 untuk elemen baru
+                initSelect2();
             });
+
+            // Event untuk menghapus elemen
+            $(document).on('click', '.remove-item', function() {
+                if ($('.item-entry').length > 1) {
+                    $(this).closest('.item-entry').remove();
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Anda harus memiliki setidaknya satu entri barang.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        });
+
+
+        $(document).ready(function() {
 
             // Remove item entry on "Hapus" button click
             $(document).on('click', '.remove-item', function() {
@@ -184,7 +188,7 @@
                 e.preventDefault();
                 var formData = new FormData(this);
                 $.ajax({
-                    url: "{{ route('waste-barang.admin.store') }}",
+                    url: "{{ route('waste.admin.store') }}",
                     method: "POST",
                     data: formData,
                     contentType: false,
@@ -200,7 +204,7 @@
                                 if (result.isConfirmed) {
                                     $('#simpan')[0].reset();
                                     window.location.href =
-                                        '{{ route('waste-barang.admin.index') }}';
+                                        '{{ route('waste.admin.index') }}';
                                 }
                             });
                         }
@@ -226,32 +230,6 @@
                         }
                     }
                 });
-            });
-
-            // Fungsi untuk menangani input barcode dinamis
-            $(document).on('input', '.barcode-input', function() {
-                var barcode = $(this).val();
-                var parent = $(this).closest('.item-entry');
-
-                if (barcode.length > 0) {
-                    $.ajax({
-                        url: "/get-barang-by-barcode/waste/admin/" +
-                            barcode, // Route untuk mengambil barang
-                        method: "GET",
-                        success: function(response) {
-                            if (response) {
-                                // Update select field dengan data barang yang sesuai
-                                parent.find('.kode_barang').val(response.kode_barang).trigger(
-                                    'change');
-                            } else {
-                                parent.find('.kode_barang').val('').trigger('change');
-                            }
-                        },
-                        error: function() {
-                            console.error("Error fetching barang by barcode");
-                        }
-                    });
-                }
             });
         });
     </script>

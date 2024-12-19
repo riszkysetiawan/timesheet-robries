@@ -1,15 +1,6 @@
 @extends('superadmin.partials.createuser')
 @section('container')
     <div class="container">
-        <!-- FLASH MESSAGE -->
-        @if (session()->has('message'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-
         <div class="row">
             <div id="flStackForm" class="col-lg-12 layout-spacing layout-top-spacing">
                 <div class="statbox widget box box-shadow">
@@ -26,19 +17,14 @@
                             @csrf
                             <div id="item-list">
                                 <div class="item-entry">
-                                    <div class="row mb-4">
-                                        <div class="col-sm-12">
-                                            <label for="barcode" class="form-label">Barcode Barang</label>
-                                            <input type="text" class="form-control" name="barcode[]" id="barcode">
-                                        </div>
-                                    </div>
+
                                     <div class="row mb-4">
                                         <div class="col-sm-12">
                                             <label for="kode_produk" class="form-label">Nama Barang</label>
-                                            <select name="kode_produk[]" class="form-control kode_produk">
+                                            <select name="kode_barang[]" class="form-control kode_barang">
                                                 <option value="">Pilih Barang</option>
-                                                @foreach ($produks as $produk)
-                                                    <option value="{{ $produk->kode_produk }}"> {{ $produk->nama_barang }}
+                                                @foreach ($barangs as $barang)
+                                                    <option value="{{ $barang->kode_barang }}"> {{ $barang->nama_barang }}
                                                     </option>
                                                 @endforeach
                                             </select>

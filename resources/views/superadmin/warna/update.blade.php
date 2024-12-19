@@ -1,5 +1,5 @@
 @extends('superadmin.partials.createuser')
-@section('title', 'Update Satuan Barang')
+@section('title', 'Update Warna Barang')
 @section('container')
     <div class="container">
         <div class="container">

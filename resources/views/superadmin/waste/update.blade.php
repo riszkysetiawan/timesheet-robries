@@ -2,14 +2,6 @@
 @section('title', 'Update Reject')
 @section('container')
     <div class="container">
-        <!-- FLASH MESSAGE -->
-        @if (session()->has('message'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('message') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
         <div class="row">
             <div id="flStackForm" class="col-lg-12 layout-spacing layout-top-spacing">
                 <div class="statbox widget box box-shadow">
@@ -53,7 +45,7 @@
                                 <div class="col-sm-12">
                                     <label for="waste_old" class="form-label">Jumlah Waste</label>
                                     <input type="number" id="waste_old" name="waste_old" class="form-control"
-                                        value="{{ $waste->waste }}" min="0" />
+                                        value="{{ $waste->jumlah }}" min="0" />
                                 </div>
                             </div>
 
@@ -96,7 +88,7 @@
                                 </svg>
                                 Update</button>
                             <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
-                                onclick="window.location.href='{{ route('waste-barang.admin.index') }}'">
+                                onclick="window.location.href='{{ route('waste.admin.index') }}'">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" class="feather feather-arrow-left">
@@ -121,7 +113,7 @@
             var formData = new FormData(this);
 
             $.ajax({
-                url: "{{ route('waste-barang.admin.update', Crypt::encryptString($waste->id)) }}",
+                url: "{{ route('waste.admin.update', Crypt::encryptString($waste->id)) }}",
                 method: 'POST',
                 data: formData,
                 contentType: false,
@@ -132,7 +124,7 @@
                             .then(() => {
                                 $('#current_stock').val(response.remaining_stock);
                                 $('#waste_old').val(response.total_waste);
-                                window.location.href = '{{ route('waste-barang.admin.index') }}';
+                                window.location.href = '{{ route('waste.admin.index') }}';
                             });
                     }
                 },

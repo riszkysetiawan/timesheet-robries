@@ -20,8 +20,6 @@ class ProdukExport implements FromCollection, WithHeadings
                 'kategori'       => $produk->kategori->nama_kategori ?? '',
                 'size'       => $produk->size->size ?? '',
                 'warna'         => $produk->warna->warna ?? '',
-                'stock'          => $produk->stocks->sum('stock') ?? '',
-                'waste'          => $produk->waste->sum('waste') ?? '',
             ];
         });
     }
@@ -37,8 +35,6 @@ class ProdukExport implements FromCollection, WithHeadings
             'Kategori',
             'Warna',
             'Ukuran',
-            'Stock',
-            'Waste',
         ];
     }
 }

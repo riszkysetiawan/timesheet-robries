@@ -1,5 +1,5 @@
 @extends('superadmin.partials.detail')
-@section('title', 'Detail Penjualan')
+@section('title', 'Detail Item Production')
 @section('container')
     <div class="layout-px-spacing">
         <div class="middle-content container-xxl p-0">

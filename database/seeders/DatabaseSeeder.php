@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ProsesSeeder::class,
             CompanyProfileSeeder::class,
             AlasanWasteSeeder::class,
+            SatuanBarangSeeder::class,
             VendorPengirimanSeeder::class,
         ]);
     }

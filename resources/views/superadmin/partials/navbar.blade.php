@@ -63,7 +63,7 @@
                                <div class="emoji me-2">&#x1F44B;</div>
                                <div class="media-body">
                                    <h5>{{ Auth::user()->nama }}</h5>
-                                   <h5>{{ Auth::user()->role }}</h5>
+                                   <h5>{{ Auth::user()->role->nama }}</h5>
                                </div>
                            </div>
                        </div>
