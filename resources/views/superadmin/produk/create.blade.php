@@ -63,40 +63,6 @@
                                 </div>
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
-                                        <label for="kode_barcode" class="form-label">Kode Barcode</label>
-                                        <input type="number" id="kode_barcode" name="kode_barcode" class="form-control"
-                                            placeholder="Kode Barcode*" />
-                                    </div>
-                                </div>
-                                <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="keterangan" class="form-label">Keterangan</label>
-                                        <input type="text" id="keterangan" name="keterangan" class="form-control"
-                                            placeholder="Keterangan*" />
-                                    </div>
-                                </div>
-
-                                <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="harga" class="form-label">Harga</label>
-                                        <input type="text" id="harga" name="harga" class="form-control"
-                                            placeholder="Harga*" />
-                                    </div>
-                                </div>
-                                <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="id_kategori" class="form-label">Kategori</label>
-                                        <select id="id_kategori" name="id_kategori" class="form-control">
-                                            <option value="">Pilih Kategori</option>
-                                            @foreach ($kategoris as $kategori)
-                                                <option value="{{ $kategori->id }}"> {{ $kategori->nama_kategori }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row mb-4">
-                                    <div class="col-sm-12">
                                         <label for="id_kategori" class="form-label">Ukuran</label>
                                         <select id="id_size" name="id_size" class="form-control">
                                             <option value="">Pilih Ukuran</option>
@@ -124,8 +90,7 @@
                                     id="submitButton">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round"
-                                        class="feather feather-check-circle">
+                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle">
                                         <path d="M9 11l3 3L22 4"></path>
                                         <circle cx="12" cy="12" r="10"></circle>
                                     </svg>
@@ -136,8 +101,7 @@
                                     onclick="window.location.href='{{ route('produk.admin.index') }}'">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round"
-                                        class="feather feather-arrow-left">
+                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
                                         <line x1="19" y1="12" x2="5" y2="12"></line>
                                         <polyline points="12 19 5 12 12 5"></polyline>
                                     </svg>
@@ -158,34 +122,9 @@
     <!-- Format Rupiah untuk input harga -->
     <script>
         $(document).ready(function() {
-            $('#harga').on('input', function() {
-                var value = $(this).val();
-                $(this).val(formatRupiah(value, 'Rp '));
-            });
-
-            function formatRupiah(angka, prefix) {
-                var number_string = angka.replace(/[^,\d]/g, '').toString(),
-                    split = number_string.split(','),
-                    sisa = split[0].length % 3,
-                    rupiah = split[0].substr(0, sisa),
-                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-                if (ribuan) {
-                    separator = sisa ? '.' : '';
-                    rupiah += separator + ribuan.join('.');
-                }
-
-                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-                return prefix == undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
-            }
-
             // Handle form submission via AJAX
             $('#BarangForm').on('submit', function(e) {
                 e.preventDefault();
-
-                var harga = $('#harga').val().replace(/[^0-9]/g,
-                    ''); // Hapus format rupiah sebelum disubmit
-                $('#harga').val(harga);
 
                 var formData = new FormData(this);
 
@@ -214,12 +153,27 @@
                     error: function(xhr) {
                         if (xhr.status === 422) { // Validasi error
                             var errors = xhr.responseJSON.errors;
+                            var errorMessage = '';
+
+                            // Kumpulkan semua pesan error
+                            $.each(errors, function(key, value) {
+                                errorMessage += value +
+                                    '<br>'; // Gabungkan semua pesan error
+                            });
+
+                            // Tampilkan pesan error menggunakan SweetAlert
+                            Swal.fire({
+                                title: 'Error!',
+                                html: errorMessage, // Menggunakan HTML agar pesan error tampil dengan baik
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
 
                             // Reset error sebelumnya
                             $('.is-invalid').removeClass('is-invalid');
                             $('.invalid-feedback').remove();
 
-                            // Loop untuk menambahkan error ke input
+                            // Tampilkan error di form
                             $.each(errors, function(key, value) {
                                 // Menambahkan kelas 'is-invalid' pada input yang salah
                                 $('#' + key).addClass('is-invalid');
@@ -227,14 +181,6 @@
                                 // Menambahkan pesan error di bawah input
                                 $('#' + key).after('<div class="invalid-feedback">' +
                                     value + '</div>');
-                            });
-
-                            // Menampilkan pesan error global menggunakan SweetAlert
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Form Anda terdapat kesalahan, silakan perbaiki.',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
                             });
                         } else {
                             // Error lainnya

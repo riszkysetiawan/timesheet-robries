@@ -11,30 +11,30 @@ class ProdukImport implements ToModel, WithHeadingRow, WithCalculatedFormulas
 {
     public function model(array $row)
     {
-        if (!isset($row['kode_produk']) || !isset($row['nama_barang']) || !isset($row['harga'])) {
+        if (!isset($row['kode_produk']) || !isset($row['nama_barang'])) {
             return null;
         }
         $produk = Produk::find($row['kode_produk']);
         if ($produk) {
             $produk->update([
                 'nama_barang' => $row['nama_barang'],
-                'kode_barcode' => $row['kode_barcode'],
-                'harga' => $row['harga'],
+                // 'kode_barcode' => $row['kode_barcode'],
+                // 'harga' => $row['harga'],
                 'id_warna' => $row['warna'],
-                'id_kategori' => $row['kategori'],
+                // 'id_kategori' => $row['kategori'],
                 'id_size' => $row['size'],
-                'keterangan' => $row['keterangan'],
+                // 'keterangan' => $row['keterangan'],
             ]);
         } else {
             Produk::create([
                 'kode_produk' => $row['kode_produk'],
                 'nama_barang' => $row['nama_barang'],
-                'kode_barcode' => $row['kode_barcode'],
-                'harga' => $row['harga'],
+                // 'kode_barcode' => $row['kode_barcode'],
+                // 'harga' => $row['harga'],
                 'id_warna' => $row['warna'],
                 'id_size' => $row['size'],
-                'id_kategori' => $row['kategori'],
-                'keterangan' => $row['keterangan'],
+                // 'id_kategori' => $row['kategori'],
+                // 'keterangan' => $row['keterangan'],
             ]);
         }
     }

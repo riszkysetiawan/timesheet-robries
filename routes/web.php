@@ -45,6 +45,12 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::delete('/delete/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::get('/edit/user/{id}', [UserController::class, 'edit'])->name('user.edit');
     Route::post('/update/user/{id}', [UserController::class, 'update'])->name('user.update');
+    Route::get('/upload/files/user/admin', [UserController::class, 'uploadFile'])->name('upload.user.files.admin');
+    Route::get('/download-template/user/admin', function () {
+        $file = storage_path('app/public/upload user.xlsx');
+        return Response::download($file, 'upload user.xlsx');
+    })->name('download.template.upload.user.admin');
+    Route::post('/upload-user-excel/admin', [UserController::class, 'uploadExcel'])->name('upload.user.excel.admin');
     // user end
     // Profile
     Route::get('/profile/superadmin', [AuthController::class, 'index'])->name('profile.superadmin');
@@ -136,8 +142,8 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/waste/download-pdf/admin', [WasteController::class, 'downloadPdf'])->name('waste.download.pdf.admin');
     Route::get('/upload/files/waste/admin', [WasteController::class, 'uploadFile'])->name('upload.waste.files.admin');
     Route::get('/download-template/waste/admin', function () {
-        $file = storage_path('app/public/waste.xlsx');
-        return Response::download($file, 'waste.xlsx');
+        $file = storage_path('app/public/template upload waste.xlsx');
+        return Response::download($file, 'template upload waste.xlsx');
     })->name('download.template.upload.waste.admin');
     Route::post('/upload-waste-excel/admin', [WasteController::class, 'uploadExcel'])->name('upload.waste.excel.admin');
     // end waste admin
@@ -151,8 +157,8 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/produk/download-excel/admin', [ProdukController::class, 'downloadExcel'])->name('produk.download.excel.admin');
     Route::get('/upload/files/produk/admin', [ProdukController::class, 'uploadFile'])->name('upload.produk.files.admin');
     Route::get('/download-template/produk/admin', function () {
-        $file = storage_path('app/public/barcode.xlsx');
-        return Response::download($file, 'barcode.xlsx');
+        $file = storage_path('app/public/template upload produk.xlsx');
+        return Response::download($file, 'template upload produk.xlsx');
     })->name('download.template.upload.produk.admin');
     Route::post('/upload-produk-excel/admin', [ProdukController::class, 'uploadExcel'])->name('upload.produk.admin');
     //  end produk
@@ -166,8 +172,8 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/barang/download-excel/admin', [BarangController::class, 'downloadExcel'])->name('barang.download.excel.admin');
     Route::get('/upload/files/barang/admin', [BarangController::class, 'uploadFile'])->name('upload.barang.files.admin');
     Route::get('/download-template/barang/admin', function () {
-        $file = storage_path('app/public/barcode.xlsx');
-        return Response::download($file, 'barcode.xlsx');
+        $file = storage_path('app/public/template upload barang.xlsx');
+        return Response::download($file, 'template upload barang.xlsx');
     })->name('download.template.upload.barang.admin');
     Route::post('/upload-barang-excel/admin', [BarangController::class, 'uploadExcel'])->name('upload.barang.admin');
     // end barang
@@ -196,8 +202,8 @@ Route::middleware(['role:Superadmin'])->group(function () {
     // Route::get('/timer/download-excel/admin', [ProductionController::class, 'downloadExcel'])->name('timer.download.excel.admin');
     Route::get('/upload/production/admin', [ProductionController::class, 'uploadFile'])->name('upload.production.files.admin');
     Route::get('/download-template/production/admin', function () {
-        $file = storage_path('app/public/production.xlsx');
-        return Response::download($file, 'production.xlsx');
+        $file = storage_path('app/public/template upload production.xlsx');
+        return Response::download($file, 'template upload production.xlsx');
     })->name('download.template.upload.production.admin');
     Route::post('production/{id}/update-finish-rework', [ProductionController::class, 'updateFinishRework'])->name('production.updateFinishRework');
     Route::post('/upload-production-excel/admin', [ProductionController::class, 'uploadExcel'])->name('upload.production.excel.admin');
@@ -215,8 +221,8 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/get-produk-by-barcode/stock/{barcode}', [StockController::class, 'produkByBarcode'])->name('get.produk.barcode.stock');
     Route::get('/upload/files/stock/admin', [StockController::class, 'uploadFile'])->name('upload.stock.files.admin');
     Route::get('/download-template/stock/admin', function () {
-        $file = storage_path('app/public/stock.xlsx');
-        return Response::download($file, 'stock.xlsx');
+        $file = storage_path('app/public/template upload stock.xlsx');
+        return Response::download($file, 'template upload stock.xlsx');
     })->name('download.template.upload.stock.admin');
     Route::post('/upload-stock-excel/admin', [StockController::class, 'uploadExcel'])->name('upload.stock.excel.admin');
     //  end Stock
@@ -231,8 +237,8 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/size/download-pdf/admin', [SizeController::class, 'downloadPdf'])->name('size.download.pdf.admin');
     Route::get('/upload/files/size/admin', [SizeController::class, 'uploadFile'])->name('upload.size.files.admin');
     Route::get('/download-template/size/admin', function () {
-        $file = storage_path('app/public/size.xlsx');
-        return Response::download($file, 'size.xlsx');
+        $file = storage_path('app/public/template upload ukuran.xlsx');
+        return Response::download($file, 'template upload ukuran.xlsx');
     })->name('download.template.upload.size.admin');
     Route::post('/upload-size-excel/admin', [sizeController::class, 'uploadExcel'])->name('upload.size.excel.admin');
     //  end Size

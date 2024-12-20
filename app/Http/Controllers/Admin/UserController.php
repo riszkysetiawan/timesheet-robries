@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Imports\UserImport as ImportsUserImport;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\ValidationException;
 use DataTables;
 use App\Models\Role;
+use Maatwebsite\Excel\Facades\Excel;
+use UserImport;
 
 class UserController extends Controller
 {
@@ -64,11 +67,35 @@ class UserController extends Controller
 
         return view('superadmin.user.index');
     }
-
+    public function uploadFile()
+    {
+        return view('superadmin.user.upload');
+    }
 
     /**
      * Show the form for creating a new resource.
      */
+    public function uploadExcel(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|mimes:xlsx,xls|max:20480'
+        ], [
+            'file.required' => 'File Excel wajib diunggah.',
+            'file.mimes' => 'Format file harus berupa .xlsx atau .xls.',
+            'file.max' => 'Ukuran file tidak boleh lebih dari 20MB.'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        Excel::import(new ImportsUserImport, $request->file('file'));
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data produk berhasil diupload!'
+        ], 200);
+    }
     public function create()
     {
         $roles = Role::all();
@@ -84,7 +111,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
             'no_hp' => 'nullable|numeric',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:10000',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
             'id_role' => 'required|exists:role,id' // Validasi id_role harus ada di tabel roles

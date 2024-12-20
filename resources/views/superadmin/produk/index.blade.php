@@ -37,10 +37,6 @@
                                         <th>Kode Produk</th>
                                         <th>Nama Produk</th>
                                         <th>Gambar</th>
-                                        <th>Barcode</th>
-                                        <th>Harga</th>
-                                        <th>Keterangan</th>
-                                        <th>Kategori</th>
                                         <th>Warna</th>
                                         <th class="text-center">Action</th>
                                     </tr>
@@ -105,22 +101,6 @@
                         name: 'gambar',
                         orderable: false,
                         searchable: false
-                    },
-                    {
-                        data: 'kode_barcode',
-                        name: 'kode_barcode'
-                    },
-                    {
-                        data: 'harga',
-                        name: 'harga'
-                    },
-                    {
-                        data: 'keterangan',
-                        name: 'keterangan'
-                    },
-                    {
-                        data: 'kategori.nama_kategori',
-                        name: 'kategori.nama_kategori'
                     },
                     {
                         data: 'warna.warna',

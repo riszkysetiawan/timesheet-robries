@@ -1,0 +1,8 @@
+[2024-12-20 10:05:36] local.INFO: Processing row: {"nama_user":"namaasadada","email":"kiki@gmail.com","password":"password","role":"Purchasing"}  
+[2024-12-20 10:05:36] local.ERROR: Failed to insert user: SQLSTATE[HY000]: General error: 1364 Field 'nama' doesn't have a default value (Connection: mysql, SQL: insert into `users` (`email`, `password`, `updated_at`, `created_at`) values (kiki@gmail.com, $2y$12$ZpDPjRi5SOZ5knX5XqkRNeKBPnkR8W5wTe9YD25zAuuN7wWRR1RpK, 2024-12-20 10:05:36, 2024-12-20 10:05:36))  
+[2024-12-20 10:07:04] local.INFO: Processing row: {"nama_user":"namaasadada","email":"kiki@gmail.com","password":"password","role":"Purchasing"}  
+[2024-12-20 10:07:05] local.ERROR: Failed to process user: SQLSTATE[HY000]: General error: 1364 Field 'nama' doesn't have a default value (Connection: mysql, SQL: insert into `users` (`email`, `password`, `updated_at`, `created_at`) values (kiki@gmail.com, $2y$12$/wJjMghEUaZkGrNhnJZPzO3XLCYFqDQJx9hMKIziLrr.JArowxppC, 2024-12-20 10:07:05, 2024-12-20 10:07:05))  
+[2024-12-20 10:07:43] local.INFO: Processing row: {"nama_user":"namaasadada","email":"kiki@gmail.com","password":"password","role":"Purchasing"}  
+[2024-12-20 10:07:44] local.ERROR: Failed to process user: SQLSTATE[HY000]: General error: 1364 Field 'id_role' doesn't have a default value (Connection: mysql, SQL: insert into `users` (`nama`, `email`, `password`, `updated_at`, `created_at`) values (namaasadada, kiki@gmail.com, $2y$12$nyW0Z/4MeyW3s9L/Q2TTxO8uLxT6YVxKiJvauqZgAmDuzAVrokk4K, 2024-12-20 10:07:44, 2024-12-20 10:07:44))  
+[2024-12-20 10:08:19] local.INFO: Processing row: {"nama_user":"namaasadada","email":"kiki@gmail.com","password":"password","role":"Purchasing"}  
+[2024-12-20 10:08:20] local.INFO: New user created: kiki@gmail.com  

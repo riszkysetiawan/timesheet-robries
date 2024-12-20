@@ -76,56 +76,12 @@
                                     </div>
                                 </div>
 
-                                <!-- Kode Barcode -->
-                                <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="kode_barcode" class="form-label">Kode Barcode</label>
-                                        <input type="number" id="kode_barcode" name="kode_barcode" class="form-control"
-                                            value="{{ old('kode_barcode', $produk->kode_barcode) }}"
-                                            placeholder="Kode Barcode*" />
-                                    </div>
-                                </div>
-
-                                <!-- Harga dengan format Rupiah -->
-                                <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="harga" class="form-label">Harga</label>
-                                        <input type="text" id="harga" name="harga" class="form-control"
-                                            value="{{ old('harga', $produk->harga) }}" placeholder="Harga*" />
-                                    </div>
-                                </div>
-
-                                <!-- Keterangan -->
-                                <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="keterangan" class="form-label">Keterangan</label>
-                                        <input type="text" id="keterangan" name="keterangan" class="form-control"
-                                            value="{{ old('keterangan', $produk->keterangan) }}"
-                                            placeholder="Keterangan*" />
-                                    </div>
-                                </div>
 
 
-
-                                <!-- Kategori -->
-                                <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="id_kategori" class="form-label">Kategori</label>
-                                        <select id="id_kategori" name="id_kategori" class="form-control">
-                                            <option value="">Pilih Kategori</option>
-                                            @foreach ($kategoris as $kategori)
-                                                <option value="{{ $kategori->id }}"
-                                                    {{ $produk->id_kategori == $kategori->id ? 'selected' : '' }}>
-                                                    {{ $kategori->nama_kategori }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="id_kategori" class="form-label">Ukuran</label>
-                                        <select id="id_kategori" name="id_kategori" class="form-control">
+                                        <select id="id_size" name="id_size" class="form-control">
                                             <option value="">Pilih Ukuran</option>
                                             @foreach ($sizes as $size)
                                                 <option value="{{ $size->id }}"
@@ -141,7 +97,7 @@
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="id_satuan" class="form-label">Warna</label>
-                                        <select id="id_satuan" name="id_satuan" class="form-control">
+                                        <select id="id_warna" name="id_warna" class="form-control">
                                             <option value="">Pilih Warna</option>
                                             @foreach ($warnas as $warna)
                                                 <option value="{{ $warna->id }}"
@@ -171,8 +127,7 @@
                                     onclick="window.location.href='{{ route('produk.admin.index') }}'">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round"
-                                        class="feather feather-arrow-left">
+                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
                                         <line x1="19" y1="12" x2="5" y2="12"></line>
                                         <polyline points="12 19 5 12 12 5"></polyline>
                                     </svg>
@@ -192,66 +147,8 @@
     <script>
         // Format Rupiah untuk input harga
         $(document).ready(function() {
-            var hargaInput = $('#harga');
-            var currentValue = hargaInput.val();
-
-            if (currentValue) {
-                hargaInput.val(formatRupiah(currentValue, 'Rp ')); // Format to Rupiah on page load
-            }
-
-            hargaInput.on('input', function() {
-                var value = $(this).val();
-                $(this).val(formatRupiah(value, 'Rp '));
-            });
-
-
-            // Function to format a number to Rupiah
-            function formatRupiah(angka, prefix) {
-                var number_string = angka.replace(/[^,\d]/g, '').toString(),
-                    split = number_string.split(','),
-                    sisa = split[0].length % 3,
-                    rupiah = split[0].substr(0, sisa),
-                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-                if (ribuan) {
-                    separator = sisa ? '.' : '';
-                    rupiah += separator + ribuan.join('.');
-                }
-
-                rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
-                return prefix === undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
-            }
-
-
-            $('#harga').on('input', function() {
-                var value = $(this).val();
-                $(this).val(formatRupiah(value, 'Rp '));
-            });
-
-
-            function formatRupiah(angka, prefix) {
-                var number_string = angka.replace(/[^,\d]/g, '').toString(),
-                    split = number_string.split(','),
-                    sisa = split[0].length % 3,
-                    rupiah = split[0].substr(0, sisa),
-                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-                if (ribuan) {
-                    separator = sisa ? '.' : '';
-                    rupiah += separator + ribuan.join('.');
-                }
-
-                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-                return prefix == undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
-            }
-
             $('#BarangForm').on('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
-
-                // Ubah nilai harga ke format angka sebelum disubmit
-                var harga = $('#harga').val().replace(/[^0-9]/g, '');
-                $('#harga').val(harga);
-
+                e.preventDefault(); // Prevent default form submissio
 
                 var formData = new FormData(this);
 

@@ -56,9 +56,9 @@ class ProdukController extends Controller
                         return 'Tidak ada gambar';
                     }
                 })
-                ->addColumn('harga', function ($produk) {
-                    return 'Rp ' . number_format($produk->harga ?? 0, 0, ',', '.');
-                })
+                // ->addColumn('harga', function ($produk) {
+                //     return 'Rp ' . number_format($produk->harga ?? 0, 0, ',', '.');
+                // })
                 ->addColumn('action', function ($produk) {
                     $editUrl = route('produk.admin.edit', Crypt::encryptString($produk->kode_produk));
                     return '
@@ -223,10 +223,10 @@ class ProdukController extends Controller
             'kode_produk' => 'required|string|max:255|unique:produk,kode_produk',
             'nama_barang' => 'required|string|max:255',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'kode_barcode' => 'nullable|string|max:255',
-            'harga' => 'required|string|max:255',
-            'keterangan' => 'nullable|string|max:255',
-            'id_kategori' => 'nullable|exists:kategori_barang,id',
+            // 'kode_barcode' => 'nullable|string|max:255',
+            // 'harga' => 'required|string|max:255',
+            // 'keterangan' => 'nullable|string|max:255',
+            // 'id_kategori' => 'nullable|exists:kategori_barang,id',
             'id_size' => 'nullable|exists:size,id',
             'id_warna' => 'nullable|exists:warna,id',
         ], [
@@ -240,11 +240,11 @@ class ProdukController extends Controller
             'gambar.image' => 'Gambar harus berupa file gambar.',
             'gambar.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
             'gambar.max' => 'Ukuran gambar tidak boleh lebih dari 2 MB.',
-            'harga.required' => 'Harga wajib diisi.',
-            'harga.string' => 'Harga harus berupa teks.',
-            'keterangan.string' => 'Keterangan harus berupa teks.',
-            'keterangan.max' => 'Keterangan tidak boleh lebih dari 255 karakter.',
-            'id_kategori.exists' => 'Kategori yang dipilih tidak valid.',
+            // 'harga.required' => 'Harga wajib diisi.',
+            // 'harga.string' => 'Harga harus berupa teks.',
+            // 'keterangan.string' => 'Keterangan harus berupa teks.',
+            // 'keterangan.max' => 'Keterangan tidak boleh lebih dari 255 karakter.',
+            // 'id_kategori.exists' => 'Kategori yang dipilih tidak valid.',
             'id_warna.exists' => 'Warna yang dipilih tidak valid.',
             'id_size.exists' => 'Ukuran yang dipilih tidak valid.',
         ]);
@@ -260,11 +260,11 @@ class ProdukController extends Controller
         $produk = new Produk();
         $produk->kode_produk = $request->kode_produk;
         $produk->nama_barang = $request->nama_barang;
-        $produk->kode_barcode = $request->kode_barcode;
-        $produk->harga = $request->harga;
-        $produk->keterangan = $request->keterangan;
+        // $produk->kode_barcode = $request->kode_barcode;
+        // $produk->harga = $request->harga;
+        // $produk->keterangan = $request->keterangan;
         $produk->id_size = $request->id_size;
-        $produk->id_kategori = $request->id_kategori;
+        // $produk->id_kategori = $request->id_kategori;
         $produk->id_warna = $request->id_warna;
 
         // Jika ada file gambar yang di-upload
@@ -274,7 +274,6 @@ class ProdukController extends Controller
             $produk->gambar = 'photos/' . $imageName;
         }
 
-        // Menyimpan data produk
         $produk->save();
 
         // Mengirimkan response sukses
@@ -300,7 +299,7 @@ class ProdukController extends Controller
     public function edit($id)
     {
         $decryptedId = Crypt::decryptString($id);
-        $produk = produk::with(['stocks'])->findOrFail($decryptedId);
+        $produk = produk::findOrFail($decryptedId);
         $kategoris = Kategori::all();
         $warnas = Warna::all();
         $sizes = Size::all();
@@ -321,9 +320,9 @@ class ProdukController extends Controller
             'nama_barang' => 'required|string|max:255',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'kode_barcode' => 'nullable|string|max:255',
-            'harga' => 'required|string|max:255',
-            'keterangan' => 'nullable|string|max:255',
-            'id_kategori' => 'nullable|exists:kategori_barang,id',
+            // 'harga' => 'required|string|max:255',
+            // 'keterangan' => 'nullable|string|max:255',
+            // 'id_kategori' => 'nullable|exists:kategori_barang,id',
             'id_warna' => 'nullable|exists:warna,id',
             'id_size' => 'nullable|exists:size,id',
         ], [
@@ -333,13 +332,13 @@ class ProdukController extends Controller
             'gambar.image' => 'Gambar harus berupa file gambar.',
             'gambar.mimes' => 'Format gambar harus jpeg, png, atau jpg.',
             'gambar.max' => 'Ukuran gambar tidak boleh lebih dari 2 MB.',
-            'kode_barcode.string' => 'Kode barcode harus berupa teks.',
-            'kode_barcode.max' => 'Kode barcode tidak boleh lebih dari 255 karakter.',
-            'harga.required' => 'Harga wajib diisi.',
-            'harga.string' => 'Harga harus berupa teks.',
+            // 'kode_barcode.string' => 'Kode barcode harus berupa teks.',
+            // 'kode_barcode.max' => 'Kode barcode tidak boleh lebih dari 255 karakter.',
+            // 'harga.required' => 'Harga wajib diisi.',
+            // 'harga.string' => 'Harga harus berupa teks.',
             'keterangan.string' => 'Keterangan harus berupa teks.',
             'keterangan.max' => 'Keterangan tidak boleh lebih dari 255 karakter.',
-            'id_kategori.exists' => 'Kategori yang dipilih tidak valid.',
+            // 'id_kategori.exists' => 'Kategori yang dipilih tidak valid.',
             'id_warna.exists' => 'Warna yang dipilih tidak valid.',
             'id_size.exists' => 'Ukuran yang dipilih tidak valid.',
         ]);
@@ -357,10 +356,10 @@ class ProdukController extends Controller
 
         // Update data produk dengan data request
         $produk->nama_barang = $request->nama_barang;
-        $produk->kode_barcode = $request->kode_barcode;
-        $produk->harga = $request->harga;
-        $produk->keterangan = $request->keterangan;
-        $produk->id_kategori = $request->id_kategori;
+        // $produk->kode_barcode = $request->kode_barcode;
+        // $produk->harga = $request->harga;
+        // $produk->keterangan = $request->keterangan;
+        // $produk->id_kategori = $request->id_kategori;
         $produk->id_warna = $request->id_warna;
         $produk->id_size = $request->id_size;
 
