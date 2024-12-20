@@ -1153,6 +1153,36 @@ class ProductionController extends Controller
         }
     }
 
+    public function printSelected(Request $request)
+    {
+        // Fetch selected rows based on IDs
+        $selectedIds = $request->input('selected_ids'); // This is an array of IDs passed from the front end
+        $data = [];
+
+        // Example: Fetch data from your production model with relationships
+        $selectedProductions = Production::with(['produk', 'warna', 'size'])->whereIn('id', $selectedIds)->get();
+
+        foreach ($selectedProductions as $item) {
+            $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($item->barcode);
+
+            $data[] = [
+                'company_name' => 'ROBRIES',
+                'tagline' => 'Providing Sustainable Living',
+                'so_number' => $item->so_number,
+                'size' => $item->size->size ?? 'N/A', // Access size name from the relationship
+                'color' => $item->warna->warna ?? 'N/A', // Access color name from the relationship
+                'barcode' => $item->barcode,
+                'qty' => $item->qty,
+                'nama_produk' => $item->produk->nama_barang,
+                'date' => now()->format('d/m/Y'),
+                'batch_number' => '001',
+                'qr_code_url' => $qrCodeUrl,
+            ];
+        }
+
+        // Render the view for printing
+        return view('superadmin.production.print', compact('data'));
+    }
 
     /**
      * Remove the specified resource from storage.

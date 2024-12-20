@@ -159,59 +159,91 @@
                     <button class="btn btn-outline-secondary btn-rounded mb-2 me-4"
                         onclick="window.location.href='{{ route('upload.production.files.admin') }}'">
                         Upload File</button>
+                    <button id="printSelected" class="btn btn-primary">Print Selected</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Date Range Picker CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
-    <!-- Moment.js (Required by Date Range Picker) -->
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" defer></script>
-
+    <!-- Scripts -->
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" defer></script>
+    <script>
+        $('#printSelected').on('click', function() {
+            const selectedIds = Array.from($('.rowCheckbox:checked')).map((checkbox) => $(checkbox).data('id'));
+
+            if (selectedIds.length === 0) {
+                alert('No rows selected!');
+                return;
+            }
+
+            // Open a new tab for printing
+            const form = $('<form>', {
+                action: "{{ route('print.labels') }}",
+                method: 'POST',
+                target: '_blank'
+            });
+
+            // Add CSRF token
+            form.append($('<input>', {
+                type: 'hidden',
+                name: '_token',
+                value: '{{ csrf_token() }}'
+            }));
+
+            // Add selected IDs
+            selectedIds.forEach(id => {
+                form.append($('<input>', {
+                    type: 'hidden',
+                    name: 'selected_ids[]',
+                    value: id
+                }));
+            });
+
+            // Append the form to the body and submit
+            form.appendTo('body').submit().remove();
+        });
+    </script>
     <script>
         $(document).ready(function() {
             const selectedRows = new Set();
 
-            // Event untuk checkbox "Select All"
             $('#selectAll').on('click', function() {
                 const isChecked = $(this).is(':checked');
-                $('.rowCheckbox').prop('checked', isChecked);
 
-                if (isChecked) {
-                    $('.rowCheckbox').each(function() {
-                        selectedRows.add($(this).data('id'));
-                    });
-                } else {
-                    selectedRows.clear();
-                }
+                $('.rowCheckbox').each(function() {
+                    const id = $(this).data('id');
+                    if (isChecked) {
+                        selectedRows.add(id);
+                        $(this).prop('checked', true); // Check all checkboxes on the current page
+                    } else {
+                        selectedRows.delete(id);
+                        $(this).prop('checked',
+                            false); // Uncheck all checkboxes on the current page
+                    }
+                });
             });
 
-            // Event untuk checkbox individual
+            // Individual row selection
             $(document).on('click', '.rowCheckbox', function() {
                 const id = $(this).data('id');
                 if ($(this).is(':checked')) {
-                    selectedRows.add(id);
+                    selectedRows.add(id); // Add ID to the selected set
                 } else {
-                    selectedRows.delete(id);
+                    selectedRows.delete(id); // Remove ID from the selected set
                 }
 
                 // Update "Select All" state
-                const allChecked = $('.rowCheckbox').length === $('.rowCheckbox:checked').length;
+                const allChecked = $('.rowCheckbox:checked').length === $('.rowCheckbox').length;
                 $('#selectAll').prop('checked', allChecked);
             });
 
-            // Contoh: Ambil data terpilih
+            // Example: Log selected rows
             $('#getSelected').on('click', function() {
                 console.log('Selected Rows:', Array.from(selectedRows));
             });
@@ -300,9 +332,6 @@
             });
         });
 
-
-
-
         $('#downloadExcel').on('click', function() {
             const dateRange = $('#filterTanggal').val();
             let url = "{{ route('production.download.excel.admin') }}";
@@ -317,23 +346,8 @@
         });
     </script>
     <script>
-        // $('#filterTanggal').daterangepicker({
-        //     locale: {
-        //         format: 'YYYY-MM-DD',
-        //         cancelLabel: 'Clear'
-        //     },
-        //     autoUpdateInput: false
-        // });
-
-        // $('#filterTanggal').on('apply.daterangepicker', function(ev, picker) {
-        //     $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-        // });
-
-        // $('#filterTanggal').on('cancel.daterangepicker', function(ev, picker) {
-        //     $(this).val('');
-        // });
-
         $(document).ready(function() {
+            const selectedRows = new Set();
             var table = $('#penjualan-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -354,8 +368,10 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            return `<input type="checkbox" class="rowCheckbox" data-id="${row.id}">`;
-                        }
+                            // Check if the row's ID is already selected
+                            const isChecked = selectedRows.has(row.id) ? "checked" : "";
+                            return `<input type="checkbox" class="rowCheckbox" data-id="${row.id}" ${isChecked}>`;
+                        },
                     }, {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -395,7 +411,6 @@
                         name: 'barcode',
                         render: function(data, type, row) {
                             if (type === 'display') {
-                                // Use a library to generate QR code
                                 return `<div class="qrcode" data-barcode="${data}"></div>`;
                             }
                             return data;
@@ -618,6 +633,15 @@
                         searchable: false
                     }
                 ],
+                drawCallback: function() {
+                    // Ensure checkboxes reflect selected state after page change
+                    $('.rowCheckbox').each(function() {
+                        const id = $(this).data('id');
+                        if (selectedRows.has(id)) {
+                            $(this).prop('checked', true);
+                        }
+                    });
+                },
             });
             // // Inisialisasi Date Range Picker
             $('#filterTanggal').daterangepicker({

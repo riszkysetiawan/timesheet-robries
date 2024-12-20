@@ -201,6 +201,7 @@ Route::middleware(['role:Superadmin'])->group(function () {
     })->name('download.template.upload.production.admin');
     Route::post('production/{id}/update-finish-rework', [ProductionController::class, 'updateFinishRework'])->name('production.updateFinishRework');
     Route::post('/upload-production-excel/admin', [ProductionController::class, 'uploadExcel'])->name('upload.production.excel.admin');
+    Route::post('/print-labels', [ProductionController::class, 'printSelected'])->name('print.labels');
     // end production
     // Stock
     Route::get('/stock/produk/admin', [StockController::class, 'index'])->name('stock-produk.admin.index');
