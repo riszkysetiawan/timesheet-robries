@@ -354,14 +354,15 @@
                 responsive: true,
                 ajax: {
                     url: "{{ route('production.admin.index') }}",
+                    type: 'POST', // Ubah metode menjadi POST
                     data: function(d) {
-                        // Kirim parameter filter tanggal ke server jika ada
                         var dates = $('#filterTanggal').val().split(' - ');
                         if (dates.length === 2) {
                             d.startDate = dates[0];
                             d.endDate = dates[1];
                         }
-                    }
+                        d._token = '{{ csrf_token() }}'; // Tambahkan CSRF token
+                    },
                 },
                 columns: [{
                         data: null,

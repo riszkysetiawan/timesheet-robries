@@ -182,6 +182,7 @@ Route::middleware(['role:Superadmin'])->group(function () {
     // end barang
     // production
     Route::get('/production/admin', [ProductionController::class, 'index'])->name('production.admin.index');
+    Route::post('/production/admin', [ProductionController::class, 'index'])->name('production.admin.index');
     Route::get('/tambah/production/admin', [ProductionController::class, 'create'])->name('production.admin.create');
     Route::post('/simpan/production/admin/store', [ProductionController::class, 'store'])->name('production.admin.store');
     Route::delete('/delete/production/admin/{id}', [ProductionController::class, 'destroy'])->name('production.admin.destroy');
