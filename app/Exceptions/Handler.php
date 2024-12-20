@@ -27,4 +27,9 @@ class Handler extends ExceptionHandler
             //
         });
     }
+    public function render($request, Throwable $exception)
+    {
+        // Arahkan ke halaman error custom jika ada exception
+        return response()->view('error.error', [], 500);
+    }
 }

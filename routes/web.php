@@ -34,6 +34,9 @@ use App\Http\Controllers\Admin\BarangController;
 Route::get('/', function () {
     return view('auth.login');
 })->name('index.login');
+Route::fallback(function () {
+    return redirect()->route('eror');
+});
 Route::post('/login-ajax', [AuthController::class, 'login'])->name('login.ajax');
 
 Route::middleware(['role:Superadmin'])->group(function () {
