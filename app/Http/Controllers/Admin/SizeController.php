@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Size;
 use App\Http\Requests\UpdateSizeRequest;
 use Illuminate\Http\Request;

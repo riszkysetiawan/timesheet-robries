@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Mapping;
 use App\Http\Requests\StoreMappingRequest;
 use App\Http\Requests\UpdateMappingRequest;

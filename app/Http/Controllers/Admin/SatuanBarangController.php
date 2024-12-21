@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\SatuanBarang;
 use App\Http\Requests\StoreSatuanBarangRequest;
 use App\Http\Requests\UpdateSatuanBarangRequest;

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Penjualan;
 use App\Http\Requests\StorePenjualanRequest;
 use App\Http\Requests\UpdatePenjualanRequest;

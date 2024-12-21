@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Warna;
 use App\Http\Requests\StoreWarnaRequest;
 use App\Http\Requests\UpdateWarnaRequest;

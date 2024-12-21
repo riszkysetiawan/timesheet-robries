@@ -20,6 +20,13 @@ use App\Http\Controllers\Admin\AlasanWasteController;
 use App\Http\Controllers\Admin\WasteController;
 use App\Http\Controllers\Admin\SatuanBarangController;
 use App\Http\Controllers\Admin\BarangController;
+use App\Http\Controllers\StaffProduksi\ProdukStaffProduksiController;
+use App\Http\Controllers\StaffProduksi\DashoardStaffProduksiController;
+use App\Http\Controllers\StaffProduksi\SizeStaffProduksiController;
+use App\Http\Controllers\StaffProduksi\WarnaStaffProduksiController;
+use App\Http\Controllers\StaffProduksi\ProductionStaffProduksiController;
+use App\Http\Controllers\OperatorProduksi\DashboardOperatorProduksiController;
+use App\Http\Controllers\OperatorProduksi\ProductionOperatorProduksiController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -60,7 +67,7 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::post('/profile/superadmin/update', [AuthController::class, 'update'])->name('profile-superadmin.update');
     Route::get('/logout/superadmin', [AuthController::class, 'logout'])->name('logout.superadmin');
     //  end profile
-    // kategori barang
+    // Warna admin
     Route::get('/warna/admin', [WarnaController::class, 'index'])->name('warna.admin.index');
     Route::get('/tambah/warna/admin', [WarnaController::class, 'create'])->name('warna.admin.create');
     Route::post('/simpan/warna/admin/store', [WarnaController::class, 'store'])->name('warna.admin.store');
@@ -68,7 +75,7 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/edit/warna/admin/{id}', [WarnaController::class, 'edit'])->name('warna.admin.edit');
     Route::post('/update/warna/admin/{id}', [WarnaController::class, 'update'])->name('warna.admin.update');
     Route::get('/warna/download-excel/admin', [WarnaController::class, 'downloadExcel'])->name('warna.download.excel.admin');
-    //  end kategori barang
+    //  end Warna
     // proses
     Route::get('/proses/admin', [ProsesController::class, 'index'])->name('proses.admin.index');
     Route::get('/tambah/proses/admin', [ProsesController::class, 'create'])->name('proses.admin.create');
@@ -246,4 +253,126 @@ Route::middleware(['role:Superadmin'])->group(function () {
     })->name('download.template.upload.size.admin');
     Route::post('/upload-size-excel/admin', [sizeController::class, 'uploadExcel'])->name('upload.size.excel.admin');
     //  end Size
+});
+
+Route::middleware(['role:Staff Produksi'])->group(function () {
+    Route::get('/dashboard-produksi', [DashoardStaffProduksiController::class, 'index'])->name('dashboard.staff-produksi');
+    // Warna
+    Route::get('/warna/production-staff', [WarnaStaffProduksiController::class, 'index'])->name('warna.production-staff.index');
+    Route::get('/tambah/warna/production-staff', [WarnaStaffProduksiController::class, 'create'])->name('warna.production-staff.create');
+    Route::post('/simpan/warna/production-staff/store', [WarnaStaffProduksiController::class, 'store'])->name('warna.production-staff.store');
+    Route::delete('/delete/warna/production-staff/{id}', [WarnaStaffProduksiController::class, 'destroy'])->name('warna.production-staff.destroy');
+    Route::get('/edit/warna/production-staff/{id}', [WarnaStaffProduksiController::class, 'edit'])->name('warna.production-staff.edit');
+    Route::post('/update/warna/production-staff/{id}', [WarnaStaffProduksiController::class, 'update'])->name('warna.production-staff.update');
+    Route::get('/warna/download-excel/production-staff', [WarnaStaffProduksiController::class, 'downloadExcel'])->name('warna.download.excel.production-staff');
+    //  end
+    // produk
+    Route::get('/produk/production-staff', [ProdukStaffProduksiController::class, 'index'])->name('produk.production-staff.index');
+    Route::get('/tambah/produk/production-staff', [ProdukStaffProduksiController::class, 'create'])->name('produk.production-staff.create');
+    Route::post('/simpan/produk/production-staff/store', [ProdukStaffProduksiController::class, 'store'])->name('produk.production-staff.store');
+    Route::delete('/delete/produk/production-staff/{id}', [ProdukStaffProduksiController::class, 'destroy'])->name('produk.production-staff.destroy');
+    Route::get('/edit/produk/production-staff/{id}', [ProdukStaffProduksiController::class, 'edit'])->name('produk.production-staff.edit');
+    Route::post('/update/produk/production-staff/{id}', [ProdukStaffProduksiController::class, 'update'])->name('produk.production-staff.update');
+    Route::get('/produk/download-excel/production-staff', [ProdukStaffProduksiController::class, 'downloadExcel'])->name('produk.download.excel.production-staff');
+    Route::get('/upload/files/produk/production-staff', [ProdukStaffProduksiController::class, 'uploadFile'])->name('upload.produk.files.production-staff');
+    Route::get('/download-template/produk/production-staff', function () {
+        $file = storage_path('app/public/template upload produk.xlsx');
+        return Response::download($file, 'template upload produk.xlsx');
+    })->name('download.template.upload.produk.production-staff');
+    Route::post('/upload-produk-excel/production-staff', [ProdukStaffProduksiController::class, 'uploadExcel'])->name('upload.produk.production-staff');
+    //  end produk   // Size
+    Route::get('/size/produk/production-staff', [SizeStaffProduksiController::class, 'index'])->name('size-produk.production-staff.index');
+    Route::get('/tambah/size/produk/production-staff', [SizeStaffProduksiController::class, 'create'])->name('size-produk.production-staff.create');
+    Route::post('/simpan/size/produk/production-staff', [SizeStaffProduksiController::class, 'store'])->name('size-produk.production-staff.store');
+    Route::delete('/delete/size/produk/production-staff/{id}', [SizeStaffProduksiController::class, 'destroy'])->name('size-produk.production-staff.destroy');
+    Route::get('/edit/size/produk/production-staff/{id}', [SizeStaffProduksiController::class, 'edit'])->name('size-produk.production-staff.edit');
+    Route::post('/update/size/produk/production-staff/{id}', [SizeStaffProduksiController::class, 'update'])->name('size-produk.production-staff.update');
+    Route::get('/size/download-excel/production-staff', [SizeStaffProduksiController::class, 'downloadExcel'])->name('size.download.excel.production-staff');
+    Route::get('/size/download-pdf/production-staff', [SizeStaffProduksiController::class, 'downloadPdf'])->name('size.download.pdf.production-staff');
+    Route::get('/upload/files/size/production-staff', [SizeStaffProduksiController::class, 'uploadFile'])->name('upload.size.files.production-staff');
+    Route::get('/download-template/size/production-staff', function () {
+        $file = storage_path('app/public/template upload ukuran.xlsx');
+        return Response::download($file, 'template upload ukuran.xlsx');
+    })->name('download.template.upload.size.production-staff');
+    Route::post('/upload-size-excel/production-staff', [SizeStaffProduksiController::class, 'uploadExcel'])->name('upload.size.excel.production-staff');
+    //  end Size
+    // production
+    Route::get('/production/production-staff', [ProductionStaffProduksiController::class, 'index'])->name('production.production-staff.index');
+    Route::post('/production/production-staff', [ProductionStaffProduksiController::class, 'index'])->name('production.production-staff.index');
+    Route::get('/tambah/production/production-staff', [ProductionStaffProduksiController::class, 'create'])->name('production.production-staff.create');
+    Route::post('/simpan/production/production-staff/store', [ProductionStaffProduksiController::class, 'store'])->name('production.production-staff.store');
+    Route::delete('/delete/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'destroy'])->name('production.production-staff.destroy');
+    Route::get('/edit/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'edit'])->name('production.production-staff.edit');
+    Route::get('/edit-timer/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'editTimer'])->name('production.production-staff.edit.timer');
+    Route::post('/production/update-timer', [ProductionStaffProduksiController::class, 'updateTimer'])->name('production-staff.production.updateTimer');
+    Route::post('/production-staff/production/delete-timer', [ProductionStaffProduksiController::class, 'deleteTimer'])->name('production-staff.production.deleteTimer');
+    Route::get('/mulai-timer/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'timer'])->name('timer-start.production.production-staff');
+    // Route::get('/production/production-staff/timerbarcode/{barcode}', [ProductionStaffProduksiController::class, 'timerbarcode'])->name('production.production-staff.timerbarcode');
+    Route::get('/production/production-staff/timerbarcode/{barcode}', [ProductionStaffProduksiController::class, 'timerbarcode'])
+        ->where('barcode', '.*') // Allow special characters
+        ->name('production.production-staff.timerbarcode');
+    Route::post('/production/start-timer', [ProductionStaffProduksiController::class, 'startTimer'])->name('production.startTimer');
+    Route::post('/update/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'update'])->name('production.production-staff.update');
+    Route::get('/production/download-excel/production-staff', [ProductionStaffProduksiController::class, 'downloadExcel'])->name('production.download.excel.production-staff');
+    Route::get('/show/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'show'])->name('detail.production.production-staff');
+    Route::get('/get-produk/production-staff/{so_number}', [ProductionStaffProduksiController::class, 'getProduk'])->name('get.produk.production-staff');
+    Route::get('/get-produk/production-staff',  [ProductionStaffProduksiController::class, 'getAllProduk'])->name('get.all-produk-production-staff');
+    Route::get('/get-ukuran/production-staff',  [ProductionStaffProduksiController::class, 'getAllUkuran'])->name('get.all-ukuran-production-staff');
+    Route::get('/get-warna/production-staff', [ProductionStaffProduksiController::class, 'getWarna'])->name('get.all-warna.produk-production-staff');
+    // Route::get('/timer/download-excel/production-staff', [ProductionStaffProduksiController::class, 'downloadExcel'])->name('timer.download.excel.production-staff');
+    Route::get('/upload/production/production-staff', [ProductionStaffProduksiController::class, 'uploadFile'])->name('upload.production.files.production-staff');
+    Route::get('/download-template/production/production-staff', function () {
+        $file = storage_path('app/public/template upload production.xlsx');
+        return Response::download($file, 'template upload production.xlsx');
+    })->name('download.template.upload.production.production-staff');
+    Route::post('production/{id}/update-finish-rework', [ProductionStaffProduksiController::class, 'updateFinishRework'])->name('production.updateFinishRework');
+    Route::post('/upload-production-excel/production-staff', [ProductionStaffProduksiController::class, 'uploadExcel'])->name('upload.production.excel.production-staff');
+    Route::post('/print-labels/production-staff', [ProductionStaffProduksiController::class, 'printSelected'])->name('print.labels.production-staff');
+    // end production
+    // Profile
+    Route::get('/profile/production-staff', [AuthController::class, 'index'])->name('profile.production-staff');
+    Route::post('/profile/production-staff/update', [AuthController::class, 'update'])->name('profile-production-staff.update');
+    Route::get('/logout/production-staff', [AuthController::class, 'logout'])->name('logout.production-staff');
+    //  end profile
+});
+Route::middleware(['role:Operator Produksi'])->group(function () {
+    Route::get('/dashboard-operator-produksi', [DashboardOperatorProduksiController::class, 'index'])->name('dashboard.operator-produksi');
+    //
+    Route::get('/profile/operator-produksi', [AuthController::class, 'index'])->name('profile.operator-produksi');
+    Route::post('/profile/operator-produksi/update', [AuthController::class, 'update'])->name('profile-operator-produksi.update');
+    Route::get('/logout/operator-produksi', [AuthController::class, 'logout'])->name('logout.operator-produksi');
+    // profile end
+    // production
+    Route::get('/production/operator-produksi', [ProductionOperatorProduksiController::class, 'index'])->name('production.operator-produksi.index');
+    Route::post('/production/operator-produksi', [ProductionOperatorProduksiController::class, 'index'])->name('production.operator-produksi.index');
+    Route::get('/tambah/production/operator-produksi', [ProductionOperatorProduksiController::class, 'create'])->name('production.operator-produksi.create');
+    Route::post('/simpan/production/operator-produksi/store', [ProductionOperatorProduksiController::class, 'store'])->name('production.operator-produksi.store');
+    Route::delete('/delete/production/operator-produksi/{id}', [ProductionOperatorProduksiController::class, 'destroy'])->name('production.operator-produksi.destroy');
+    Route::get('/edit/production/operator-produksi/{id}', [ProductionOperatorProduksiController::class, 'edit'])->name('production.operator-produksi.edit');
+    Route::get('/edit-timer/production/operator-produksi/{id}', [ProductionOperatorProduksiController::class, 'editTimer'])->name('production.operator-produksi.edit.timer');
+    Route::post('/production/update-timer', [ProductionOperatorProduksiController::class, 'updateTimer'])->name('operator-produksi.production.updateTimer');
+    Route::post('/operator-produksi/production/delete-timer', [ProductionOperatorProduksiController::class, 'deleteTimer'])->name('operator-produksi.production.deleteTimer');
+    Route::get('/mulai-timer/production/operator-produksi/{id}', [ProductionOperatorProduksiController::class, 'timer'])->name('timer-start.production.operator-produksi');
+    // Route::get('/production/operator-produksi/timerbarcode/{barcode}', [ProductionOperatorProduksiController::class, 'timerbarcode'])->name('production.operator-produksi.timerbarcode');
+    Route::get('/production/operator-produksi/timerbarcode/{barcode}', [ProductionOperatorProduksiController::class, 'timerbarcode'])
+        ->where('barcode', '.*') // Allow special characters
+        ->name('production.operator-produksi.timerbarcode');
+    Route::post('/production/start-timer', [ProductionOperatorProduksiController::class, 'startTimer'])->name('production.startTimer');
+    Route::post('/update/production/operator-produksi/{id}', [ProductionOperatorProduksiController::class, 'update'])->name('production.operator-produksi.update');
+    Route::get('/production/download-excel/operator-produksi', [ProductionOperatorProduksiController::class, 'downloadExcel'])->name('production.download.excel.operator-produksi');
+    Route::get('/show/production/operator-produksi/{id}', [ProductionOperatorProduksiController::class, 'show'])->name('detail.production.operator-produksi');
+    Route::get('/get-produk/operator-produksi/{so_number}', [ProductionOperatorProduksiController::class, 'getProduk'])->name('get.produk.operator-produksi');
+    Route::get('/get-produk/operator-produksi',  [ProductionOperatorProduksiController::class, 'getAllProduk'])->name('get.all-produk-operator-produksi');
+    Route::get('/get-ukuran/operator-produksi',  [ProductionOperatorProduksiController::class, 'getAllUkuran'])->name('get.all-ukuran-operator-produksi');
+    Route::get('/get-warna/operator-produksi', [ProductionOperatorProduksiController::class, 'getWarna'])->name('get.all-warna.produk-operator-produksi');
+    // Route::get('/timer/download-excel/operator-produksi', [ProductionOperatorProduksiController::class, 'downloadExcel'])->name('timer.download.excel.operator-produksi');
+    Route::get('/upload/production/operator-produksi', [ProductionOperatorProduksiController::class, 'uploadFile'])->name('upload.production.files.operator-produksi');
+    Route::get('/download-template/production/operator-produksi', function () {
+        $file = storage_path('app/public/template upload production.xlsx');
+        return Response::download($file, 'template upload production.xlsx');
+    })->name('download.template.upload.production.operator-produksi');
+    Route::post('production/{id}/update-finish-rework', [ProductionOperatorProduksiController::class, 'updateFinishRework'])->name('production.updateFinishRework');
+    Route::post('/upload-production-excel/operator-produksi', [ProductionOperatorProduksiController::class, 'uploadExcel'])->name('upload.production.excel.operator-produksi');
+    Route::post('/print-labels/operator-produksi', [ProductionOperatorProduksiController::class, 'printSelected'])->name('print.labels.operator-produksi');
+    // end production
 });

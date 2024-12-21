@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Packing;
 use App\Http\Requests\StorePackingRequest;
 use App\Http\Requests\UpdatePackingRequest;

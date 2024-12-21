@@ -18,10 +18,10 @@ class RoleMiddleware
     public function handle($request, Closure $next, $role)
     {
         if (Auth::check()) {
-            // Access the role name via the relationship
-            $userRole = Auth::user()->role->nama; // Assuming 'nama' is the role name
+            $userRole = Auth::user()->role->nama;
+            \Log::info('User Role: ' . $userRole);
+            \Log::info('Required Role: ' . $role);
 
-            // Compare the role
             if ($userRole === $role) {
                 return $next($request);
             }

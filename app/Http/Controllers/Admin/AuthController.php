@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -41,6 +42,10 @@ class AuthController extends Controller
             switch ($user->role->nama) { // Ensure 'role' is properly loaded with the 'role' relation
                 case 'Superadmin':
                     return response()->json(['status' => 'success', 'redirect' => route('dashboard.superadmin')]);
+                case 'Staff Produksi':
+                    return response()->json(['status' => 'success', 'redirect' => route('dashboard.staff-produksi')]);
+                case 'Operator Produksi':
+                    return response()->json(['status' => 'success', 'redirect' => route('dashboard.operators-produksi')]);
                     // Add other cases as needed
                 default:
                     Auth::logout(); // Log out the user if the role doesn't match
@@ -96,10 +101,9 @@ class AuthController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'no_hp' => 'nullable|string|max:20',
-            'role' => 'required|in:Superadmin,Purchasing,Kasir,Receiving,Inventory',
             'old_password' => 'nullable|min:6',
             'new_password' => 'nullable|min:6',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:10000'
         ]);
         if ($request->filled('old_password') && $request->filled('new_password')) {
             if (Hash::check($request->old_password, $user->password)) {
@@ -125,7 +129,6 @@ class AuthController extends Controller
         $user->nama = $request->nama;
         $user->email = $request->email;
         $user->no_hp = $request->no_hp;
-        $user->role = $request->role;
         $user->save();
 
         // Kembalikan pesan sukses

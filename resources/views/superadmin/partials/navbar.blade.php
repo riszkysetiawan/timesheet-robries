@@ -51,7 +51,7 @@
                                        class="rounded-circle" />
                                @else
                                    <!-- Tampilkan avatar default jika pengguna tidak memiliki foto -->
-                                   <img alt="avatar" src="{{ asset('user_profile.jpg') }}" class="rounded-circle" />
+                                   <img alt="avatar" src="{{ asset('logo.jpg') }}" class="rounded-circle" />
                                @endif
                            </div>
                        </div>

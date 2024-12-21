@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\AlasanWaste;
 use App\Http\Requests\StoreAlasanWasteRequest;
 use App\Http\Requests\UpdateAlasanWasteRequest;

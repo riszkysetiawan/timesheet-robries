@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Timer;
 use App\Http\Requests\StoreTimerRequest;
 use App\Http\Requests\UpdateTimerRequest;

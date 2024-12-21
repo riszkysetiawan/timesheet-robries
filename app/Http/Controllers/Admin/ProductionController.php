@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Production;
 use App\Http\Requests\StoreProductionRequest;
 use App\Http\Requests\UpdateProductionRequest;
@@ -37,7 +39,7 @@ class ProductionController extends Controller
     {
         if ($request->ajax()) {
             // Ambil data dari tabel production beserta timers dan proses
-            $productions = Production::with(['timers.proses', 'timers.user', 'warna', 'size'])
+            $productions = Production::with(['timers.proses', 'timers.user', 'warna', 'size', 'produk'])
                 ->orderBy('created_at', 'desc')
                 ->select('production.*'); // Pastikan mengambil data dari production table
 
@@ -118,6 +120,9 @@ class ProductionController extends Controller
 
                 ->addColumn('size', function ($row) {
                     return $row->size ? $row->size->size : '-';
+                })
+                ->addColumn('nama_barang', function ($row) {
+                    return $row->produk ? $row->produk->nama_barang : '-';
                 })
                 ->addColumn('oven_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 1); // Oven Start

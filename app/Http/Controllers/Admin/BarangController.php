@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Exports\BarangExport;
 use App\Models\Barang;
 use App\Http\Requests\StoreBarangRequest;

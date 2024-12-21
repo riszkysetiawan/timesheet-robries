@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Exports\WasteExport;
 use App\Models\Waste;
 use App\Http\Requests\StoreWasteRequest;

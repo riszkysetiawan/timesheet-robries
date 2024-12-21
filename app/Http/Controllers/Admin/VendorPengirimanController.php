@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\VendorPengiriman;
 use App\Http\Requests\StoreVendorPengirimanRequest;
 use App\Http\Requests\UpdateVendorPengirimanRequest;

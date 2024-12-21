@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Imports\UserImport as ImportsUserImport;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -58,7 +60,7 @@ class UserController extends Controller
                     ';
                 })
                 ->addColumn('profile', function ($user) {
-                    $imgSrc = $user->foto ? asset('storage/' . $user->foto) : asset('user_profile.jpg');
+                    $imgSrc = $user->foto ? asset('storage/' . $user->foto) : asset('logo.jpg');
                     return '<img alt="avatar" class="img-fluid rounded-circle" src="' . $imgSrc . '" width="50">';
                 })
                 ->rawColumns(['action', 'profile'])

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Inbound;
 use App\Http\Requests\StoreInbondRequest;
 use App\Http\Requests\UpdateInbondRequest;

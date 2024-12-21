@@ -75,32 +75,6 @@
                                                                                 value="{{ $user->no_hp }}" />
                                                                         </div>
                                                                     </div>
-
-                                                                    <!-- Role -->
-                                                                    <div class="col-md-6">
-                                                                        <div class="form-group">
-                                                                            <label for="role">Role</label>
-                                                                            <select name="role" id="role"
-                                                                                class="form-control mb-3">
-                                                                                <option value="Superadmin"
-                                                                                    {{ $user->role == 'Superadmin' ? 'selected' : '' }}>
-                                                                                    Superadmin</option>
-                                                                                <option value="Purchasing"
-                                                                                    {{ $user->role == 'Purchasing' ? 'selected' : '' }}>
-                                                                                    Purchasing</option>
-                                                                                <option value="Kasir"
-                                                                                    {{ $user->role == 'Kasir' ? 'selected' : '' }}>
-                                                                                    Kasir</option>
-                                                                                <option value="Receiving"
-                                                                                    {{ $user->role == 'Receiving' ? 'selected' : '' }}>
-                                                                                    Receiving</option>
-                                                                                <option value="Inventory"
-                                                                                    {{ $user->role == 'Inventory' ? 'selected' : '' }}>
-                                                                                    Inventory</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-
                                                                     <!-- Email -->
                                                                     <div class="col-md-6">
                                                                         <div class="form-group">
