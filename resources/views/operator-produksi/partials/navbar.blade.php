@@ -113,7 +113,7 @@
                cancelButtonText: 'Batal'
            }).then((result) => {
                if (result.isConfirmed) {
-                   window.location.href = "{{ route('logout.staffproprofile.operator-produksi') }}";
+                   window.location.href = "{{ route('logout.operator-produksi') }}";
                }
            });
        });

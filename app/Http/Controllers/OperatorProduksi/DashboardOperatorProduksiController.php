@@ -1,8 +1,24 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\OperatorProduksi;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Production;
+use App\Models\DetailProduction;
+use App\Models\Timer;
+use App\Models\Proses;
+use App\Models\Produk;
+use App\Models\WasteStock;
+use App\Models\PurchaseOrder;
+use App\Models\DetailPenjualan;
+use App\Models\DetailInbound;
+use App\Models\AlasanWaste;
+use App\Models\Stock;
+use App\Models\KategoriBarang;
+use Illuminate\Support\Facades\DB;
+use App\Models\Supplier;
+use Carbon\Carbon;
 
 class DashboardOperatorProduksiController extends Controller
 {
@@ -11,9 +27,15 @@ class DashboardOperatorProduksiController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $total_products = Produk::count();
+        $total_supplier = Supplier::count();
 
+
+        return view('operator-produksi.dashboard.index', [
+            'total_products' => $total_products,
+            'total_supplier' => $total_supplier,
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */

@@ -330,17 +330,17 @@ Route::middleware(['role:Staff Produksi'])->group(function () {
     Route::post('/print-labels/production-staff', [ProductionStaffProduksiController::class, 'printSelected'])->name('print.labels.production-staff');
     // end production
     // Profile
-    Route::get('/profile/production-staff', [AuthController::class, 'index'])->name('profile.production-staff');
-    Route::post('/profile/production-staff/update', [AuthController::class, 'update'])->name('profile-production-staff.update');
-    Route::get('/logout/production-staff', [AuthController::class, 'logout'])->name('logout.production-staff');
+    Route::get('/profile/production-staff', [AuthController::class, 'indexStaffProduksi'])->name('profile.production-staff');
+    Route::post('/profile/production-staff/update', [AuthController::class, 'updateStaffProduksi'])->name('profile-production-staff.update');
+    Route::get('/logout/production-staff', [AuthController::class, 'logoutStaffProduksi'])->name('logout.production-staff');
     //  end profile
 });
 Route::middleware(['role:Operator Produksi'])->group(function () {
     Route::get('/dashboard-operator-produksi', [DashboardOperatorProduksiController::class, 'index'])->name('dashboard.operator-produksi');
     //
-    Route::get('/profile/operator-produksi', [AuthController::class, 'index'])->name('profile.operator-produksi');
-    Route::post('/profile/operator-produksi/update', [AuthController::class, 'update'])->name('profile-operator-produksi.update');
-    Route::get('/logout/operator-produksi', [AuthController::class, 'logout'])->name('logout.operator-produksi');
+    Route::get('/profile/operator-produksi', [AuthController::class, 'indexOperatorProduksi'])->name('profile.operator-produksi');
+    Route::post('/profile/operator-produksi/update', [AuthController::class, 'updateOperatorProduksi'])->name('profile-operator-produksi.update');
+    Route::get('/logout/operator-produksi', [AuthController::class, 'logoutOperatorProduksi'])->name('logout.operator-produksi');
     // profile end
     // production
     Route::get('/production/operator-produksi', [ProductionOperatorProduksiController::class, 'index'])->name('production.operator-produksi.index');

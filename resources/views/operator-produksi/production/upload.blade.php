@@ -1,4 +1,4 @@
-@extends('superadmin.partials.upload')
+@extends('operator-produksi.partials.upload')
 @section('title', 'Upload Production')
 @section('container')
     <div class="container">

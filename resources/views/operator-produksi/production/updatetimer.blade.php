@@ -1,4 +1,4 @@
-@extends('superadmin.partials.createuser')
+@extends('operator-produksi.partials.createuser')
 @section('title', 'Update Timer Production')
 @section('container')
     <div class="container">

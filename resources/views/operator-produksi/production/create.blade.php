@@ -1,4 +1,4 @@
-@extends('superadmin.partials.penjualan')
+@extends('operator-produksi.partials.penjualan')
 @section('title', 'Tambah Item Production')
 @section('container')
     <div class="layout-px-spacing">

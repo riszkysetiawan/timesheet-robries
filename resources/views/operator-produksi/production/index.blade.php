@@ -1,22 +1,9 @@
-@extends('superadmin.partials.datatablescustomer')
+@extends('operator-produksi.partials.datatablescustomer')
 @section('title', 'List Item Production')
 @section('container')
     <div class="layout-px-spacing">
         <div class="middle-content container-xxl p-0">
             <!-- BREADCRUMB -->
-            <div class="page-meta">
-                <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                    <a href="{{ route('production.admin.create') }}" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" class="feather feather-plus">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        Tambah Data
-                    </a>
-                </nav>
-            </div>
             <!-- Scan Button -->
             <div class="page-meta">
                 <nav class="breadcrumb-style-one" aria-label="breadcrumb">
@@ -98,54 +85,34 @@
                                         <th>Kode Barcode</th>
                                         <th>Barcode</th>
                                         <th>Oven Start</th>
-                                        <th>Nama Operator</th>
                                         <th>Oven Finish</th>
                                         <th>Durasi</th>
-                                        <th>Nama Operator</th>
                                         <th>Press Start</th>
-                                        <th>Nama Operator</th>
                                         <th>Press Finish</th>
-                                        <th>Nama Operator</th>
                                         <th>Durasi</th>
                                         <th>WBS Start</th>
-                                        <th>Nama Operator</th>
                                         <th>WBS Finish</th>
-                                        <th>Nama Operator</th>
                                         <th>Durasi</th>
                                         <th>WELD Start</th>
-                                        <th>Nama Operator</th>
                                         <th>WELD Finish</th>
-                                        <th>Nama Operator</th>
                                         <th>Durasi</th>
                                         <th>VBS Start</th>
-                                        <th>Nama Operator</th>
                                         <th>VBS Finish</th>
-                                        <th>Nama Operator</th>
                                         <th>Durasi</th>
                                         <th>HBS Start</th>
-                                        <th>Nama Operator</th>
                                         <th>HBS Finish</th>
-                                        <th>Nama Operator</th>
                                         <th>Durasi</th>
                                         <th>Poles Start</th>
-                                        <th>Nama Operator</th>
                                         <th>Poles Finish</th>
-                                        <th>Nama Operator</th>
                                         <th>Durasi</th>
                                         <th>Assembly Start</th>
-                                        <th>Nama Operator</th>
                                         <th>Assembly Finish</th>
-                                        <th>Nama Operator</th>
                                         <th>Durasi</th>
                                         <th>Finishing Start</th>
-                                        <th>Nama Operator</th>
                                         <th>Finishing Finish</th>
-                                        <th>Nama Operator</th>
                                         <th>Durasi</th>
                                         <th>Rework Start</th>
-                                        <th>Nama Operator</th>
                                         <th>Rework Finish</th>
-                                        <th>Nama Operator</th>
                                         <th>Durasi</th>
                                         <th>Progress</th>
                                         <th>Hasil Akhir</th>
@@ -156,11 +123,6 @@
                             </table>
                         </div>
                     </div>
-                    <button id="downloadExcel" class="btn btn-success">Download Excel</button>
-                    <button class="btn btn-outline-secondary btn-rounded mb-2 me-4"
-                        onclick="window.location.href='{{ route('upload.production.files.admin') }}'">
-                        Upload File</button>
-                    <button id="printSelected" class="btn btn-primary">Print Selected</button>
                 </div>
             </div>
         </div>
@@ -174,42 +136,7 @@
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" defer></script>
-    <script>
-        $('#printSelected').on('click', function() {
-            const selectedIds = Array.from($('.rowCheckbox:checked')).map((checkbox) => $(checkbox).data('id'));
 
-            if (selectedIds.length === 0) {
-                alert('No rows selected!');
-                return;
-            }
-
-            // Open a new tab for printing
-            const form = $('<form>', {
-                action: "{{ route('print.labels') }}",
-                method: 'POST',
-                target: '_blank'
-            });
-
-            // Add CSRF token
-            form.append($('<input>', {
-                type: 'hidden',
-                name: '_token',
-                value: '{{ csrf_token() }}'
-            }));
-
-            // Add selected IDs
-            selectedIds.forEach(id => {
-                form.append($('<input>', {
-                    type: 'hidden',
-                    name: 'selected_ids[]',
-                    value: id
-                }));
-            });
-
-            // Append the form to the body and submit
-            form.appendTo('body').submit().remove();
-        });
-    </script>
     <script>
         $(document).ready(function() {
             const selectedRows = new Set();
@@ -354,7 +281,7 @@
                 serverSide: true,
                 responsive: true,
                 ajax: {
-                    url: "{{ route('production.admin.index') }}",
+                    url: "{{ route('production.operator-produksi.index') }}",
                     type: 'POST', // Ubah metode menjadi POST
                     data: function(d) {
                         var dates = $('#filterTanggal').val().split(' - ');
@@ -428,17 +355,10 @@
                         name: 'oven_start'
                     },
                     {
-                        data: 'oven_start_operator',
-                        name: 'oven_start_operator'
-                    },
-                    {
                         data: 'oven_finish',
                         name: 'oven_finish'
                     },
-                    {
-                        data: 'oven_finish_operator',
-                        name: 'oven_finish_operator'
-                    },
+
                     {
                         data: 'oven_duration',
                         name: 'oven_duration'
@@ -447,18 +367,12 @@
                         data: 'press_start',
                         name: 'press_start'
                     },
-                    {
-                        data: 'press_start_operator',
-                        name: 'press_start_operator'
-                    },
+
                     {
                         data: 'press_finish',
                         name: 'press_finish'
                     },
-                    {
-                        data: 'press_finish_operator',
-                        name: 'press_finish_operator',
-                    },
+
                     {
                         data: 'press_duration',
                         name: 'press_duration'
@@ -467,18 +381,12 @@
                         data: 'wbs_start',
                         name: 'wbs_start'
                     },
-                    {
-                        data: 'wbs_start_operator',
-                        name: 'wbs_start_operator',
-                    },
+
                     {
                         data: 'wbs_finish',
                         name: 'wbs_finish'
                     },
-                    {
-                        data: 'wbs_finish_operator',
-                        name: 'wbs_finish_operator',
-                    },
+
                     {
                         data: 'wbs_duration',
                         name: 'wbs_duration',
@@ -487,18 +395,12 @@
                         data: 'weld_start',
                         name: 'weld_start'
                     },
-                    {
-                        data: 'weld_start_operator',
-                        name: 'weld_start_operator',
-                    },
+
                     {
                         data: 'weld_finish',
                         name: 'weld_finish'
                     },
-                    {
-                        data: 'weld_finish_operator',
-                        name: 'weld_finish_operator',
-                    },
+
                     {
                         data: 'weld_duration',
                         name: 'weld_duration',
@@ -507,18 +409,12 @@
                         data: 'vbs_start',
                         name: 'vbs_start'
                     },
-                    {
-                        data: 'vbs_start_operator',
-                        name: 'vbs_start_operator'
-                    },
+
                     {
                         data: 'vbs_finish',
                         name: 'vbs_finish'
                     },
-                    {
-                        data: 'vbs_finish_operator',
-                        name: 'vbs_finish_operator'
-                    },
+
                     {
                         data: 'vbs_duration',
                         name: 'vbs_duration',
@@ -527,18 +423,12 @@
                         data: 'hbs_start',
                         name: 'hbs_start'
                     },
-                    {
-                        data: 'hbs_start_operator',
-                        name: 'hbs_start_operator',
-                    },
+
                     {
                         data: 'hbs_finish',
                         name: 'hbs_finish'
                     },
-                    {
-                        data: 'hbs_finish_operator',
-                        name: 'hbs_finish_operator',
-                    },
+
                     {
                         data: 'hbs_duration',
                         name: 'hbs_duration'
@@ -547,18 +437,12 @@
                         data: 'poles_start',
                         name: 'poles_start',
                     },
-                    {
-                        data: 'poles_start_operator',
-                        name: 'poles_start_operator',
-                    },
+
                     {
                         data: 'poles_finish',
                         name: 'poles_finish'
                     },
-                    {
-                        data: 'poles_finish_operator',
-                        name: 'poles_finish_operator',
-                    },
+
                     {
                         data: 'poles_duration',
                         name: 'poles_duration',
@@ -567,18 +451,12 @@
                         data: 'assembly_start',
                         name: 'assembly_start',
                     },
-                    {
-                        data: 'assembly_start_operator',
-                        name: 'assembly_start_operator',
-                    },
+
                     {
                         data: 'assembly_finish',
                         name: 'assembly_finish',
                     },
-                    {
-                        data: 'assembly_finish_operator',
-                        name: 'assembly_finish_operator',
-                    },
+
                     {
                         data: 'assembly_duration',
                         name: 'assembly_duration',
@@ -587,18 +465,12 @@
                         data: 'finishing_start',
                         name: 'finishing_start',
                     },
-                    {
-                        data: 'finishing_start_operator',
-                        name: 'finishing_start_operator',
-                    },
+
                     {
                         data: 'finishing_finish',
                         name: 'finishing_finish',
                     },
-                    {
-                        data: 'finishing_finish_operator',
-                        name: 'finishing_finish_operator',
-                    },
+
                     {
                         data: 'finishing_duration',
                         name: 'finishing_duration',
@@ -607,18 +479,12 @@
                         data: 'rework_start',
                         name: 'rework_start'
                     },
-                    {
-                        data: 'rework_start_operator',
-                        name: 'rework_start_operator',
-                    },
+
                     {
                         data: 'rework_finish',
                         name: 'rework_finish'
                     },
-                    {
-                        data: 'rework_finish_operator',
-                        name: 'rework_finish_operator',
-                    },
+
                     {
                         data: 'rework_duration',
                         name: 'rework_duration',
