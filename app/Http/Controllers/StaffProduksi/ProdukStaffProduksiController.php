@@ -63,13 +63,14 @@ class ProdukStaffProduksiController extends Controller
                 //     return 'Rp ' . number_format($produk->harga ?? 0, 0, ',', '.');
                 // })
                 ->addColumn('action', function ($produk) {
-                    $editUrl = route('produk.admin.edit', Crypt::encryptString($produk->kode_produk));
+                    $editUrl = route('produk.production-staff.edit', Crypt::encryptString($produk->kode_produk));
                     return '
                     <a href="' . $editUrl . '" class="btn btn-outline-primary btn-rounded mb-2 me-4">
                         Edit
                     </a>
-                    <a href="javascript:void(0)" onclick="confirmDelete(' . $produk->kode_produk . ')" class="btn btn-outline-danger btn-rounded mb-2 me-4">
-                        Hapus
+                     <a href="javascript:void(0)" onclick="confirmDelete(\'' . $produk->kode_produk . '\')"
+                        class="btn btn-outline-danger btn-rounded mb-2 me-4">
+                        <i class="feather feather-trash-2"></i> Hapus
                     </a>
                 ';
                 })

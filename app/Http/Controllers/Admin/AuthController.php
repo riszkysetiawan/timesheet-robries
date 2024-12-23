@@ -66,7 +66,21 @@ class AuthController extends Controller
         // If authentication fails, return an error message
         return response()->json(['errors' => ['email' => 'Email atau password salah.']], 422);
     }
-
+    public function logout()
+    {
+        Auth::logout();
+        return redirect()->route('index.login');
+    }
+    public function logoutStaffProduksi()
+    {
+        Auth::logout();
+        return redirect()->route('index.login');
+    }
+    public function logoutOperatorProduksi()
+    {
+        Auth::logout();
+        return redirect()->route('index.login');
+    }
     /**
      * Show the form for creating a new resource.
      */

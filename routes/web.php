@@ -202,7 +202,7 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::get('/production/admin/timerbarcode/{barcode}', [ProductionController::class, 'timerbarcode'])
         ->where('barcode', '.*') // Allow special characters
         ->name('production.admin.timerbarcode');
-    Route::post('/production/start-timer', [ProductionController::class, 'startTimer'])->name('production.startTimer');
+    Route::post('/production/start-timer/admin', [ProductionController::class, 'startTimer'])->name('production.startTimer');
     Route::post('/update/production/admin/{id}', [ProductionController::class, 'update'])->name('production.admin.update');
     Route::get('/production/download-excel/admin', [ProductionController::class, 'downloadExcel'])->name('production.download.excel.admin');
     Route::get('/show/production/admin/{id}', [ProductionController::class, 'show'])->name('detail.production.admin');
@@ -304,14 +304,14 @@ Route::middleware(['role:Staff Produksi'])->group(function () {
     Route::delete('/delete/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'destroy'])->name('production.production-staff.destroy');
     Route::get('/edit/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'edit'])->name('production.production-staff.edit');
     Route::get('/edit-timer/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'editTimer'])->name('production.production-staff.edit.timer');
-    Route::post('/production/update-timer', [ProductionStaffProduksiController::class, 'updateTimer'])->name('production-staff.production.updateTimer');
+    Route::post('/production/update-timer/production-staff', [ProductionStaffProduksiController::class, 'updateTimer'])->name('production-staff.production.updateTimer');
     Route::post('/production-staff/production/delete-timer', [ProductionStaffProduksiController::class, 'deleteTimer'])->name('production-staff.production.deleteTimer');
     Route::get('/mulai-timer/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'timer'])->name('timer-start.production.production-staff');
     // Route::get('/production/production-staff/timerbarcode/{barcode}', [ProductionStaffProduksiController::class, 'timerbarcode'])->name('production.production-staff.timerbarcode');
     Route::get('/production/production-staff/timerbarcode/{barcode}', [ProductionStaffProduksiController::class, 'timerbarcode'])
         ->where('barcode', '.*') // Allow special characters
         ->name('production.production-staff.timerbarcode');
-    Route::post('/production/start-timer', [ProductionStaffProduksiController::class, 'startTimer'])->name('production.startTimer');
+    Route::post('/production/start-timer/staff-produksi', [ProductionStaffProduksiController::class, 'startTimer'])->name('production.startTimer.staffproduksi');
     Route::post('/update/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'update'])->name('production.production-staff.update');
     Route::get('/production/download-excel/production-staff', [ProductionStaffProduksiController::class, 'downloadExcel'])->name('production.download.excel.production-staff');
     Route::get('/show/production/production-staff/{id}', [ProductionStaffProduksiController::class, 'show'])->name('detail.production.production-staff');
@@ -357,7 +357,7 @@ Route::middleware(['role:Operator Produksi'])->group(function () {
     Route::get('/production/operator-produksi/timerbarcode/{barcode}', [ProductionOperatorProduksiController::class, 'timerbarcode'])
         ->where('barcode', '.*') // Allow special characters
         ->name('production.operator-produksi.timerbarcode');
-    Route::post('/production/start-timer', [ProductionOperatorProduksiController::class, 'startTimer'])->name('production.startTimer');
+    Route::post('/production/start-timer/operator-produksi', [ProductionOperatorProduksiController::class, 'startTimer'])->name('production.startTimer.operator-produksi');
     Route::post('/update/production/operator-produksi/{id}', [ProductionOperatorProduksiController::class, 'update'])->name('production.operator-produksi.update');
     Route::get('/production/download-excel/operator-produksi', [ProductionOperatorProduksiController::class, 'downloadExcel'])->name('production.download.excel.operator-produksi');
     Route::get('/show/production/operator-produksi/{id}', [ProductionOperatorProduksiController::class, 'show'])->name('detail.production.operator-produksi');

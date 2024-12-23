@@ -46,7 +46,7 @@
                                     Simpan
                                 </button>
                                 <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
-                                    onclick="window.location.href='{{ route('warna-barang.production-staff.index') }}'">
+                                    onclick="window.location.href='{{ route('warna.production-staff.create') }}'">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
@@ -71,7 +71,7 @@
                 e.preventDefault();
                 var formData = new FormData(this);
                 $.ajax({
-                    url: "{{ route('satuan-barang.production-staff.store') }}",
+                    url: "{{ route('warna.production-staff.store') }}",
                     method: "POST",
                     data: formData,
                     contentType: false,
@@ -87,7 +87,7 @@
                                 if (result.isConfirmed) {
                                     $('#satuan')[0].reset();
                                     window.location.href =
-                                        '/satuan-barang/production-staff';
+                                        '{{ route('warna.production-staff.index') }}';
                                 }
                             });
                         }

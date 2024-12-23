@@ -32,8 +32,9 @@
             <ul class="list-unstyled menu-categories" id="accordionExample">
 
                 <!-- Dashboard Menu -->
-                <li class="menu  {{ Request::is('dashboard*') || Request::is('profile/superadmin*') ? 'active' : '' }}">
-                    <a href="/dashboard" aria-expanded="false" class="dropdown-toggle">
+                <li
+                    class="menu  {{ Request::is('dashboard*') || Request::is('profile/production-staff*') ? 'active' : '' }}">
+                    <a href="/dashboard-produksi" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"

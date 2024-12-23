@@ -185,7 +185,7 @@
         //             console.log(`QR Code detected: ${decodedText}`);
 
         //             const cleanedBarcode = decodedText.replace(/\//g, '.');
-        //             window.location.href = `/production/admin/timerbarcode/${cleanedBarcode}`;
+        //             window.location.href = `/production/operator-produksi/timerbarcode/${cleanedBarcode}`;
 
         //             $('#scanModal').modal('hide');
         //             html5QrCode.stop().catch(err => console.log(err));
@@ -222,7 +222,7 @@
 
                     // Redirect or fetch the view
                     $.ajax({
-                        url: `/production/admin/timerbarcode/${encodedBarcode}`,
+                        url: `/production/operator-produksi/timerbarcode/${encodedBarcode}`,
                         method: 'GET',
                         success: function(response) {
                             console.log('Data fetched successfully:', response);
@@ -262,7 +262,7 @@
 
         $('#downloadExcel').on('click', function() {
             const dateRange = $('#filterTanggal').val();
-            let url = "{{ route('production.download.excel.admin') }}";
+            let url = "{{ route('production.download.excel.operator-produksi') }}";
 
             if (dateRange) {
                 const dates = dateRange.split(" - ");
@@ -562,7 +562,7 @@
         // Delete Production Handler
         function deleteProduction(id) {
             $.ajax({
-                url: '/delete/production/admin/' + id,
+                url: '/delete/production/operator-produksi/' + id,
                 method: 'DELETE',
                 data: {
                     _token: '{{ csrf_token() }}'

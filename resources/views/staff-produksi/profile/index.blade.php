@@ -158,7 +158,7 @@
 
             var formData = new FormData(this);
             $.ajax({
-                url: "{{ route('profile-staff-produksi.update', $user->id) }}",
+                url: "{{ route('profile-production-staff.update', $user->id) }}",
                 method: 'POST',
                 data: formData,
                 contentType: false,

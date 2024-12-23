@@ -74,9 +74,9 @@ class ProductionStaffProduksiController extends Controller
 
 
                 ->addColumn('action', function ($row) {
-                    $editUrl = route('production.admin.edit', Crypt::encryptString($row->id));
-                    $tambahTimer = route('timer-start.production.admin', Crypt::encryptString($row->id));
-                    $editTimer = route('production.admin.edit.timer', Crypt::encryptString($row->id));
+                    $editUrl = route('production.production-staff.edit', Crypt::encryptString($row->id));
+                    $tambahTimer = route('timer-start.production.production-staff', Crypt::encryptString($row->id));
+                    $editTimer = route('production.production-staff.edit.timer', Crypt::encryptString($row->id));
                     return '
                         <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)" onclick="confirmDelete(' . $row->id . ')" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">

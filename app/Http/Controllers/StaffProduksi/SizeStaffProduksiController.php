@@ -40,7 +40,7 @@ class SizeStaffProduksiController extends Controller
             return DataTables::of($sizes)
                 ->addIndexColumn() // Tambahkan baris ini untuk kolom nomor urut
                 ->addColumn('action', function ($size) {
-                    $editUrl = route('size-produk.admin.edit', Crypt::encryptString($size->id));
+                    $editUrl = route('size-produk.production-staff.edit', Crypt::encryptString($size->id));
                     return '
                         <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)" onclick="confirmDelete(' . $size->id . ')" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">

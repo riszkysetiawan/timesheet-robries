@@ -67,8 +67,9 @@ class ProdukController extends Controller
                     <a href="' . $editUrl . '" class="btn btn-outline-primary btn-rounded mb-2 me-4">
                         Edit
                     </a>
-                    <a href="javascript:void(0)" onclick="confirmDelete(' . $produk->kode_produk . ')" class="btn btn-outline-danger btn-rounded mb-2 me-4">
-                        Hapus
+                   <a href="javascript:void(0)" onclick="confirmDelete(\'' . $produk->kode_produk . '\')"
+                        class="btn btn-outline-danger btn-rounded mb-2 me-4">
+                        <i class="feather feather-trash-2"></i> Hapus
                     </a>
                 ';
                 })
@@ -393,7 +394,7 @@ class ProdukController extends Controller
      */
     public function destroy($id)
     {
-        $produk = produk::find($id);
+        $produk = Produk::find($id);
         if (!$produk) {
             return response()->json([
                 'status' => 'error',

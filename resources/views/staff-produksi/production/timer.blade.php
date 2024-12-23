@@ -217,7 +217,7 @@
 
             // Kirim AJAX request
             $.ajax({
-                url: "{{ route('production.startTimer') }}", // Ganti dengan URL backend Anda
+                url: "{{ route('production.startTimer.staffproduksi') }}", // Ganti dengan URL backend Anda
                 method: 'POST',
                 data: requestData,
                 success: function(response) {
