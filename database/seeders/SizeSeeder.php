@@ -23,6 +23,8 @@ class SizeSeeder extends Seeder
             ['size' => '1200x600x10',  'created_at' => now(), 'updated_at' => now()],
             ['size' => '1200x600x15',  'created_at' => now(), 'updated_at' => now()],
             ['size' => '1200x600x20',  'created_at' => now(), 'updated_at' => now()],
+            ['size' => '40x40x80',  'created_at' => now(), 'updated_at' => now()],
+            ['size' => '40x25',  'created_at' => now(), 'updated_at' => now()],
         ];
 
         DB::table('size')->insert($size);

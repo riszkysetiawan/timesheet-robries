@@ -9,8 +9,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
-class UserImport implements ToCollection, WithHeadingRow
+class UserImport implements ToCollection, WithHeadingRow, WithCalculatedFormulas
 {
     /**
      * Handle the imported data.

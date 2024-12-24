@@ -121,9 +121,7 @@ class ProductionController extends Controller
                 ->addColumn('size', function ($row) {
                     return $row->size ? $row->size->size : '-';
                 })
-                ->addColumn('nama_barang', function ($row) {
-                    return $row->produk ? $row->produk->nama_barang : '-';
-                })
+
                 ->addColumn('oven_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 1); // Oven Start
                     return $timer ? \Carbon\Carbon::parse($timer->waktu)->format('Y-m-d H:i:s') : '-';
@@ -584,8 +582,9 @@ class ProductionController extends Controller
         $request->validate([
             'so_number.*' => 'required',
             'tgl_production' => 'required|date',
-            'kode_produk.*' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
+            // 'kode_produk.*' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
             'qty.*' => 'required|string',
+            'nama_produk.*' => 'required|string',
             'warna.*' => 'required|string',
             'size.*' => 'required|string',
             'barcode.*' => 'required|string',
@@ -593,8 +592,9 @@ class ProductionController extends Controller
             'so_number.*.required' => 'Nomor SO wajib diisi.',
             'tgl_production.required' => 'Tanggal produksi wajib diisi.',
             'tgl_production.date' => 'Tanggal produksi harus berupa tanggal yang valid.',
-            'kode_produk.*.required' => 'Kode produk wajib diisi.',
-            'kode_produk.*.exists' => 'Kode produk tidak ditemukan di dalam database.',
+            // 'kode_produk.*.required' => 'Kode produk wajib diisi.',
+            // 'kode_produk.*.exists' => 'Kode produk tidak ditemukan di dalam database.',
+            'nama_produk.*.required' => 'Kode produk wajib diisi.',
             'qty.*.required' => 'Kuantitas wajib diisi.',
             'warna.*.required' => 'Warna wajib diisi.',
             'size.*.required' => 'Ukuran wajib diisi.',
@@ -618,7 +618,7 @@ class ProductionController extends Controller
                 $production->id_color = $request->warna[$key];
                 $production->qty = $request->qty[$key];
                 $production->barcode = $request->barcode[$key];
-                $production->kode_produk = $request->kode_produk[$key]; // Setiap item dari array
+                $production->nama_produk = $request->nama_produk[$key]; // Setiap item dari array
                 $production->finish_rework = null;
                 $production->progress = null;
                 $production->save();
@@ -871,41 +871,6 @@ class ProductionController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Finish/Rework status updated successfully']);
     }
 
-
-    // public function timerbarcode($barcode)
-    // {
-    //     // Log barcode yang diterima
-    //     \Log::info("Received Barcode: " . $barcode);
-
-    //     try {
-    //         // Cari data menggunakan barcode yang diterima
-    //         $production = Production::where('barcode', $barcode)->firstOrFail();
-    //         \Log::info("Production Data Found: " . $production->id); // Debugging log
-    //     } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-    //         \Log::error("Production data not found for barcode: " . $barcode);
-    //         return redirect()->back()->with('error', 'Production data not found.');
-    //     }
-
-    //     // Fetch processes and their status
-    //     $prosess = Proses::all()->map(function ($proses) use ($production) {
-    //         $proses->is_done = Timer::where('id_production', $production->id)
-    //             ->where('id_proses', $proses->id)
-    //             ->exists();
-    //         return $proses;
-    //     });
-
-    //     $produks = Produk::all();
-    //     $sizes = Size::all();
-    //     $warnas = Warna::all();
-
-    //     return view('superadmin.production.timer', compact(
-    //         'production',
-    //         'produks',
-    //         'sizes',
-    //         'warnas',
-    //         'prosess'
-    //     ));
-    // }
     public function timerbarcode($barcode)
     {
         // Decode the barcode to handle encoded characters
@@ -945,54 +910,7 @@ class ProductionController extends Controller
     }
 
 
-    // public function startTimer(Request $request)
-    // {
-    //     try {
-    //         // Validasi input
-    //         $validated = $request->validate([
-    //             'process_id' => 'required|exists:proses,id',
-    //             'production_id' => 'required|exists:production,id',
-    //         ]);
 
-    //         // Cek apakah timer untuk proses dan produksi ini sudah ada
-    //         $timer = Timer::updateOrCreate(
-    //             [
-    //                 'id_proses' => $validated['process_id'],
-    //                 'id_production' => $validated['production_id'],
-    //             ],
-    //             [
-    //                 'id_users' => auth()->id(), // Simpan ID user yang memulai timer
-    //                 'waktu' => now()->format('H:i:s'), // Format waktu sesuai tipe kolom `time`
-    //                 'updated_at' => now(), // Perbarui waktu terakhir
-    //             ]
-    //         );
-
-    //         // Berhasil
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'message' => 'Timer berhasil dimulai!',
-    //             'timer' => $timer, // Kirim data timer ke frontend untuk pembaruan UI
-    //         ]);
-    //     } catch (\Illuminate\Validation\ValidationException $e) {
-    //         // Kesalahan validasi
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Validasi gagal: ' . implode(', ', $e->errors()),
-    //         ], 422);
-    //     } catch (\Illuminate\Database\QueryException $e) {
-    //         // Kesalahan query database
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Kesalahan database: ' . $e->getMessage(),
-    //         ], 500);
-    //     } catch (\Exception $e) {
-    //         // Kesalahan umum lainnya
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Kesalahan: ' . $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
     public function startTimer(Request $request)
     {
         try {
@@ -1106,7 +1024,8 @@ class ProductionController extends Controller
             // Validasi input
             $request->validate([
                 'so_number' => 'required',
-                'kode_produk' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
+                // 'kode_produk' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
+                'nama_produk' => 'required', // Pastikan kode produk ada di tabel produk
                 'qty' => 'required|string',
                 'warna' => 'required|string',
                 'size' => 'required|string',
@@ -1115,8 +1034,8 @@ class ProductionController extends Controller
                 'so_number.required' => 'Nomor SO wajib diisi.',
                 'tgl_production.required' => 'Tanggal produksi wajib diisi.',
                 'tgl_production.date' => 'Tanggal produksi harus berupa tanggal yang valid.',
-                'kode_produk.required' => 'Kode produk wajib diisi.',
-                'kode_produk.exists' => 'Kode produk tidak ditemukan di dalam database.',
+                'nama_produk.required' => 'Kode produk wajib diisi.',
+                // 'nama_produk.exists' => 'Kode produk tidak ditemukan di dalam database.',
                 'qty.required' => 'Kuantitas wajib diisi.',
                 'warna.required' => 'Warna wajib diisi.',
                 'size.required' => 'Ukuran wajib diisi.',
@@ -1133,7 +1052,7 @@ class ProductionController extends Controller
             $production->id_color = $request->warna;
             $production->qty = $request->qty;
             $production->barcode = $request->barcode;
-            $production->kode_produk = $request->kode_produk;
+            $production->nama_produk = $request->nama_produk;
             $production->save();
 
             DB::commit();
@@ -1178,7 +1097,7 @@ class ProductionController extends Controller
                 'color' => $item->warna->warna ?? 'N/A', // Access color name from the relationship
                 'barcode' => $item->barcode,
                 'qty' => $item->qty,
-                'nama_produk' => $item->produk->nama_barang,
+                'nama_produk' => $item->nama_produk,
                 'date' => now()->format('d/m/Y'),
                 'batch_number' => '001',
                 'qr_code_url' => $qrCodeUrl,

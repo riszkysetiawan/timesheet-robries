@@ -40,6 +40,7 @@ class ProductionExport implements FromCollection, WithHeadings
         return $productions->map(function ($production) use ($allProcesses) {
             $result = [
                 'SO Number' => $production->so_number,
+                'Nama Produk' => $production->nama_produk,
                 'Tanggal' => $production->created_at->format('Y-m-d'),
                 'Warna' => optional($production->warna)->warna ?? '-',
                 'Size' => optional($production->size)->size ?? '-',
@@ -63,6 +64,7 @@ class ProductionExport implements FromCollection, WithHeadings
         // Default headings
         $headings = [
             'SO Number',
+            'Nama Produk',
             'Tanggal',
             'Warna',
             'Size',

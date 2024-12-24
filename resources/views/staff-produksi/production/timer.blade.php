@@ -29,15 +29,8 @@
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="kode_produk" class="form-label">Nama Produk</label>
-                                        <select id="kode_produk" name="kode_produk" class="form-control" disabled>
-                                            <option value="">Pilih Produk</option>
-                                            @foreach ($produks as $produk)
-                                                <option value="{{ $produk->kode_produk }}"
-                                                    {{ $production->kode_produk == $produk->kode_produk ? 'selected' : '' }}>
-                                                    {{ $produk->nama_barang }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <input type="text" id="nama_produk" name="nama_produk" class="form-control"
+                                            value="{{ old('nama_produk', $production->nama_produk) }}" readonly />
                                     </div>
                                 </div>
                                 <div class="row mb-4">
@@ -61,7 +54,7 @@
                                             <option value="">Pilih Ukuran</option>
                                             @foreach ($sizes as $size)
                                                 <option value="{{ $size->id }}"
-                                                    {{ $produk->id_size == $size->id ? 'selected' : '' }}>
+                                                    {{ $production->id_size == $size->id ? 'selected' : '' }}>
                                                     {{ $size->size }}
                                                 </option>
                                             @endforeach

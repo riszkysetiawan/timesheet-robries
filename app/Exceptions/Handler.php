@@ -29,7 +29,15 @@ class Handler extends ExceptionHandler
     }
     public function render($request, Throwable $exception)
     {
-        // Arahkan ke halaman error custom jika ada exception
-        return response()->view('error.error', [], 500);
+        // Jika environment adalah production, tampilkan pesan error saja
+        if (app()->environment('production')) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], $this->isHttpException($exception) ? $exception->getStatusCode() : 500);
+        }
+
+        // Default Laravel (untuk non-production)
+        return parent::render($request, $exception);
     }
 }

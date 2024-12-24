@@ -195,7 +195,7 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::delete('/delete/production/admin/{id}', [ProductionController::class, 'destroy'])->name('production.admin.destroy');
     Route::get('/edit/production/admin/{id}', [ProductionController::class, 'edit'])->name('production.admin.edit');
     Route::get('/edit-timer/production/admin/{id}', [ProductionController::class, 'editTimer'])->name('production.admin.edit.timer');
-    Route::post('/production/update-timer', [ProductionController::class, 'updateTimer'])->name('admin.production.updateTimer');
+    Route::post('/production/update-timer/admin', [ProductionController::class, 'updateTimer'])->name('admin.production.updateTimer');
     Route::post('/admin/production/delete-timer', [ProductionController::class, 'deleteTimer'])->name('admin.production.deleteTimer');
     Route::get('/mulai-timer/production/admin/{id}', [ProductionController::class, 'timer'])->name('timer-start.production.admin');
     // Route::get('/production/admin/timerbarcode/{barcode}', [ProductionController::class, 'timerbarcode'])->name('production.admin.timerbarcode');

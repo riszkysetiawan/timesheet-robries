@@ -17,7 +17,7 @@ class Produk extends Model
     }
     public function size()
     {
-        return $this->belongsTo(Kategori::class, 'id_size', 'id');
+        return $this->belongsTo(Size::class, 'id_size', 'id');
     }
     public function warna()
     {

@@ -185,7 +185,7 @@
 
             // Open a new tab for printing
             const form = $('<form>', {
-                action: "{{ route('print.labels') }}",
+                action: "{{ route('print.labels.production-staff') }}",
                 method: 'POST',
                 target: '_blank'
             });
@@ -389,8 +389,8 @@
                         name: 'so_number'
                     },
                     {
-                        data: 'nama_barang',
-                        name: 'nama_barang'
+                        data: 'nama_produk',
+                        name: 'nama_produk'
                     },
                     {
                         data: 'size',

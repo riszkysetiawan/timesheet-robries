@@ -103,7 +103,10 @@
                                                                         placeholder="So Number" name="so_number[]" />
                                                                 </td>
                                                                 <td class="description">
-                                                                    <select name="kode_produk[]"
+                                                                    <input type="text"
+                                                                        class="form-control form-control-sm"
+                                                                        placeholder="nama produk" name="nama_produk[]" />
+                                                                    {{-- <select name="kode_produk[]"
                                                                         class="form-control form-control-sm"
                                                                         id="kode_produk_select">
                                                                         <option value="">Pilih Barang</option>
@@ -112,7 +115,7 @@
                                                                                 {{ $produk->nama_barang }}
                                                                             </option>
                                                                         @endforeach
-                                                                    </select>
+                                                                    </select> --}}
                                                                 </td>
                                                                 <td class="text-right qty">
                                                                     <input type="text"
@@ -403,14 +406,9 @@
                                                                         placeholder="So Number" name="so_number[]" />
                                                                 </td>
         <td class="description">
-            <select name="kode_produk[]" class="form-control form-control-sm kode_produk_select">
-                <option value="">Pilih Produk</option>
-                @foreach ($produks as $produk)
-                    <option value="{{ $produk->kode_produk }}">
-                        {{ $produk->nama_barang }}
-                    </option>
-                @endforeach
-            </select>
+             <input type="text"
+                                                                        class="form-control form-control-sm"
+                                                                        placeholder="nama produk" name="nama_produk[]" />
         </td>
           <td class="text-right qty">
                                                                     <input type="text"

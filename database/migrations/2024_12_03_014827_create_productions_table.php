@@ -23,6 +23,7 @@ return new class extends Migration
         Schema::create('production', function (Blueprint $table) {
             $table->id();
             $table->string('so_number');
+            $table->string('nama_produk');
             $table->date('tgl_production');
             $table->unsignedBigInteger('id_size');
             $table->unsignedBigInteger('id_color');
@@ -30,8 +31,8 @@ return new class extends Migration
             $table->string('barcode')->unique();
             $table->string('finish_rework')->nullable();
             $table->string('progress')->nullable();
-            $table->string('kode_produk');
-            $table->foreign('kode_produk')->references('kode_produk')->on('produk')->onDelete('restrict')->onUpdate('cascade');
+            // $table->string('kode_produk');
+            // $table->foreign('kode_produk')->references('kode_produk')->on('produk')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_color')->references('id')->on('warna')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_size')->references('id')->on('size')->onDelete('restrict')->onUpdate('cascade');
 

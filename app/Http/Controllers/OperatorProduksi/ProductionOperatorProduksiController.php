@@ -95,9 +95,7 @@ class ProductionOperatorProduksiController extends Controller
                 ->addColumn('size', function ($row) {
                     return $row->size ? $row->size->size : '-';
                 })
-                ->addColumn('nama_barang', function ($row) {
-                    return $row->produk ? $row->produk->nama_barang : '-';
-                })
+
                 ->addColumn('oven_start', function ($row) {
                     $timer = $row->timers->firstWhere('id_proses', 1); // Oven Start
                     return $timer ? \Carbon\Carbon::parse($timer->waktu)->format('Y-m-d H:i:s') : '-';
@@ -558,7 +556,8 @@ class ProductionOperatorProduksiController extends Controller
         $request->validate([
             'so_number.*' => 'required',
             'tgl_production' => 'required|date',
-            'kode_produk.*' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
+            // 'kode_produk.*' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
+            'nama_produk.*' => 'required', // Pastikan kode produk ada di tabel produk
             'qty.*' => 'required|string',
             'warna.*' => 'required|string',
             'size.*' => 'required|string',
@@ -567,8 +566,7 @@ class ProductionOperatorProduksiController extends Controller
             'so_number.*.required' => 'Nomor SO wajib diisi.',
             'tgl_production.required' => 'Tanggal produksi wajib diisi.',
             'tgl_production.date' => 'Tanggal produksi harus berupa tanggal yang valid.',
-            'kode_produk.*.required' => 'Kode produk wajib diisi.',
-            'kode_produk.*.exists' => 'Kode produk tidak ditemukan di dalam database.',
+            'nama_produk.*.required' => 'Kode produk wajib diisi.',
             'qty.*.required' => 'Kuantitas wajib diisi.',
             'warna.*.required' => 'Warna wajib diisi.',
             'size.*.required' => 'Ukuran wajib diisi.',
@@ -592,7 +590,7 @@ class ProductionOperatorProduksiController extends Controller
                 $production->id_color = $request->warna[$key];
                 $production->qty = $request->qty[$key];
                 $production->barcode = $request->barcode[$key];
-                $production->kode_produk = $request->kode_produk[$key]; // Setiap item dari array
+                $production->nama_produk = $request->nama_produk[$key]; // Setiap item dari array
                 $production->finish_rework = null;
                 $production->progress = null;
                 $production->save();
@@ -1080,7 +1078,8 @@ class ProductionOperatorProduksiController extends Controller
             // Validasi input
             $request->validate([
                 'so_number' => 'required',
-                'kode_produk' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
+                // 'kode_produk' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
+                'nama_produk' => 'required', // Pastikan kode produk ada di tabel produk
                 'qty' => 'required|string',
                 'warna' => 'required|string',
                 'size' => 'required|string',
@@ -1089,8 +1088,8 @@ class ProductionOperatorProduksiController extends Controller
                 'so_number.required' => 'Nomor SO wajib diisi.',
                 'tgl_production.required' => 'Tanggal produksi wajib diisi.',
                 'tgl_production.date' => 'Tanggal produksi harus berupa tanggal yang valid.',
-                'kode_produk.required' => 'Kode produk wajib diisi.',
-                'kode_produk.exists' => 'Kode produk tidak ditemukan di dalam database.',
+                'nama_produk.required' => 'Kode produk wajib diisi.',
+                // 'kode_produk.exists' => 'Kode produk tidak ditemukan di dalam database.',
                 'qty.required' => 'Kuantitas wajib diisi.',
                 'warna.required' => 'Warna wajib diisi.',
                 'size.required' => 'Ukuran wajib diisi.',
@@ -1107,7 +1106,7 @@ class ProductionOperatorProduksiController extends Controller
             $production->id_color = $request->warna;
             $production->qty = $request->qty;
             $production->barcode = $request->barcode;
-            $production->kode_produk = $request->kode_produk;
+            $production->nama_produk = $request->nama_produk;
             $production->save();
 
             DB::commit();
@@ -1152,7 +1151,7 @@ class ProductionOperatorProduksiController extends Controller
                 'color' => $item->warna->warna ?? 'N/A', // Access color name from the relationship
                 'barcode' => $item->barcode,
                 'qty' => $item->qty,
-                'nama_produk' => $item->produk->nama_barang,
+                'nama_produk' => $item->nama_produk,
                 'date' => now()->format('d/m/Y'),
                 'batch_number' => '001',
                 'qr_code_url' => $qrCodeUrl,
