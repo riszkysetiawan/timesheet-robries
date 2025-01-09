@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Penjualan extends Model
 {
     use HasFactory;
-    protected $table = 'packing';
+    protected $table = 'penjualan';
     protected $guarded = ['id'];
     public function packing()
     {

@@ -79,7 +79,8 @@
     @include('sweetalert::alert')
     @include('superadmin.partials.navbar')
     @include('superadmin.partials.aside')
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
     <script src="{{ asset('cork/html/src/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('cork/html/src/plugins/src/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>

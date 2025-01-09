@@ -22,6 +22,7 @@ use App\Imports\ProductionImport;
 use App\Models\Proses;
 use App\Models\Size;
 use App\Models\Timer;
+use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
@@ -814,7 +815,10 @@ class ProductionStaffProduksiController extends Controller
         // Simpan progres ke dalam kolom production
         $production->progress = $progress;
         $production->save();
-
+        $processTimers = Timer::where('id_production', $decryptedId)
+            ->with('user') // Pastikan ada relasi dengan user
+            ->get()
+            ->keyBy('id_proses');
         // Ambil semua proses dengan status selesai atau belum
         $prosess = Proses::all()->map(function ($proses) use ($decryptedId) {
             $proses->is_done = Timer::where('id_production', $decryptedId)
@@ -833,15 +837,21 @@ class ProductionStaffProduksiController extends Controller
         $produks = Produk::all();
         $sizes = Size::all();
         $warnas = Warna::all();
+        $users = User::whereHas('role', function ($query) {
+            $query->whereIn('nama', ['Operator Produksi', 'Quality Control']);
+        })->get();
 
         return view('staff-produksi.production.timer', compact(
             'production',
             'produks',
+            'users',
             'sizes',
             'warnas',
-            'prosess'
+            'prosess',
+            'processTimers'
         ));
     }
+
     public function updateFinishRework(Request $request, $id)
     {
         $decryptedId = Crypt::decryptString($id);
@@ -917,31 +927,87 @@ class ProductionStaffProduksiController extends Controller
             // Query the database with the decoded barcode
             $production = Production::where('barcode', $decodedBarcode)->firstOrFail();
             \Log::info("Production Data Found: " . $production->id); // Debugging log
+
+            // Hitung total proses
+            $totalProses = 18;
+            if ($production->finish_rework === 'Rework') {
+                $totalProses += 2; // Tambahkan 2 untuk Rework Start dan Rework Finish
+            }
+
+            // Ambil semua proses yang sudah selesai
+            $completedProses = Timer::where('id_production', $production->id)
+                ->distinct('id_proses')
+                ->count('id_proses');
+
+            // Hitung progres
+            $progress = ($completedProses / $totalProses) * 100;
+
+            // Sesuaikan progres jika finish_rework adalah Rework atau Finishing Finish selesai
+            if ($production->finish_rework === 'Rework') {
+                $progress -= 30; // Kurangi 30% untuk Rework
+            }
+
+            // Cek apakah Finishing Finish selesai
+            $isFinishingFinished = Timer::where('id_production', $production->id)
+                ->where('id_proses', 18)
+                ->exists();
+
+            if ($isFinishingFinished) {
+                $progress += 30;
+            }
+
+            // Pastikan progres tidak kurang dari 0% atau lebih dari 100%
+            $progress = max(0, min(100, $progress));
+
+            // Simpan progres
+            $production->progress = $progress;
+            $production->save();
+
+            // Fetch processes and their status
+            $prosess = Proses::all()->map(function ($proses) use ($production) {
+                $proses->is_done = Timer::where('id_production', $production->id)
+                    ->where('id_proses', $proses->id)
+                    ->exists();
+                return $proses;
+            });
+
+            // Jika finish_rework adalah Rework, tambahkan proses Rework
+            if ($production->finish_rework === 'Rework') {
+                $reworkProcesses = Proses::whereIn('id', [19, 20])->get();
+                $prosess = $prosess->concat($reworkProcesses);
+            }
+
+            // Ambil data timer dengan relasi user
+            $processTimers = Timer::where('id_production', $production->id)
+                ->with('user')
+                ->get()
+                ->keyBy('id_proses');
+
+            $produks = Produk::all();
+            $sizes = Size::all();
+            $warnas = Warna::all();
+            $users = User::whereHas('role', function ($query) {
+                $query->whereIn('nama', ['Operator Produksi', 'Quality Control']);
+            })->get();
+
+
+            // Return the desired view
+            return view('staff-produksi.production.timer', compact(
+                'production',
+                'produks',
+                'sizes',
+                'warnas',
+                'prosess',
+                'users',
+                'processTimers'
+            ));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             \Log::error("Production data not found for barcode: " . $decodedBarcode);
-            return response()->view('errors.404', [], 404); // Return 404 error view
+            return response()->view('errors.404', [], 404);
+        } catch (\Exception $e) {
+            \Log::error("Error in timerbarcode: " . $e->getMessage());
+            return response()->view('errors.500', [], 500);
         }
-
-        // Fetch processes and their status
-        $prosess = Proses::all()->map(function ($proses) use ($production) {
-            $proses->is_done = Timer::where('id_production', $production->id)
-                ->where('id_proses', $proses->id)
-                ->exists();
-            return $proses;
-        });
-
-        $produks = Produk::all();
-        $sizes = Size::all();
-        $warnas = Warna::all();
-
-        // Return the desired view
-        return view('staff-produksi.production.timer', compact(
-            'production',
-            'produks',
-            'sizes',
-            'warnas',
-            'prosess'
-        ));
     }
 
 
@@ -993,6 +1059,7 @@ class ProductionStaffProduksiController extends Controller
     //         ], 500);
     //     }
     // }
+
     public function startTimer(Request $request)
     {
         try {
@@ -1000,10 +1067,12 @@ class ProductionStaffProduksiController extends Controller
             $validated = $request->validate([
                 'process_id' => 'required|exists:proses,id',
                 'production_id' => 'required|exists:production,id',
+                'id_user' => 'required|exists:users,id',
             ]);
 
             $productionId = $validated['production_id'];
             $processId = $validated['process_id'];
+            $userId = $validated['id_user'];
 
             // Cek apakah proses sudah selesai
             $existingTimer = Timer::where('id_production', $productionId)
@@ -1011,81 +1080,90 @@ class ProductionStaffProduksiController extends Controller
                 ->exists();
 
             if ($existingTimer) {
+                Log::info('Timer sudah ada', [
+                    'production_id' => $productionId,
+                    'process_id' => $processId,
+                    'user_id' => $userId
+                ]);
+
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Timer untuk proses ini sudah dimulai sebelumnya.',
-                ], 400); // HTTP 400 Bad Request
+                ], 400);
             }
 
             // Simpan timer baru
             $timer = Timer::create([
                 'id_proses' => $processId,
                 'id_production' => $productionId,
-                'id_users' => auth()->id(),
+                'id_users' => $userId,
                 'waktu' => now()->format('H:i:s'),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
             // Hitung progress
-            $totalProses = 18; // Jumlah proses default
+            $totalProses = 18;
             $production = Production::findOrFail($productionId);
 
-            // Jika rework diaktifkan, tambahkan 2 proses (Rework Start dan Rework Finish)
             if ($production->finish_rework === 'Rework') {
                 $totalProses += 2;
             }
 
-            // Hitung jumlah proses yang telah dimulai
             $completedProses = Timer::where('id_production', $productionId)
                 ->distinct('id_proses')
                 ->count('id_proses');
 
-            // Hitung progres awal
             $progress = ($completedProses / $totalProses) * 100;
 
-            // Kurangi 30% jika rework aktif
             if ($production->finish_rework === 'Rework') {
                 $progress -= 30;
             }
 
-            // Tambahkan 30% jika proses Finishing Finish sudah selesai
             $isFinishingFinished = Timer::where('id_production', $productionId)
-                ->where('id_proses', 18) // ID untuk Finishing Finish
+                ->where('id_proses', 18)
                 ->exists();
 
             if ($isFinishingFinished) {
                 $progress += 30;
             }
 
-            // Pastikan progres berada dalam rentang 0% hingga 100%
             $progress = max(0, min(100, $progress));
 
-            // Perbarui progress di tabel production
             $production->progress = $progress;
             $production->save();
 
-            // Berhasil
+            Log::info('Timer berhasil dimulai', [
+                'production_id' => $productionId,
+                'process_id' => $processId,
+                'user_id' => $userId,
+                'progress' => $progress
+            ]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Timer berhasil dimulai!',
-                'progress' => $progress, // Kirim progress terbaru ke frontend
-                'timer' => $timer, // Kirim data timer ke frontend
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Kesalahan validasi
+            Log::error('Validation Error', [
+                'message' => $e->getMessage(),
+                'errors' => $e->errors(),
+                'request_data' => $request->all()
+            ]);
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Validasi gagal: ' . implode(', ', $e->errors()),
             ], 422);
-        } catch (\Illuminate\Database\QueryException $e) {
-            // Kesalahan query database
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Kesalahan database: ' . $e->getMessage(),
-            ], 500);
         } catch (\Exception $e) {
-            // Kesalahan umum lainnya
+            Log::error('System Error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Kesalahan: ' . $e->getMessage(),
@@ -1111,6 +1189,7 @@ class ProductionStaffProduksiController extends Controller
                 'qty' => 'required|string',
                 'warna' => 'required|string',
                 'size' => 'required|string',
+                'catatan' => 'nullable|string',
                 'barcode' => 'required|string',
             ], [
                 'so_number.required' => 'Nomor SO wajib diisi.',
@@ -1135,6 +1214,7 @@ class ProductionStaffProduksiController extends Controller
             $production->qty = $request->qty;
             $production->barcode = $request->barcode;
             $production->nama_produk = $request->nama_produk;
+            $production->catatan = $request->catatan;
             $production->save();
 
             DB::commit();

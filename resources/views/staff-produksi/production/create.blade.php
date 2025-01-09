@@ -296,11 +296,10 @@
                 });
 
                 console.log("Data yang dikirim ke backend (terformat):", formattedData);
-
                 $.ajax({
-                    url: "{{ route('production.production-staff.store') }}",
+                    url: "{{ route('production.production-staff.store') }}", // URL untuk menyimpan data
                     method: "POST",
-                    data: formData,
+                    data: formData, // Data yang dikirim ke backend
                     success: function(response) {
                         if (response.status === 'success') {
                             Swal.fire({
@@ -310,7 +309,10 @@
                                 confirmButtonText: 'OK'
                             }).then((result) => {
                                 if (result.isConfirmed) {
+                                    // Reset form jika diperlukan
                                     $('#simpan')[0].reset();
+
+                                    // Redirect ke halaman index
                                     window.location.href =
                                         '{{ route('production.production-staff.index') }}';
                                 }
@@ -319,17 +321,21 @@
                     },
                     error: function(xhr) {
                         if (xhr.status === 422) {
+                            // Tangani error validasi
                             var errors = xhr.responseJSON.errors;
                             var errorMessage = '';
                             $.each(errors, function(key, value) {
-                                errorMessage += value + '\n';
+                                errorMessage += value +
+                                    '\n'; // Gabungkan semua pesan error
                             });
                             Swal.fire('Error!', errorMessage, 'error');
                         } else {
+                            // Tangani error lainnya
                             Swal.fire('Error!', xhr.responseJSON.message, 'error');
                         }
                     }
                 });
+
             });
         });
 

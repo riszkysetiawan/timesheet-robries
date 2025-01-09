@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('detail_penjualans', function (Blueprint $table) {
             $table->unsignedBigInteger('id_penjualan');
-            $table->string('pesanan');
-            $table->string('qty');
-            $table->string('deskripsi');
+            $table->string('pesanan')->nullable();
+            $table->string('qty')->nullable();
+            $table->string('deskripsi')->nullable();
             $table->timestamps();
             $table->foreign('id_penjualan')->references('id')->on('penjualan')->onDelete('restrict')->onUpdate('cascade');
         });

@@ -149,6 +149,7 @@
                                         <th>Durasi</th>
                                         <th>Progress</th>
                                         <th>Hasil Akhir</th>
+                                        <th>Catatan</th>
                                         <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
@@ -249,6 +250,7 @@
                 console.log('Selected Rows:', Array.from(selectedRows));
             });
         });
+
         // $(document).ready(function() {
         //     $('#scanButton').on('click', function() {
         //         $('#scanModal').modal('show');
@@ -257,8 +259,23 @@
         //         const qrCodeSuccessCallback = (decodedText, decodedResult) => {
         //             console.log(`QR Code detected: ${decodedText}`);
 
-        //             const cleanedBarcode = decodedText.replace(/\//g, '.');
-        //             window.location.href = `/production/admin/timerbarcode/${cleanedBarcode}`;
+        //             // Encode the barcode to ensure special characters like '/' are properly handled
+        //             const encodedBarcode = encodeURIComponent(decodedText);
+
+        //             // Redirect or fetch the view
+        //             $.ajax({
+        //                 url: `/production/admin/timerbarcode/${encodedBarcode}`,
+        //                 method: 'GET',
+        //                 success: function(response) {
+        //                     console.log('Data fetched successfully:', response);
+        //                     // Replace the current page content with the response (render the view)
+        //                     $('body').html(response);
+        //                 },
+        //                 error: function(error) {
+        //                     console.error('Error fetching data:', error);
+        //                     alert('Failed to fetch data. Please try again.');
+        //                 }
+        //             });
 
         //             $('#scanModal').modal('hide');
         //             html5QrCode.stop().catch(err => console.log(err));
@@ -274,8 +291,10 @@
 
         //         html5QrCode.start({
         //                 facingMode: "environment"
-        //             }, config, qrCodeSuccessCallback)
-        //             .catch(err => console.log(`Error starting camera: ${err}`));
+        //             },
+        //             config,
+        //             qrCodeSuccessCallback
+        //         ).catch(err => console.log(`Error starting camera: ${err}`));
 
         //         $('#scanModal').on('hidden.bs.modal', function() {
         //             html5QrCode.stop().catch(err => console.log(err));
@@ -631,6 +650,10 @@
                     {
                         data: 'finish_rework',
                         name: 'finish_rework'
+                    },
+                    {
+                        data: 'catatan',
+                        name: 'catatan'
                     },
                     {
                         data: 'action',

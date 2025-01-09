@@ -137,7 +137,7 @@
                                 : '' }}">
                             <a href="{{ route('warna.production-staff.index') }}"> Warna Produk </a>
                         </li>
-                        <li
+                        {{-- <li
                             class=" {{ Request::is('produk/production-staff*') ||
                             Request::is('tambah/produk/production-staff*') ||
                             Request::is('edit/produk/production-staff*') ||
@@ -145,7 +145,7 @@
                                 ? 'active'
                                 : '' }}">
                             <a href="{{ route('produk.production-staff.index') }}"> Data Produk </a>
-                        </li>
+                        </li> --}}
                         <li
                             class="{{ Request::is('size/produk/production-staff*') ||
                             Request::is('tambah/size/produk/production-staff*') ||

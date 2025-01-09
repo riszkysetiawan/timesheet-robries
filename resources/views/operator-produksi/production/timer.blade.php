@@ -31,6 +31,15 @@
                                         <label for="kode_produk" class="form-label">Nama Produk</label>
                                         <input type="text" id="nama_produk" name="nama_produk" class="form-control"
                                             value="{{ old('nama_produk', $production->nama_produk) }}" readonly />
+                                        {{-- <select id="kode_produk" name="kode_produk" class="form-control" disabled>
+                                            <option value="">Pilih Produk</option>
+                                            @foreach ($produks as $produk)
+                                                <option value="{{ $produk->kode_produk }}"
+                                                    {{ $production->kode_produk == $produk->kode_produk ? 'selected' : '' }}>
+                                                    {{ $produk->nama_barang }}
+                                                </option>
+                                            @endforeach
+                                        </select> --}}
                                     </div>
                                 </div>
                                 <div class="row mb-4">
@@ -76,42 +85,64 @@
                                             readonly />
                                     </div>
                                 </div>
-                                <!-- Kategori -->
-                                {{-- <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="unfinished_processes" class="form-label">Proses yang Belum
-                                            Dikerjakan</label>
-                                        <ul class="list-group">
-                                            @foreach ($prosess as $process)
-                                                <!-- Tampilkan proses Rework Start dan Rework Finish hanya jika finish_rework adalah Rework -->
-                                                @if (!in_array($process->id, [19, 20]) || $production->finish_rework === 'Rework')
-                                                    <li class="list-group-item">
-                                                        {{ $process->nama }}
-                                                        <button class="btn btn-primary btn-sm float-end start-timer"
-                                                            data-process-id="{{ $process->id }}">
-                                                            Mulai Timer
-                                                        </button>
-                                                    </li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div> --}}
+
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="unfinished_processes" class="form-label">Proses yang Belum
                                             Dikerjakan</label>
                                         <ul class="list-group">
+                                            <!-- Ganti bagian ini di dalam foreach prosess -->
                                             @foreach ($prosess as $process)
-                                                <!-- Tampilkan proses Rework Start dan Rework Finish hanya jika finish_rework adalah Rework -->
                                                 @if (!in_array($process->id, [19, 20]) || $production->finish_rework === 'Rework')
-                                                    <li class="list-group-item">
-                                                        {{ $process->nama }}
-                                                        <button class="btn btn-primary btn-sm float-end start-timer"
-                                                            data-process-id="{{ $process->id }}"
-                                                            {{ $process->is_done ? 'disabled' : '' }}>
-                                                            {{ $process->is_done ? 'Sudah Dimulai' : 'Mulai Timer' }}
-                                                        </button>
+                                                    <li class="list-group-item mb-3">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-md-4">
+                                                                <strong>{{ $process->nama }}</strong>
+                                                            </div>
+                                                            <div class="col-md-5">
+                                                                {{-- <select name="id_user_{{ $process->id }}"
+                                                                    id="id_user_{{ $process->id }}"
+                                                                    class="form-select operator_select"
+                                                                    {{ $process->is_done ? 'disabled' : '' }}>
+                                                                    <option value="">Pilih Operator</option>
+                                                                    @foreach ($users as $user)
+                                                                        <option value="{{ $user->id }}"
+                                                                            {{ isset($processTimers[$process->id]) && $processTimers[$process->id]->id_users == $user->id ? 'selected' : '' }}>
+                                                                            {{ $user->nama }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select> --}}
+                                                                <select name="id_user_{{ $process->id }}"
+                                                                    id="id_user_{{ $process->id }}"
+                                                                    class="form-select operator_select"
+                                                                    {{ $process->is_done ? 'disabled' : '' }}>
+                                                                    <option value="">Pilih Operator</option>
+                                                                    @foreach ($users as $user)
+                                                                        <option value="{{ $user->id }}"
+                                                                            {{ isset($processTimers[$process->id]) && $processTimers[$process->id]->id_users == $user->id ? 'selected' : '' }}>
+                                                                            {{ $user->nama }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                                @if (isset($processTimers[$process->id]))
+                                                                    <small class="text-muted">
+                                                                        Operator:
+                                                                        {{ $processTimers[$process->id]->user->nama }}<br>
+                                                                        Waktu:
+                                                                        {{ $processTimers[$process->id]->created_at->format('d/m/Y H:i') }}
+                                                                    </small>
+                                                                @endif
+                                                            </div>
+
+                                                            <div class="col-md-3">
+                                                                <button class="btn btn-primary btn-sm float-end start-timer"
+                                                                    data-process-id="{{ $process->id }}"
+                                                                    data-select-id="id_user_{{ $process->id }}"
+                                                                    {{ $process->is_done ? 'disabled' : '' }}>
+                                                                    {{ $process->is_done ? 'Sudah Dimulai' : 'Mulai Timer' }}
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </li>
                                                 @endif
                                             @endforeach
@@ -119,24 +150,41 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="size" class="form-label">Rework/ Finish</label>
-                                        <select name="finish_rework" id="finish_rework" class="form-control">
-                                            <option value="">Pilih</option>
-                                            <option value="Finish">Finish</option>
-                                            <option value="Rework">Rework</option>
-                                            <option value="Reject">Reject</option>
-                                        </select>
+                                @if (auth()->check() && auth()->user()->role->nama === 'Quality Control')
+                                    <div class="row mb-4">
+                                        <div class="col-sm-12">
+                                            <label for="finish_rework" class="form-label">Rework/ Finish</label>
+                                            <select name="finish_rework" id="finish_rework" class="form-control">
+                                                <option value="">Pilih</option>
+                                                <option value="Finish"
+                                                    {{ old('finish_rework', $production->finish_rework) === 'Finish' ? 'selected' : '' }}>
+                                                    Finish</option>
+                                                <option value="Rework"
+                                                    {{ old('finish_rework', $production->finish_rework) === 'Rework' ? 'selected' : '' }}>
+                                                    Rework</option>
+                                                <option value="Reject"
+                                                    {{ old('finish_rework', $production->finish_rework) === 'Reject' ? 'selected' : '' }}>
+                                                    Reject</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <button type="button" class="btn btn-success btn-rounded mb-2 me-4"
-                                    id="updateFinishReworkButton">
-                                    Update
-                                </button>
+                                    <div class="row mb-4">
+                                        <div class="col-sm-12">
+                                            <label for="catatan" class="form-label">Catatan</label>
+                                            <input type="text" id="catatan" name="catatan" class="form-control"
+                                                value="{{ old('catatan', $production->catatan) }}"
+                                                placeholder="Catatan" />
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-success btn-rounded mb-2 me-4"
+                                        id="updateFinishReworkButton">
+                                        Update
+                                    </button>
+                                @endif
+
                                 <!-- Tombol Kembali -->
                                 <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
-                                    onclick="window.location.href='{{ route('production.admin.index') }}'">
+                                    onclick="window.location.href='{{ route('production.operator-produksi.index') }}'">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round"
@@ -156,131 +204,169 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
-        // Handle the click event for the Update button
-        $('#updateFinishReworkButton').on('click', function() {
-            // Get the value of the finish_rework field
-            var finishRework = $('#finish_rework').val();
+        $(document).ready(function() {
+            $('.operator_select').select2({
+                placeholder: "Pilih Operator",
+                allowClear: true
+            });
+        });
 
-            // Check if a valid option is selected
-            if (!finishRework) {
-                Swal.fire('Error!', 'Please select Rework or Finish.', 'error');
-                return;
-            }
-
-            // Submit the form to update the finish_rework
-            var formData = {
-                _token: "{{ csrf_token() }}", // CSRF Token
-                finish_rework: finishRework, // Value of finish_rework dropdown
-            };
-
-            // Send AJAX request to update the finish_rework
-            $.ajax({
-                url: "{{ route('production.updateFinishRework', Crypt::encryptString($production->id)) }}", // Adjust this route
-                method: 'POST',
-                data: formData,
-                success: function(response) {
-                    if (response.status === 'success') {
-                        Swal.fire('Updated!', 'Finish/Rework status has been updated.', 'success');
-                    } else {
-                        Swal.fire('Error!', response.message, 'error');
-                    }
-                },
-                error: function(xhr) {
-                    // Handle any errors
-                    var errorMessage = xhr.responseJSON?.message || 'Something went wrong.';
-                    Swal.fire('Error!', errorMessage, 'error');
-                }
+        // Re-init Select2 for dynamically added elements
+        $(document).on('change', '.operator_select', function() {
+            $(this).select2({
+                placeholder: "Pilih Operator",
+                allowClear: true
             });
         });
     </script>
 
     <script>
-        $(document).on('click', '.start-timer', function() {
-            var processId = $(this).data('process-id');
-            var productionId = "{{ $production->id }}";
-            var requestData = {
-                _token: "{{ csrf_token() }}",
-                process_id: processId,
-                production_id: productionId,
-            };
+        $(document).ready(function() {
 
-            // Log data yang dikirim ke backend
-            console.log('Data yang dikirim ke backend:', requestData);
+            $('.start-timer').on('click', function(e) {
+                e.preventDefault();
 
-            // Kirim AJAX request
-            $.ajax({
-                url: "{{ route('production.startTimer.operator-produksi') }}", // Ganti dengan URL backend Anda
-                method: 'POST',
-                data: requestData,
-                success: function(response) {
-                    if (response.status === 'success') {
-                        // Log respons untuk debugging
-                        console.log('Response:', response);
+                var button = $(this);
+                var processId = button.data('process-id');
+                var selectId = button.data('select-id');
+                var userId = $('#' + selectId).val();
+                var productionId = "{{ $production->id }}";
 
-                        // Tampilkan pesan sukses
-                        Swal.fire('Berhasil!', response.message, 'success');
-
-                        // Perbarui UI secara dinamis tanpa reload
-                        $('[data-process-id="' + processId + '"]').prop('disabled',
-                            true); // Disable tombol yang diklik
-                    }
-                },
-                error: function(xhr) {
-                    // Log error untuk debugging
-                    console.error('Error Response:', xhr);
-                    var errorMessage = xhr.responseJSON?.message ||
-                        'Terjadi kesalahan saat memulai timer.';
-                    Swal.fire('Error!', errorMessage, 'error');
+                // Validasi pemilihan operator
+                if (!userId) {
+                    Swal.fire({
+                        title: 'Perhatian!',
+                        text: 'Silakan pilih operator terlebih dahulu!',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                    return false;
                 }
-            });
-        });
-    </script>
 
+                // Konfirmasi sebelum memulai timer
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: 'Apakah Anda yakin ingin memulai timer untuk proses ini?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Mulai',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Data yang akan dikirim
+                        var requestData = {
+                            _token: "{{ csrf_token() }}",
+                            process_id: processId,
+                            production_id: productionId,
+                            id_user: userId
+                        };
 
-    {{-- <script>
-        $('#BarangForm').on('submit', function(e) {
-            e.preventDefault(); // Prevent default form submission
+                        // Kirim request AJAX
+                        $.ajax({
+                            url: "{{ route('production.startTimer.operator-produksi') }}",
+                            method: 'POST',
+                            data: requestData,
+                            beforeSend: function() {
+                                // Disable button dan tampilkan loading
+                                button.prop('disabled', true);
+                                button.html(
+                                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...'
+                                );
+                            },
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        title: 'Berhasil!',
+                                        text: response.message,
+                                        icon: 'success',
+                                        confirmButtonText: 'OK'
+                                    }).then((result) => {
+                                        // Refresh halaman atau redirect
+                                        window.location.href =
+                                            "{{ route('production.operator-produksi.index') }}";
+                                    });
+                                } else {
+                                    Swal.fire('Error!', response.message, 'error');
+                                    button.prop('disabled', false);
+                                    button.html('Mulai Timer');
+                                }
+                            },
+                            error: function(xhr) {
+                                let errorMessage = 'Terjadi kesalahan!';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMessage = xhr.responseJSON.message;
+                                }
 
-            var formData = new FormData(this);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorMessage,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
 
-            $.ajax({
-                url: "{{ route('production.admin.update', Crypt::encryptString($production->id)) }}",
-                method: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    if (response.status === 'success') {
-                        Swal.fire(
-                            'Berhasil!',
-                            response.message,
-                            'success'
-                        ).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = '{{ route('production.admin.index') }}';
+                                button.prop('disabled', false);
+                                button.html('Mulai Timer');
                             }
                         });
                     }
-                },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        var errors = xhr.responseJSON.errors;
-                        var errorMessage = '';
-                        $.each(errors, function(key, value) {
-                            errorMessage += value + '<br>';
-                        });
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Kesalahan Validasi',
-                            html: errorMessage,
-                        });
-                    } else {
-                        Swal.fire('Error!', 'Terjadi kesalahan saat memproses permintaan.', 'error');
-                    }
-                }
+                });
             });
+
+            // Script untuk update Finish/Rework tetap sama seperti sebelumnya
+            $('#updateFinishReworkButton').on('click', function() {
+                // Get the value of the finish_rework field
+                var finishRework = $('#finish_rework').val();
+                var catatan = $('#catatan').val();
+
+                // Check if a valid option is selected
+                if (!finishRework) {
+                    Swal.fire('Error!', 'Please select Rework or Finish.', 'error');
+                    return;
+                }
+
+                // Prepare data for submission
+                var formData = {
+                    _token: "{{ csrf_token() }}", // CSRF Token
+                    finish_rework: finishRework, // Value of finish_rework dropdown
+                    catatan: catatan, // Value of catatan input
+                };
+
+                // Send AJAX request to update the finish_rework
+                $.ajax({
+                    url: "{{ route('production.updateFinishRework.operator-produksi', Crypt::encryptString($production->id)) }}", // Adjust this route
+                    method: 'POST',
+                    data: formData,
+                    beforeSend: function() {
+                        $('#updateFinishReworkButton').prop('disabled', true).text(
+                            'Updating...');
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            Swal.fire('Updated!', 'Finish/Rework status has been updated.',
+                                'success').then(() => {
+                                window.location.reload(); // Refresh the page
+                            });
+                        } else {
+                            Swal.fire('Error!', response.message, 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        var errorMessage = xhr.responseJSON?.message || 'Something went wrong.';
+                        Swal.fire('Error!', errorMessage, 'error');
+                    },
+                    complete: function() {
+                        $('#updateFinishReworkButton').prop('disabled', false).text('Update');
+                    }
+                });
+            });
+
+
         });
-    </script> --}}
+    </script>
+
+
+
 
 @endsection

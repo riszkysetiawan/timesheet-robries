@@ -51,6 +51,7 @@
     <!--  END LOADER -->
     @include('superadmin.partials.navbar')
     @include('superadmin.partials.aside')
+    @include('sweetalert::alert')
 
     <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
     <script src="{{ asset('cork/html/src/plugins/src/global/vendors.min.js') }}"></script>

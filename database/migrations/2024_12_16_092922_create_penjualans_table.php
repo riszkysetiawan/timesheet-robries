@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('penjualan', function (Blueprint $table) {
             $table->id();
-            $table->string('so_number');
-            $table->string('nama_customer');
-            $table->string('shipping');
+            $table->string('so_number')->nullable();
+            $table->string('nama_customer')->nullable();
+            $table->string('shipping')->nullable();
+            $table->string('catatan')->nullable();
             $table->timestamps();
         });
     }

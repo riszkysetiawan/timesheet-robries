@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Support\Facades\App;
 
 class Handler extends ExceptionHandler
 {
@@ -21,23 +22,27 @@ class Handler extends ExceptionHandler
     /**
      * Register the exception handling callbacks for the application.
      */
+    // public function register(): void
+    // {
+    //     $this->reportable(function (Throwable $e) {
+    //         //
+    //     });
+    // }
     public function register(): void
     {
         $this->reportable(function (Throwable $e) {
             //
         });
     }
-    public function render($request, Throwable $exception)
-    {
-        // Jika environment adalah production, tampilkan pesan error saja
-        if (app()->environment('production')) {
-            return response()->json([
-                'success' => false,
-                'message' => $exception->getMessage(),
-            ], $this->isHttpException($exception) ? $exception->getStatusCode() : 500);
-        }
+    // public function render($request, Throwable $exception)
+    // {
+    //     // Periksa apakah environment adalah 'production'
+    //     if (App::environment('production')) {
+    //         // Arahkan ke view `error.error` untuk semua jenis error
+    //         return response()->view('error.error', [], 500);
+    //     }
 
-        // Default Laravel (untuk non-production)
-        return parent::render($request, $exception);
-    }
+    //     // Jika bukan production, gunakan handler bawaan Laravel
+    //     return parent::render($request, $exception);
+    // }
 }

@@ -5,7 +5,6 @@
         <div class="container">
             <!-- FLASH MESSAGE -->
             <div id="flash-message"></div>
-
             <div class="row">
                 <div id="flStackForm" class="col-lg-12 layout-spacing layout-top-spacing">
                     <div class="statbox widget box box-shadow">

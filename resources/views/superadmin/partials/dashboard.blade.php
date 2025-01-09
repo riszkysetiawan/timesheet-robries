@@ -44,6 +44,8 @@
 
     @include('superadmin.partials.navbar')
     @include('superadmin.partials.aside')
+    @include('sweetalert::alert')
+
     <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
     <script src="{{ asset('cork/html/src/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('cork/html/src/plugins/src/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>

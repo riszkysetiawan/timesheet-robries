@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('barcode')->unique();
             $table->string('finish_rework')->nullable();
             $table->string('progress')->nullable();
+            $table->string('catatan')->nullable();
             // $table->string('kode_produk');
             // $table->foreign('kode_produk')->references('kode_produk')->on('produk')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_color')->references('id')->on('warna')->onDelete('restrict')->onUpdate('cascade');

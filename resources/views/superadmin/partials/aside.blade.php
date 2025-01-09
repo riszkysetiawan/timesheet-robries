@@ -145,8 +145,8 @@
                     </a>
                 </li>
                 <li
-                    class="menu {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') ? 'active' : '' }}">
-                    <a href="/supplier/admin" aria-expanded="false" class="dropdown-toggle">
+                    class="menu {{ Request::is('penjualan*') || Request::is('edit/penjualan/admin*') || Request::is('tambah/penjualan/admin*') ? 'active' : '' }}">
+                    <a href="{{ route('penjualan.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

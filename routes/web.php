@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\AlasanWasteController;
 use App\Http\Controllers\Admin\WasteController;
 use App\Http\Controllers\Admin\SatuanBarangController;
 use App\Http\Controllers\Admin\BarangController;
+use App\Http\Controllers\Admin\PenjualanController;
 use App\Http\Controllers\StaffProduksi\ProdukStaffProduksiController;
 use App\Http\Controllers\StaffProduksi\DashoardStaffProduksiController;
 use App\Http\Controllers\StaffProduksi\SizeStaffProduksiController;
@@ -41,6 +42,10 @@ use App\Http\Controllers\OperatorProduksi\ProductionOperatorProduksiController;
 Route::get('/', function () {
     return view('auth.login');
 })->name('index.login');
+Route::get('/error', function () {
+    return view('error.error'); // Arahkan ke view error.error
+})->name('eror');
+
 Route::fallback(function () {
     return redirect()->route('eror');
 });
@@ -198,7 +203,6 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::post('/production/update-timer/admin', [ProductionController::class, 'updateTimer'])->name('admin.production.updateTimer');
     Route::post('/admin/production/delete-timer', [ProductionController::class, 'deleteTimer'])->name('admin.production.deleteTimer');
     Route::get('/mulai-timer/production/admin/{id}', [ProductionController::class, 'timer'])->name('timer-start.production.admin');
-    // Route::get('/production/admin/timerbarcode/{barcode}', [ProductionController::class, 'timerbarcode'])->name('production.admin.timerbarcode');
     Route::get('/production/admin/timerbarcode/{barcode}', [ProductionController::class, 'timerbarcode'])
         ->where('barcode', '.*') // Allow special characters
         ->name('production.admin.timerbarcode');
@@ -216,7 +220,7 @@ Route::middleware(['role:Superadmin'])->group(function () {
         $file = storage_path('app/public/template upload production.xlsx');
         return Response::download($file, 'template upload production.xlsx');
     })->name('download.template.upload.production.admin');
-    Route::post('production/{id}/update-finish-rework', [ProductionController::class, 'updateFinishRework'])->name('production.updateFinishRework');
+    Route::post('production/{id}/update-finish-rework/admin', [ProductionController::class, 'updateFinishRework'])->name('production.updateFinishRework.admin');
     Route::post('/upload-production-excel/admin', [ProductionController::class, 'uploadExcel'])->name('upload.production.excel.admin');
     Route::post('/print-labels', [ProductionController::class, 'printSelected'])->name('print.labels');
     // end production
@@ -253,6 +257,14 @@ Route::middleware(['role:Superadmin'])->group(function () {
     })->name('download.template.upload.size.admin');
     Route::post('/upload-size-excel/admin', [sizeController::class, 'uploadExcel'])->name('upload.size.excel.admin');
     //  end Size
+    // Penjualan area
+    Route::get('/penjualan/admin', [PenjualanController::class, 'index'])->name('penjualan.admin.index');
+    Route::get('/tambah/penjualan/admin', [PenjualanController::class, 'create'])->name('penjualan.admin.create');
+    Route::post('/simpan/penjualan/admin/store', [PenjualanController::class, 'store'])->name('penjualan.admin.store');
+    Route::delete('/delete/penjualan/admin/{id}', [PenjualanController::class, 'destroy'])->name('penjualan.admin.destroy');
+    Route::get('/edit/penjualan/admin/{id}', [PenjualanController::class, 'edit'])->name('penjualan.admin.edit');
+    Route::post('/update/penjualan/admin/{id}', [PenjualanController::class, 'update'])->name('penjualan.admin.update');
+    // end Penjualan area
 });
 
 Route::middleware(['role:Staff Produksi'])->group(function () {
@@ -325,7 +337,7 @@ Route::middleware(['role:Staff Produksi'])->group(function () {
         $file = storage_path('app/public/template upload production.xlsx');
         return Response::download($file, 'template upload production.xlsx');
     })->name('download.template.upload.production.production-staff');
-    Route::post('production/{id}/update-finish-rework', [ProductionStaffProduksiController::class, 'updateFinishRework'])->name('production.updateFinishRework');
+    Route::post('production/{id}/update-finish-rework/production-staff', [ProductionStaffProduksiController::class, 'updateFinishRework'])->name('production.updateFinishRework.production-staff');
     Route::post('/upload-production-excel/production-staff', [ProductionStaffProduksiController::class, 'uploadExcel'])->name('upload.production.excel.production-staff');
     Route::post('/print-labels/production-staff', [ProductionStaffProduksiController::class, 'printSelected'])->name('print.labels.production-staff');
     // end production
@@ -335,7 +347,7 @@ Route::middleware(['role:Staff Produksi'])->group(function () {
     Route::get('/logout/production-staff', [AuthController::class, 'logoutStaffProduksi'])->name('logout.production-staff');
     //  end profile
 });
-Route::middleware(['role:Operator Produksi'])->group(function () {
+Route::middleware(['role:Operator Produksi,Quality Control'])->group(function () {
     Route::get('/dashboard-operator-produksi', [DashboardOperatorProduksiController::class, 'index'])->name('dashboard.operator-produksi');
     //
     Route::get('/profile/operator-produksi', [AuthController::class, 'indexOperatorProduksi'])->name('profile.operator-produksi');
@@ -371,7 +383,7 @@ Route::middleware(['role:Operator Produksi'])->group(function () {
         $file = storage_path('app/public/template upload production.xlsx');
         return Response::download($file, 'template upload production.xlsx');
     })->name('download.template.upload.production.operator-produksi');
-    Route::post('production/{id}/update-finish-rework', [ProductionOperatorProduksiController::class, 'updateFinishRework'])->name('production.updateFinishRework');
+    Route::post('production/{id}/update-finish-rework/operator-produksi', [ProductionOperatorProduksiController::class, 'updateFinishRework'])->name('production.updateFinishRework.operator-produksi');
     Route::post('/upload-production-excel/operator-produksi', [ProductionOperatorProduksiController::class, 'uploadExcel'])->name('upload.production.excel.operator-produksi');
     Route::post('/print-labels/operator-produksi', [ProductionOperatorProduksiController::class, 'printSelected'])->name('print.labels.operator-produksi');
     // end production

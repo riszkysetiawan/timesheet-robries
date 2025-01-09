@@ -116,6 +116,7 @@
                                         <th>Durasi</th>
                                         <th>Progress</th>
                                         <th>Hasil Akhir</th>
+                                        <th>Catatan</th>
                                         <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
@@ -497,6 +498,10 @@
                     {
                         data: 'finish_rework',
                         name: 'finish_rework'
+                    },
+                    {
+                        data: 'catatan',
+                        name: 'catatan'
                     },
                     {
                         data: 'action',

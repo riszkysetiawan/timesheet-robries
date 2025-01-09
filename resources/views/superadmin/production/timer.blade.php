@@ -85,42 +85,53 @@
                                             readonly />
                                     </div>
                                 </div>
-                                <!-- Kategori -->
-                                {{-- <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="unfinished_processes" class="form-label">Proses yang Belum
-                                            Dikerjakan</label>
-                                        <ul class="list-group">
-                                            @foreach ($prosess as $process)
-                                                <!-- Tampilkan proses Rework Start dan Rework Finish hanya jika finish_rework adalah Rework -->
-                                                @if (!in_array($process->id, [19, 20]) || $production->finish_rework === 'Rework')
-                                                    <li class="list-group-item">
-                                                        {{ $process->nama }}
-                                                        <button class="btn btn-primary btn-sm float-end start-timer"
-                                                            data-process-id="{{ $process->id }}">
-                                                            Mulai Timer
-                                                        </button>
-                                                    </li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div> --}}
+
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="unfinished_processes" class="form-label">Proses yang Belum
                                             Dikerjakan</label>
                                         <ul class="list-group">
+                                            <!-- Ganti bagian ini di dalam foreach prosess -->
                                             @foreach ($prosess as $process)
-                                                <!-- Tampilkan proses Rework Start dan Rework Finish hanya jika finish_rework adalah Rework -->
                                                 @if (!in_array($process->id, [19, 20]) || $production->finish_rework === 'Rework')
-                                                    <li class="list-group-item">
-                                                        {{ $process->nama }}
-                                                        <button class="btn btn-primary btn-sm float-end start-timer"
-                                                            data-process-id="{{ $process->id }}"
-                                                            {{ $process->is_done ? 'disabled' : '' }}>
-                                                            {{ $process->is_done ? 'Sudah Dimulai' : 'Mulai Timer' }}
-                                                        </button>
+                                                    <li class="list-group-item mb-3">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-md-4">
+                                                                <strong>{{ $process->nama }}</strong>
+                                                            </div>
+                                                            <div class="col-md-5">
+                                                                <select name="id_user_{{ $process->id }}"
+                                                                    id="id_user_{{ $process->id }}"
+                                                                    class="form-select operator-select select2-dropdown"
+                                                                    {{ isset($processTimers[$process->id]) ? 'disabled' : '' }}>
+                                                                    <option value="">Pilih Operator</option>
+                                                                    @foreach ($users as $user)
+                                                                        <option value="{{ $user->id }}"
+                                                                            {{ isset($processTimers[$process->id]) && $processTimers[$process->id]->id_users == $user->id ? 'selected' : '' }}>
+                                                                            {{ $user->nama }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                                @if (isset($processTimers[$process->id]))
+                                                                    <small class="text-muted">
+                                                                        Operator:
+                                                                        {{ $processTimers[$process->id]->user->nama }}
+                                                                        <br>
+                                                                        Waktu :
+                                                                        {{ $processTimers[$process->id]->created_at->format('d/m/Y H:i') }}
+                                                                    </small>
+                                                                @endif
+                                                            </div>
+
+                                                            <div class="col-md-3">
+                                                                <button class="btn btn-primary btn-sm float-end start-timer"
+                                                                    data-process-id="{{ $process->id }}"
+                                                                    data-select-id="id_user_{{ $process->id }}"
+                                                                    {{ $process->is_done ? 'disabled' : '' }}>
+                                                                    {{ $process->is_done ? 'Sudah Dimulai' : 'Mulai Timer' }}
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </li>
                                                 @endif
                                             @endforeach
@@ -137,6 +148,13 @@
                                             <option value="Rework">Rework</option>
                                             <option value="Reject">Reject</option>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="size" class="form-label">Catatan</label>
+                                        <input type="text" id="catatan" name="catatan" class="form-control"
+                                            placeholder="Catatan" />
                                     </div>
                                 </div>
                                 <button type="button" class="btn btn-success btn-rounded mb-2 me-4"
@@ -165,131 +183,203 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // Handle the click event for the Update button
-        $('#updateFinishReworkButton').on('click', function() {
-            // Get the value of the finish_rework field
-            var finishRework = $('#finish_rework').val();
-
-            // Check if a valid option is selected
-            if (!finishRework) {
-                Swal.fire('Error!', 'Please select Rework or Finish.', 'error');
-                return;
-            }
-
-            // Submit the form to update the finish_rework
-            var formData = {
-                _token: "{{ csrf_token() }}", // CSRF Token
-                finish_rework: finishRework, // Value of finish_rework dropdown
-            };
-
-            // Send AJAX request to update the finish_rework
-            $.ajax({
-                url: "{{ route('production.updateFinishRework', Crypt::encryptString($production->id)) }}", // Adjust this route
-                method: 'POST',
-                data: formData,
-                success: function(response) {
-                    if (response.status === 'success') {
-                        Swal.fire('Updated!', 'Finish/Rework status has been updated.', 'success');
-                    } else {
-                        Swal.fire('Error!', response.message, 'error');
-                    }
-                },
-                error: function(xhr) {
-                    // Handle any errors
-                    var errorMessage = xhr.responseJSON?.message || 'Something went wrong.';
-                    Swal.fire('Error!', errorMessage, 'error');
-                }
-            });
-        });
-    </script>
+    <!-- Di bagian head atau sebelum closing body -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        $(document).on('click', '.start-timer', function() {
-            var processId = $(this).data('process-id');
-            var productionId = "{{ $production->id }}";
-            var requestData = {
-                _token: "{{ csrf_token() }}",
-                process_id: processId,
-                production_id: productionId,
-            };
+        $(document).ready(function() {
+            // Inisialisasi Select2 untuk semua dropdown operator
+            $('.select2-dropdown').each(function() {
+                $(this).select2({
+                    placeholder: 'Pilih Operator',
+                    allowClear: true,
+                    width: '100%',
+                    language: {
+                        noResults: function() {
+                            return "Tidak ada hasil yang ditemukan";
+                        },
+                        searching: function() {
+                            return "Mencari...";
+                        }
+                    },
+                    // Custom styling
+                    theme: 'classic',
+                    // Minimum input length before searching
+                    minimumInputLength: 0,
+                    // Custom dropdown parent if needed
+                    dropdownParent: $(this).parent()
+                });
+            });
 
-            // Log data yang dikirim ke backend
-            console.log('Data yang dikirim ke backend:', requestData);
-
-            // Kirim AJAX request
-            $.ajax({
-                url: "{{ route('production.startTimer') }}", // Ganti dengan URL backend Anda
-                method: 'POST',
-                data: requestData,
-                success: function(response) {
-                    if (response.status === 'success') {
-                        // Log respons untuk debugging
-                        console.log('Response:', response);
-
-                        // Tampilkan pesan sukses
-                        Swal.fire('Berhasil!', response.message, 'success');
-
-                        // Perbarui UI secara dinamis tanpa reload
-                        $('[data-process-id="' + processId + '"]').prop('disabled',
-                            true); // Disable tombol yang diklik
-                    }
-                },
-                error: function(xhr) {
-                    // Log error untuk debugging
-                    console.error('Error Response:', xhr);
-                    var errorMessage = xhr.responseJSON?.message ||
-                        'Terjadi kesalahan saat memulai timer.';
-                    Swal.fire('Error!', errorMessage, 'error');
+            // Handle disabled state
+            $('.select2-dropdown').each(function() {
+                if ($(this).prop('disabled')) {
+                    $(this).next('.select2-container').addClass('select2-container--disabled');
                 }
             });
-        });
-    </script>
 
+            $('.start-timer').on('click', function(e) {
+                e.preventDefault();
 
-    {{-- <script>
-        $('#BarangForm').on('submit', function(e) {
-            e.preventDefault(); // Prevent default form submission
+                var button = $(this);
+                var processId = button.data('process-id');
+                var selectId = button.data('select-id');
+                var userId = $('#' + selectId).val();
+                var productionId = "{{ $production->id }}";
 
-            var formData = new FormData(this);
+                // Validasi pemilihan operator
+                if (!userId) {
+                    Swal.fire({
+                        title: 'Perhatian!',
+                        text: 'Silakan pilih operator terlebih dahulu!',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                    return false;
+                }
 
-            $.ajax({
-                url: "{{ route('production.admin.update', Crypt::encryptString($production->id)) }}",
-                method: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    if (response.status === 'success') {
-                        Swal.fire(
-                            'Berhasil!',
-                            response.message,
-                            'success'
-                        ).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = '{{ route('production.admin.index') }}';
+                // Konfirmasi sebelum memulai timer
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: 'Apakah Anda yakin ingin memulai timer untuk proses ini?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Mulai',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Data yang akan dikirim
+                        var requestData = {
+                            _token: "{{ csrf_token() }}",
+                            process_id: processId,
+                            production_id: productionId,
+                            id_user: userId
+                        };
+
+                        // Kirim request AJAX
+                        $.ajax({
+                            url: "{{ route('production.startTimer') }}",
+                            method: 'POST',
+                            data: requestData,
+                            beforeSend: function() {
+                                // Disable button dan tampilkan loading
+                                button.prop('disabled', true);
+                                button.html(
+                                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...'
+                                );
+                            },
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        title: 'Berhasil!',
+                                        text: response.message,
+                                        icon: 'success',
+                                        confirmButtonText: 'OK'
+                                    }).then((result) => {
+                                        // Refresh halaman atau redirect
+                                        window.location.href =
+                                            "{{ route('production.admin.index') }}";
+                                    });
+                                } else {
+                                    Swal.fire('Error!', response.message, 'error');
+                                    button.prop('disabled', false);
+                                    button.html('Mulai Timer');
+                                }
+                            },
+                            error: function(xhr) {
+                                let errorMessage = 'Terjadi kesalahan!';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMessage = xhr.responseJSON.message;
+                                }
+
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorMessage,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+
+                                button.prop('disabled', false);
+                                button.html('Mulai Timer');
                             }
                         });
                     }
-                },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        var errors = xhr.responseJSON.errors;
-                        var errorMessage = '';
-                        $.each(errors, function(key, value) {
-                            errorMessage += value + '<br>';
-                        });
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Kesalahan Validasi',
-                            html: errorMessage,
-                        });
-                    } else {
-                        Swal.fire('Error!', 'Terjadi kesalahan saat memproses permintaan.', 'error');
-                    }
+                });
+            });
+
+            // Script untuk update Finish/Rework tetap sama seperti sebelumnya
+            $('#updateFinishReworkButton').on('click', function() {
+                // Get the value of the finish_rework field
+                var finishRework = $('#finish_rework').val();
+
+                // Check if a valid option is selected
+                if (!finishRework) {
+                    Swal.fire('Error!', 'Please select Rework or Finish.', 'error');
+                    return;
                 }
+
+                // Submit the form to update the finish_rework
+                var formData = {
+                    _token: "{{ csrf_token() }}", // CSRF Token
+                    finish_rework: finishRework, // Value of finish_rework dropdown
+                };
+
+                // Send AJAX request to update the finish_rework
+                $.ajax({
+                    url: "{{ route('production.updateFinishRework.admin', Crypt::encryptString($production->id)) }}", // Adjust this route
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            Swal.fire('Updated!', 'Finish/Rework status has been updated.',
+                                'success');
+                        } else {
+                            Swal.fire('Error!', response.message, 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        // Handle any errors
+                        var errorMessage = xhr.responseJSON?.message || 'Something went wrong.';
+                        Swal.fire('Error!', errorMessage, 'error');
+                    }
+                });
             });
         });
-    </script> --}}
+    </script>
+
+    <style>
+        /* Custom styling for Select2 */
+        .select2-container--classic .select2-selection--single {
+            height: 38px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        .select2-container--classic .select2-selection--single .select2-selection__rendered {
+            line-height: 36px;
+            padding-left: 12px;
+        }
+
+        .select2-container--classic .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+        }
+
+        .select2-container--classic .select2-search--dropdown .select2-search__field {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 6px 12px;
+        }
+
+        .select2-container--classic .select2-results__option--highlighted[aria-selected] {
+            background-color: #007bff;
+        }
+
+        .select2-container--classic.select2-container--disabled .select2-selection--single {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+    </style>
+
 
 @endsection

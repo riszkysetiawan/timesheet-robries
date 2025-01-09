@@ -56,6 +56,7 @@
     <!--  END LOADER -->
     @include('superadmin.partials.navbar')
     @include('superadmin.partials.aside')
+    @include('sweetalert::alert')
 
     <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
     <script src="{{ asset('cork/html/src/plugins/src/global/vendors.min.js') }}"></script>
@@ -66,7 +67,7 @@
     <!-- END GLOBAL MANDATORY SCRIPTS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="{{ asset('cork/html/src/plugins/src/filepond/filepond.min.js') }}"></script>
     <script src="{{ asset('cork/html/src/plugins/src/filepond/FilePondPluginFileValidateType.min.js') }}"></script>
     <script src="{{ asset('cork/html/src/plugins/src/filepond/FilePondPluginImageExifOrientation.min.js') }}"></script>

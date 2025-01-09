@@ -104,6 +104,13 @@
                                     </div>
                                 </div>
 
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="size" class="form-label">Catatan</label>
+                                        <input type="text" id="catatan" name="catatan" class="form-control"
+                                            value="{{ old('catatan', $production->catatan) }}" placeholder="Catatan *" />
+                                    </div>
+                                </div>
                                 <!-- Tombol Update -->
                                 <button type="submit" class="btn btn-outline-success btn-rounded mb-2 me-4"
                                     id="submitButton">

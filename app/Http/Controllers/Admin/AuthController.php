@@ -33,39 +33,41 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
-        // Validate the input
+        // Validasi input
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|min:6',
         ]);
 
-        // If validation fails, return errors
+        // Jika validasi gagal
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Attempt to log in with email and password
+        // Autentikasi pengguna
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
 
-            // Check user role and redirect accordingly
-            switch ($user->role->nama) { // Ensure 'role' is properly loaded with the 'role' relation
+            // Redirect berdasarkan role
+            switch ($user->role->nama) {
                 case 'Superadmin':
                     return response()->json(['status' => 'success', 'redirect' => route('dashboard.superadmin')]);
                 case 'Staff Produksi':
                     return response()->json(['status' => 'success', 'redirect' => route('dashboard.staff-produksi')]);
                 case 'Operator Produksi':
                     return response()->json(['status' => 'success', 'redirect' => route('dashboard.operator-produksi')]);
-                    // Add other cases as needed
+                case 'Quality Control':
+                    return response()->json(['status' => 'success', 'redirect' => route('dashboard.operator-produksi')]);
                 default:
-                    Auth::logout(); // Log out the user if the role doesn't match
+                    Auth::logout(); // Log out jika role tidak cocok
                     return response()->json(['errors' => ['role' => 'Role tidak valid.']], 403);
             }
         }
 
-        // If authentication fails, return an error message
+        // Jika autentikasi gagal
         return response()->json(['errors' => ['email' => 'Email atau password salah.']], 422);
     }
+
     public function logout()
     {
         Auth::logout();

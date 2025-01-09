@@ -51,33 +51,10 @@
 </head>
 
 <body class="layout-boxed" data-bs-spy="scroll" data-bs-target="#navSection" data-bs-offset="100">
-    @include('sweetalert::alert')
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                title: 'Berhasil!',
-                text: "{{ session('success') }}",
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-        </script>
-    @endif
-
-    @if (session('error'))
-        <script>
-            Swal.fire({
-                title: 'Error!',
-                text: "{{ session('error') }}",
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        </script>
-    @endif
-
 
     @include('superadmin.partials.navbar')
     @include('superadmin.partials.aside')
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @include('sweetalert::alert')
 
 
     <!-- BEGIN GLOBAL MANDATORY STYLES -->
