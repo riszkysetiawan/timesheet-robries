@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('packing', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_penjualan');
-            $table->unsignedBigInteger('id_vendor_pengiriman');
-            $table->string('operator');
-            $table->date('tgl_pengiriman');
-            $table->string('foto_pengiriman');
+            $table->unsignedBigInteger('id_vendor_pengiriman')->nullable();
+            $table->string('id_user')->nullable();
+            $table->date('tgl_pengiriman')->nullable();
+            $table->string('foto_pengiriman')->nullable();
             $table->timestamps();
             $table->foreign('id_penjualan')->references('id')->on('penjualan')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_vendor_pengiriman')->references('id')->on('vendor_pengiriman')->onDelete('restrict')->onUpdate('cascade');

@@ -25,6 +25,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         // Middleware lain...
         'role' => \App\Http\Middleware\RoleMiddleware::class,
+        'log.user.activity' => \App\Http\Middleware\LogUserActivity::class,
     ];
 
     /**

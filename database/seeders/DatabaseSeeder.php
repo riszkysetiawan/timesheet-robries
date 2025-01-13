@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
             AlasanWasteSeeder::class,
             SatuanBarangSeeder::class,
             VendorPengirimanSeeder::class,
+            OvenSeeder::class,
+            SupplierSeeder::class,
         ]);
     }
 }

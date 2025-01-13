@@ -271,13 +271,13 @@
                                 </thead>
                                 <tbody>
                                     ${data.details.map(detail => `
-                                                                    <tr>
-                                                                        <td>${detail.kode_barang}</td>
-                                                                        <td>${detail.barang.nama_barang}</td>
-                                                                        <td>${detail.qty}</td>
-                                                                        <td>${detail.satuan}</td>
-                                                                        <td>Rp. ${formatRupiah(detail.sub_total)}</td>
-                                                                    </tr>`).join('')}
+                                                                        <tr>
+                                                                            <td>${detail.kode_barang}</td>
+                                                                            <td>${detail.barang.nama_barang}</td>
+                                                                            <td>${detail.qty}</td>
+                                                                            <td>${detail.satuan}</td>
+                                                                            <td>Rp. ${formatRupiah(detail.sub_total)}</td>
+                                                                        </tr>`).join('')}
                                 </tbody>
                             </table>
                         </div>

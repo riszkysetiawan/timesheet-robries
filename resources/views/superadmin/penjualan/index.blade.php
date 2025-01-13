@@ -1,4 +1,4 @@
-@extends('superadmin.partials.user')
+@extends('superadmin.partials.indexpenjualan')
 @section('title', 'List Barang')
 @section('container')
     <div class="layout-px-spacing">
@@ -17,6 +17,38 @@
                     </a>
                 </nav>
             </div>
+            <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detailModalLabel">Detail Penjualan</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h6>Informasi Penjualan</h6>
+                            <p><strong>SO Number:</strong> <span id="modal-so-number"></span></p>
+                            <p><strong>Nama Customer:</strong> <span id="modal-nama-customer"></span></p>
+                            <p><strong>Shipping:</strong> <span id="modal-shipping"></span></p>
+                            <h6>Detail Pesanan</h6>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Pesanan</th>
+                                        <th>Qty</th>
+                                        <th>Deskripsi</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modal-detail-body">
+                                    <!-- Detail rows will be appended here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- /BREADCRUMB -->
             <div class="row layout-top-spacing">
                 <div class="col-xl-12 col-lg-12 col-sm-12 layout-spacing">
@@ -29,6 +61,7 @@
                                         <th>SO Number</th>
                                         <th>Nama Customer</th>
                                         <th>Shipping</th>
+                                        <th>Catatan</th>
                                         <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
@@ -55,6 +88,8 @@
         </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Bootstrap CSS -->
+
     <script>
         $(document).ready(function() {
             $('#zero-config').DataTable({
@@ -76,6 +111,11 @@
                     {
                         data: 'shipping',
                         name: 'shipping',
+                    },
+                    {
+                        data: 'catatan',
+                        name: 'catatan',
+                        defaulContent: '-'
                     },
                     {
                         data: 'action',
@@ -114,19 +154,63 @@
                 },
                 success: function(response) {
                     if (response.status === 'success') {
-                        Swal.fire('Dihapus!', 'Barang berhasil dihapus.', 'success').then((result) => {
+                        Swal.fire('Dihapus!', 'penjualan berhasil dihapus.', 'success').then((result) => {
                             if (result.isConfirmed) {
                                 location.reload();
                             }
                         });
                     } else {
-                        Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus Barang.', 'error');
+                        Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus penjualan.', 'error');
                     }
                 },
                 error: function() {
-                    Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus Barang.', 'error');
+                    Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus penjualan.', 'error');
                 }
             });
         }
+    </script>
+    <script>
+        // Handle Detail button click
+        $(document).on('click', '.btn-detail', function() {
+            let id = $(this).data('id');
+
+            // Fetch detail data
+            $.ajax({
+                url: '/penjualan/detail/' + id,
+                method: 'GET',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        let data = response.data;
+                        let details = response.details;
+
+                        // Populate modal fields
+                        $('#modal-so-number').text(data.so_number);
+                        $('#modal-nama-customer').text(data.nama_customer);
+                        $('#modal-shipping').text(data.shipping);
+
+                        // Populate detail table
+                        let detailBody = '';
+                        details.forEach(detail => {
+                            detailBody += `
+                            <tr>
+                                <td>${detail.pesanan}</td>
+                                <td>${detail.qty}</td>
+                                <td>${detail.deskripsi}</td>
+                                <td>${detail.note ?? ''}</td>
+                            </tr>`;
+                        });
+                        $('#modal-detail-body').html(detailBody);
+
+                        // Show modal
+                        $('#detailModal').modal('show');
+                    } else {
+                        Swal.fire('Error', 'Gagal mengambil data detail.', 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error', 'Terjadi kesalahan saat mengambil data.', 'error');
+                }
+            });
+        });
     </script>
 @endsection

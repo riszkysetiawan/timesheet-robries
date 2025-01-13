@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('detail_packing', function (Blueprint $table) {
             $table->unsignedBigInteger('id_packing');
             $table->unsignedBigInteger('id_penjualan');
-            $table->string('foto_sebelum_packing');
-            $table->string('foto_packing');
+            $table->string('foto_sebelum_packing')->nullable();
+            $table->string('foto_packing')->nullable();
             $table->timestamps();
             $table->foreign('id_penjualan')->references('id')->on('penjualan')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_packing')->references('id')->on('packing')->onDelete('restrict')->onUpdate('cascade');

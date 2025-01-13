@@ -15,6 +15,10 @@ class PurchaseOrder extends Model
     {
         return $this->belongsTo(Supplier::class, 'id_supplier');
     }
+    public function details()
+    {
+        return $this->hasMany(DetailPurchaseOrder::class, 'kode_po', 'kode_po');
+    }
 
     public function detailPurchaseOrders()
     {
@@ -24,10 +28,5 @@ class PurchaseOrder extends Model
     public function inbounds()
     {
         return $this->hasMany(Inbound::class, 'kode_po', 'kode_po');
-    }
-
-    public function details()
-    {
-        return $this->hasMany(DetailPurchaseOrder::class, 'kode_po');
     }
 }

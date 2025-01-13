@@ -3,19 +3,6 @@
 @section('container')
     <div class="container">
         <div class="container">
-            <!-- BREADCRUMB -->
-            {{-- <div class="page-meta">
-                <nav class="breadcrumb-style-one" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Form</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            Layouts
-                        </li>
-                    </ol>
-                </nav>
-            </div> --}}
-            <!-- /BREADCRUMB -->
-
             <div class="row">
                 <div id="flStackForm" class="col-lg-12 layout-spacing layout-top-spacing">
                     <div class="statbox widget box box-shadow">
@@ -27,15 +14,32 @@
                             </div>
                         </div>
                         <div class="widget-content widget-content-area">
-                            <form id="editData">
+                            <form id="editData" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
-                                        <label for="" class="form-label">Nama Toko</label>
-                                        <input type="text" class="form-control" name="nama_toko"
-                                            value="{{ $profiles->nama_toko }}" />
+                                        <label for="" class="form-label">Nama Perusahaan</label>
+                                        <input type="text" class="form-control" name="nama"
+                                            value="{{ $profiles->nama }}" />
                                     </div>
                                 </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="" class="form-label">Foto</label>
+                                        <!-- Tampilkan foto lama -->
+                                        @if ($profiles->foto)
+                                            <div class="mb-3">
+                                                <img src="{{ asset('storage/' . $profiles->foto) }}" alt="Foto Lama"
+                                                    class="img-thumbnail" style="max-width: 150px;">
+                                            </div>
+                                        @endif
+                                        <!-- Input untuk foto baru -->
+                                        <input type="file" class="form-control" name="foto" />
+                                        <!-- Simpan nilai foto lama di hidden input -->
+                                        <input type="hidden" name="foto_lama" value="{{ $profiles->foto }}">
+                                    </div>
+                                </div>
+
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
                                         <label for="" class="form-label">Alamat</label>
@@ -94,24 +98,22 @@
         $('#editData').on('submit', function(e) {
             e.preventDefault();
 
-            var formData = $(this).serialize();
-
+            var formData = new FormData(this); // Gunakan FormData untuk mengirim file
             $.ajax({
                 url: "{{ route('profil.company.admin.update', Crypt::encryptString($profiles->id)) }}",
                 method: 'POST',
                 data: formData,
+                contentType: false, // Harus false untuk FormData
+                processData: false, // Harus false untuk FormData
                 success: function(response) {
                     if (response.status === 'success') {
-                        Swal.fire(
-                            'Berhasil!',
-                            response.message,
-                            'success'
-                        ).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href =
-                                    '/profile/toko';
-                            }
-                        });
+                        Swal.fire('Berhasil!', response.message, 'success')
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href =
+                                        '{{ route('profil.company.admin.index') }}';
+                                }
+                            });
                     }
                 },
                 error: function(xhr) {

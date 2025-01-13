@@ -9,17 +9,23 @@ use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\ProductionController;
 use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Admin\StockController;
+use App\Http\Controllers\Admin\OvenController;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\ProsesController;
 use App\Http\Controllers\Admin\SizeController;
+use App\Http\Controllers\Admin\PurchaseOrderController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\VendorPengirimanController;
 use App\Http\Controllers\Admin\MappingController;
+use App\Http\Controllers\Admin\InbondController;
 use App\Http\Controllers\Admin\AreaMappingController;
 use App\Http\Controllers\Admin\AlasanWasteController;
 use App\Http\Controllers\Admin\WasteController;
+use App\Http\Controllers\Admin\PackingController;
 use App\Http\Controllers\Admin\SatuanBarangController;
 use App\Http\Controllers\Admin\BarangController;
+use App\Http\Controllers\Admin\CompanyProfileController;
 use App\Http\Controllers\Admin\PenjualanController;
 use App\Http\Controllers\StaffProduksi\ProdukStaffProduksiController;
 use App\Http\Controllers\StaffProduksi\DashoardStaffProduksiController;
@@ -28,6 +34,9 @@ use App\Http\Controllers\StaffProduksi\WarnaStaffProduksiController;
 use App\Http\Controllers\StaffProduksi\ProductionStaffProduksiController;
 use App\Http\Controllers\OperatorProduksi\DashboardOperatorProduksiController;
 use App\Http\Controllers\OperatorProduksi\ProductionOperatorProduksiController;
+use App\Http\Controllers\UserActivityLogsController;
+use App\Models\CompanyProfile;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -42,16 +51,16 @@ use App\Http\Controllers\OperatorProduksi\ProductionOperatorProduksiController;
 Route::get('/', function () {
     return view('auth.login');
 })->name('index.login');
-Route::get('/error', function () {
-    return view('error.error'); // Arahkan ke view error.error
-})->name('eror');
+// Route::get('/error', function () {
+//     return view('error.error'); // Arahkan ke view error.error
+// })->name('eror');
 
-Route::fallback(function () {
-    return redirect()->route('eror');
-});
+// Route::fallback(function () {
+//     return redirect()->route('eror');
+// });
 Route::post('/login-ajax', [AuthController::class, 'login'])->name('login.ajax');
 
-Route::middleware(['role:Superadmin'])->group(function () {
+Route::middleware(['role:Superadmin', 'log.user.activity'])->group(function () {
     Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard.superadmin');
     // user superadmin start
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -91,7 +100,7 @@ Route::middleware(['role:Superadmin'])->group(function () {
     // end proses
     // kategori barang
     Route::get('/kategori/admin', [KategoriController::class, 'index'])->name('kategori.admin.index');
-    Route::get('/tambah/kategori/admin', [KategoriController::class, 'create'])->name('kategori.admin.create');
+    Route::get('/tambah/kategori-barang/admin', [KategoriController::class, 'create'])->name('kategori.admin.create');
     Route::post('/simpan/kategori/admin/store', [KategoriController::class, 'store'])->name('kategori.admin.store');
     Route::delete('/delete/kategori/admin/{id}', [KategoriController::class, 'destroy'])->name('kategori.admin.destroy');
     Route::get('/edit/kategori/admin/{id}', [KategoriController::class, 'edit'])->name('kategori.admin.edit');
@@ -264,10 +273,72 @@ Route::middleware(['role:Superadmin'])->group(function () {
     Route::delete('/delete/penjualan/admin/{id}', [PenjualanController::class, 'destroy'])->name('penjualan.admin.destroy');
     Route::get('/edit/penjualan/admin/{id}', [PenjualanController::class, 'edit'])->name('penjualan.admin.edit');
     Route::post('/update/penjualan/admin/{id}', [PenjualanController::class, 'update'])->name('penjualan.admin.update');
+    Route::get('/penjualan/detail/{id}', [PenjualanController::class, 'show'])->name('penjualan.admin.detail');
     // end Penjualan area
+    // Packing area
+    Route::get('/packing/admin', [PackingController::class, 'index'])->name('packing.admin.index');
+    Route::get('/tambah/packing/admin', [PackingController::class, 'create'])->name('packing.admin.create');
+    Route::post('/simpan/packing/admin/store', [PackingController::class, 'store'])->name('packing.admin.store');
+    Route::delete('/delete/packing/admin/{id}', [PackingController::class, 'destroy'])->name('packing.admin.destroy');
+    Route::get('/edit/packing/admin/{id}', [PackingController::class, 'edit'])->name('packing.admin.edit');
+    Route::post('/update/packing/admin/{id}', [PackingController::class, 'update'])->name('packing.admin.update');
+    Route::get('/packing/detail/{id}', [PackingController::class, 'show'])->name('packing.admin.detail');
+    // end Packing area
+    // pembelian
+    Route::get('/pembelian/admin', [PurchaseOrderController::class, 'index'])->name('pembelian.admin.index');
+    Route::get('/tambah/pembelian/admin', [PurchaseOrderController::class, 'create'])->name('pembelian.admin.create');
+    Route::post('/simpan/pembelian/admin/store', [PurchaseOrderController::class, 'store'])->name('pembelian.admin.store');
+    Route::delete('/delete/pembelian/admin/{id}', [PurchaseOrderController::class, 'destroy'])->name('pembelian.admin.destroy');
+    Route::get('/edit/pembelian/admin/{id}', [PurchaseOrderController::class, 'edit'])->name('pembelian.admin.edit');
+    Route::put('/update/pembelian/admin/{id}', [PurchaseOrderController::class, 'update'])->name('pembelian.admin.update');
+    Route::get('/pembelian/detail/{id}', [PurchaseOrderController::class, 'show'])->name('pembelian.admin.detail');
+    Route::get('/purchase-order/admin/{id}/preview', [PurchaseOrderController::class, 'preview'])->name('purchase-order.preview.admin');
+    Route::get('/get-barang/admin/{kode_barang}', [PurchaseOrderController::class, 'getBarang'])->name('getabrangpembelian.admin');
+    Route::get('/get-supplier/admin/{id}', [PurchaseOrderController::class, 'getSupplier'])->name('get.supplier.admin');
+    Route::get('/show/pembelian/admin/{id}', [PurchaseOrderController::class, 'show'])->name('detail.pembelian.admin');
+    Route::post('/pembelian/admin/pdf/{id}', [PurchaseOrderController::class, 'generatePDF'])->name('pembelian.admin.generate.pdf');
+    // end purhcase order
+    // inbond
+    Route::get('/inbond/admin', [InbondController::class, 'index'])->name('inbond.admin.index');
+    Route::get('/terima-pembelian/admin/{id}', [InbondController::class, 'edit'])->name('terima.pembelian.admin');
+    Route::post('/simpan/inbond/admin/store', [InbondController::class, 'store'])->name('inbond.admin.store');
+    Route::delete('/delete/inbond/admin/{id}', [InbondController::class, 'destroy'])->name('inbond.admin.destroy');
+    Route::get('/edit/inbond/admin/{id}', [InbondController::class, 'edit'])->name('inbond.admin.edit');
+    Route::post('/update/inbond/admin/{id}', [InbondController::class, 'update'])->name('inbond.admin.update');
+    Route::get('/inbond/detail/{id}', [InbondController::class, 'show'])->name('inbond.admin.detail');
+    // end inbond
+    // history
+    Route::get('/history/admin', [UserActivityLogsController::class, 'index'])->name('history.admin.index');
+    Route::get('/tambah/history/admin', [UserActivityLogsController::class, 'create'])->name('history.admin.create');
+    Route::post('/simpan/history/admin/store', [UserActivityLogsController::class, 'store'])->name('history.admin.store');
+    Route::delete('/delete/history/admin/{id}', [UserActivityLogsController::class, 'destroy'])->name('history.admin.destroy');
+    Route::get('/edit/history/admin/{id}', [UserActivityLogsController::class, 'edit'])->name('history.admin.edit');
+    Route::post('/update/history/admin/{id}', [UserActivityLogsController::class, 'update'])->name('history.admin.update');
+    // end history
+    // oven
+    Route::get('/oven/admin', [OvenController::class, 'index'])->name('oven.admin.index');
+    Route::get('/tambah/oven/admin', [OvenController::class, 'create'])->name('oven.admin.create');
+    Route::post('/simpan/oven/admin/store', [OvenController::class, 'store'])->name('oven.admin.store');
+    Route::delete('/delete/oven/admin/{id}', [OvenController::class, 'destroy'])->name('oven.admin.destroy');
+    Route::get('/edit/oven/admin/{id}', [OvenController::class, 'edit'])->name('oven.admin.edit');
+    Route::post('/update/oven/admin/{id}', [OvenController::class, 'update'])->name('oven.admin.update');
+    // end oven
+    // suppllier
+    Route::get('/supplier/admin', [SupplierController::class, 'index'])->name('supplier.admin.index');
+    Route::get('/tambah/supplier/admin', [SupplierController::class, 'create'])->name('supplier.admin.create');
+    Route::post('/simpan/supplier/admin/store', [SupplierController::class, 'store'])->name('supplier.admin.store');
+    Route::delete('/delete/supplier/admin/{id}', [SupplierController::class, 'destroy'])->name('supplier.admin.destroy');
+    Route::get('/edit/supplier/admin/{id}', [SupplierController::class, 'edit'])->name('supplier.admin.edit');
+    Route::post('/update/supplier/admin/{id}', [SupplierController::class, 'update'])->name('supplier.admin.update');
+    // end suppllier
+    //profile company
+    Route::get('/profile/company', [CompanyProfileController::class, 'index'])->name('profil.company.admin.index');
+    Route::get('/edit/profile/company/{id}', [CompanyProfileController::class, 'edit'])->name('profil.company.admin.edit');
+    Route::post('/update/profile/company/{id}', [CompanyProfileController::class, 'update'])->name('profil.company.admin.update');
+    //profile company end
 });
 
-Route::middleware(['role:Staff Produksi'])->group(function () {
+Route::middleware(['role:Staff Produksi',  'log.user.activity'])->group(function () {
     Route::get('/dashboard-produksi', [DashoardStaffProduksiController::class, 'index'])->name('dashboard.staff-produksi');
     // Warna
     Route::get('/warna/production-staff', [WarnaStaffProduksiController::class, 'index'])->name('warna.production-staff.index');
@@ -347,7 +418,7 @@ Route::middleware(['role:Staff Produksi'])->group(function () {
     Route::get('/logout/production-staff', [AuthController::class, 'logoutStaffProduksi'])->name('logout.production-staff');
     //  end profile
 });
-Route::middleware(['role:Operator Produksi,Quality Control'])->group(function () {
+Route::middleware(['role:Operator Produksi,Quality Control', 'log.user.activity'])->group(function () {
     Route::get('/dashboard-operator-produksi', [DashboardOperatorProduksiController::class, 'index'])->name('dashboard.operator-produksi');
     //
     Route::get('/profile/operator-produksi', [AuthController::class, 'indexOperatorProduksi'])->name('profile.operator-produksi');

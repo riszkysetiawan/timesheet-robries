@@ -19,4 +19,9 @@ class DetailPurchaseOrder extends Model
     {
         return $this->belongsTo(Produk::class, 'kode_produk', 'kode_produk');
     }
+
+    public function barang()
+    {
+        return $this->belongsTo(Barang::class, 'kode_barang', 'kode_barang');
+    }
 }

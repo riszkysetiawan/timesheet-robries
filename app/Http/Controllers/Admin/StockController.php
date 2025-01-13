@@ -20,6 +20,7 @@ use App\Exports\StocksExport;
 use App\Imports\StockImport;
 use App\Models\Barang;
 use App\Models\Produk;
+use App\Models\StockMovement;
 use Yajra\DataTables\Facades\DataTables;
 
 class StockController extends Controller
@@ -210,6 +211,44 @@ class StockController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    // public function update(Request $request, $id)
+    // {
+    //     try {
+    //         // Dekripsi kode_barang yang terenkripsi
+    //         $decryptedKodeBarang = Crypt::decryptString($id);
+
+    //         // Validasi bahwa semua elemen dalam array stock adalah angka dan minimal 1
+    //         $validated = $request->validate([
+    //             'stock.*' => 'required|numeric|min:1',  // Menggunakan stock.* untuk validasi setiap elemen input stok dalam array
+    //         ], [
+    //             'stock.*.required' => 'Jumlah stok wajib diisi.',
+    //             'stock.*.numeric' => 'Jumlah stok harus berupa angka.',
+    //             'stock.*.min' => 'Jumlah stok minimal 1.',
+    //         ]);
+
+    //         // Temukan catatan stok berdasarkan kode_barang yang telah didekripsi
+    //         $stock = Stock::where('id', $decryptedKodeBarang)->firstOrFail();
+
+    //         // Perbarui stok dengan nilai pertama dari array stok
+    //         $stock->stock = $request->input('stock')[0];  // Menggunakan nilai pertama dari array stok
+
+    //         // Simpan perubahan
+    //         $stock->save();
+
+    //         // Kembalikan respons sukses
+    //         return response()->json([
+    //             'status' => 'success',
+    //             'message' => 'Stok berhasil diperbarui!'
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         // Jika terjadi kesalahan, kembalikan respons error
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
     public function update(Request $request, $id)
     {
         try {
@@ -228,16 +267,31 @@ class StockController extends Controller
             // Temukan catatan stok berdasarkan kode_barang yang telah didekripsi
             $stock = Stock::where('id', $decryptedKodeBarang)->firstOrFail();
 
-            // Perbarui stok dengan nilai pertama dari array stok
-            $stock->stock = $request->input('stock')[0];  // Menggunakan nilai pertama dari array stok
+            // Ambil stok lama sebelum perubahan
+            $oldStock = $stock->stock;
 
-            // Simpan perubahan
+            // Perbarui stok dengan nilai pertama dari array stok
+            $newStock = $request->input('stock')[0]; // Menggunakan nilai pertama dari array stok
+            $stock->stock = $newStock;
+
+            // Simpan perubahan stok ke database
             $stock->save();
+
+            // Jika stok lama dan stok baru berbeda, tambahkan entri ke stock_movement sebagai adjustment
+            if ($oldStock != $newStock) {
+                StockMovement::create([
+                    'kode_barang' => $decryptedKodeBarang,
+                    'movement_type' => 'adjustment', // Tipe movement adalah adjustment
+                    'quantity' => $newStock - $oldStock, // Selisih stok baru dan lama
+                    'created_at' => now(), // Waktu saat ini
+                    'updated_at' => now(), // Waktu saat ini
+                ]);
+            }
 
             // Kembalikan respons sukses
             return response()->json([
                 'status' => 'success',
-                'message' => 'Stok berhasil diperbarui!'
+                'message' => 'Stok berhasil diperbarui dan perubahan dicatat sebagai adjustment!'
             ]);
         } catch (\Exception $e) {
             // Jika terjadi kesalahan, kembalikan respons error
@@ -247,7 +301,6 @@ class StockController extends Controller
             ], 500);
         }
     }
-
 
     /**
      * Remove the specified resource from storage.

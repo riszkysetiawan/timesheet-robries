@@ -14,6 +14,7 @@ class Penjualan extends Model
     {
         return $this->hasMany(Packing::class, 'id_penjualan', 'id');
     }
+
     public function detailPenjualan()
     {
         return $this->hasMany(DetailPenjualan::class, 'id_penjualan', 'id');

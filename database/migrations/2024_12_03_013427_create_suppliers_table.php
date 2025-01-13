@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nama_supplier');
             $table->string('alamat')->nullable();
             $table->string('no_telp')->nullable();
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

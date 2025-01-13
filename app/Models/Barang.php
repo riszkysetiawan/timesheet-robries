@@ -15,6 +15,16 @@ class Barang extends Model
     protected $keyType = 'string';
     protected $guarded = [];
 
+
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class, 'kode_barang', 'kode_barang');
+    }
+
+    public function dailyStockHistories()
+    {
+        return $this->hasMany(DailyStockHistory::class, 'kode_barang', 'kode_barang');
+    }
     // Relasi ke kategori
     public function kategori()
     {
@@ -43,6 +53,10 @@ class Barang extends Model
     public function detailoutgoing()
     {
         return $this->hasMany(DetailOutgoing::class, 'kode_barang', 'kode_barang');
+    }
+    public function detailPurchaseOrders()
+    {
+        return $this->hasMany(DetailPurchaseOrder::class, 'kode_barang', 'kode_barang');
     }
 
     // Mapping relasi lain jika diperlukan

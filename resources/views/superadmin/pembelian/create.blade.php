@@ -31,7 +31,7 @@
                                                                     <input type="text"
                                                                         class="form-control form-control-sm"
                                                                         id="company-name" placeholder="Business Name"
-                                                                        value="{{ $profile->nama_toko }}" readonly />
+                                                                        value="{{ $profile->nama }}" readonly />
                                                                 </div>
                                                             </div>
 
@@ -129,18 +129,23 @@
                                                 <div class="row justify-content-between">
                                                     <div class="col-md-3">
                                                         <div class="form-group mb-4">
-                                                            <label for="number">Invoice Number</label>
+                                                            <label for="number">PO Number</label>
                                                             <input type="text" class="form-control form-control-sm"
-                                                                id="number" name="kode_po" value="{{ $poCode }}"
-                                                                readonly />
+                                                                id="number" name="kode_po" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group mb-4">
+                                                            <label for="number">PI Number</label>
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                id="number" name="kode_pi" />
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="form-group mb-4">
                                                             <label for="tgl_buat">Tanggal Pembelian</label>
                                                             <input type="date" name="tgl_buat"
-                                                                class="form-control form-control-sm" id="tgl_buat"
-                                                                readonly />
+                                                                class="form-control form-control-sm" id="tgl_buat" />
                                                         </div>
                                                     </div>
 
@@ -209,7 +214,7 @@
                                                                 <td class="rate">
                                                                     <input type="text"
                                                                         class="form-control form-control-sm"
-                                                                        placeholder="Harga" name="harga[]" readonly />
+                                                                        placeholder="Harga" name="harga[]" />
                                                                 </td>
                                                                 <td class="text-right qty">
                                                                     <input type="text"
@@ -261,38 +266,49 @@
                                                                 value="Belum Diterima" />
                                                         </div>
                                                     </div>
-                                                    {{-- <div class="col-xl-12 col-md-4">
-                                                        <a href="./app-invoice-preview.html"
-                                                            class="btn btn-secondary btn-preview">Preview</a>
-                                                    </div> --}}
-                                                    <div class="col-xl-12 col-md-4">
-                                                        <button type="submit"
-                                                            class="btn btn-outline-success btn-rounded mb-2 me-4">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                height="24" viewBox="0 0 24 24" fill="none"
-                                                                stroke="currentColor" stroke-width="2"
-                                                                stroke-linecap="round" stroke-linejoin="round"
-                                                                class="feather feather-check-circle">
-                                                                <path d="M9 11l3 3L22 4"></path>
-                                                                <circle cx="12" cy="12" r="10"></circle>
-                                                            </svg>
-                                                            Save</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="invoice-detail-note">
+                                                <div class="row">
+                                                    <div class="col-md-12 align-self-center">
+                                                        <div class="form-group row invoice-note">
+                                                            <label for="invoice-detail-notes"
+                                                                class="col-sm-12 col-form-label col-form-label-sm">Notes:</label>
+                                                            <div class="col-sm-12">
+                                                                <textarea class="form-control" id="invoice-detail-notes"
+                                                                    placeholder='Notes - For example, "Thank you for doing business with us"' name="catatan" id="catatan"
+                                                                    style="height: 88px"></textarea>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-xl-12 col-md-4 pt-2">
-                                                        <button type="button"
-                                                            class="btn btn-outline-dark btn-rounded mb-2 me-4"
-                                                            onclick="window.location.href='{{ route('pembelian.admin.index') }}'">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                height="24" viewBox="0 0 24 24" fill="none"
-                                                                stroke="currentColor" stroke-width="2"
-                                                                stroke-linecap="round" stroke-linejoin="round"
-                                                                class="feather feather-arrow-left">
-                                                                <line x1="19" y1="12" x2="5"
-                                                                    y2="12"></line>
-                                                                <polyline points="12 19 5 12 12 5"></polyline>
-                                                            </svg>
-                                                            Kembali</button>
-                                                    </div>
+                                                </div>
+
+                                                <div class="col-xl-12 col-md-4 mt-3 pt-3">
+                                                    <button type="submit"
+                                                        class="btn btn-outline-success btn-rounded mb-2 me-4">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                            height="24" viewBox="0 0 24 24" fill="none"
+                                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round" class="feather feather-check-circle">
+                                                            <path d="M9 11l3 3L22 4"></path>
+                                                            <circle cx="12" cy="12" r="10"></circle>
+                                                        </svg>
+                                                        Save</button>
+                                                </div>
+                                                <div class="col-xl-12 col-md-4 pt-2">
+                                                    <button type="button"
+                                                        class="btn btn-outline-dark btn-rounded mb-2 me-4"
+                                                        onclick="window.location.href='{{ route('pembelian.admin.index') }}'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                            height="24" viewBox="0 0 24 24" fill="none"
+                                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round" class="feather feather-arrow-left">
+                                                            <line x1="19" y1="12" x2="5"
+                                                                y2="12"></line>
+                                                            <polyline points="12 19 5 12 12 5"></polyline>
+                                                        </svg>
+                                                        Kembali</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -316,7 +332,16 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+                $('#id_supplier').select2()
+
+            })
+        </script>
+    @endpush
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function() {
             // Initialize Select2 on the barang dropdown
@@ -330,7 +355,7 @@
                 allowClear: true
             });
 
-            // Optionally, you can handle the change event here to update price when a barang is selected
+            // Handle change event to update price when a barang is selected
             $('#kode_barang_select').on('change', function() {
                 var kode_barang = $(this).val();
                 var row = $(this).closest('tr');
@@ -342,74 +367,34 @@
                         dataType: 'json',
                         success: function(data) {
                             if (data) {
-                                row.find('input[name="harga[]"]').val(formatRupiah(data.barang
-                                    .harga_beli));
-                                row.find('select[name="satuan[]"]').val(data.satuan)
-                                    .change(); // Mengisi dropdown satuan
+                                row.find('select[name="satuan[]"]').val(data.satuan).change();
                                 calculateTotalRow(row);
                                 calculateTotal();
                             }
                         },
                         error: function(xhr, status, error) {
-                            row.find('input[name="harga[]"]').val('');
-                            row.find('select[name="satuan[]"]').val(''); // Kosongkan jika error
+                            row.find('select[name="satuan[]"]').val('');
                         }
                     });
                 } else {
-                    row.find('input[name="harga[]"]').val('');
-                    row.find('select[name="satuan[]"]').val(
-                        ''); // Kosongkan jika tidak ada barang yang dipilih
+                    row.find('select[name="satuan[]"]').val('');
                 }
             });
-        });
-
-        $(document).on('input', 'input[name="kode_barcode[]"]', function() {
-            var barcode = $(this).val();
-            var row = $(this).closest('tr');
-
-            if (barcode) {
-                $.ajax({
-                    url: '/get-barang-by-barcode/admin/' + barcode, // Ganti URL dengan route yang sesuai
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data) {
-                            // Set nilai harga ke input harga pada baris yang sama
-                            row.find('input[name="harga[]"]').val(formatRupiah(data.harga));
-                            row.find('select[name="kode_barang[]"]').val(data.kode_barang)
-                                .change(); // Set kode_barang jika perlu
-                            calculateTotalRow(row); // Hitung total untuk baris
-                            calculateTotal(); // Hitung total keseluruhan
-                        } else {
-                            // Jika tidak ada data ditemukan, reset harga
-                            row.find('input[name="harga[]"]').val('');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        row.find('input[name="harga[]"]').val('');
-                    }
-                });
-            } else {
-                // Kosongkan harga jika barcode tidak ada
-                row.find('input[name="harga[]"]').val('');
-            }
         });
     </script>
     <script>
         $(document).ready(function() {
-            // Ketika dropdown supplier berubah
+            // Handle supplier dropdown change
             $('#id_supplier').on('change', function() {
                 var supplierID = $(this).val();
 
                 if (supplierID) {
-                    // AJAX request untuk mengambil data supplier
                     $.ajax({
                         url: '/get-supplier/admin/' + supplierID,
                         type: 'GET',
                         dataType: 'json',
                         success: function(data) {
                             if (data) {
-                                // Isi otomatis field email, alamat, dan no hp
                                 $('#client-email').val(data.email);
                                 $('#client-address').val(data.alamat);
                                 $('#client-phone').val(data.no_telp);
@@ -420,7 +405,6 @@
                         }
                     });
                 } else {
-                    // Kosongkan input jika tidak ada supplier yang dipilih
                     $('#client-email').val('');
                     $('#client-address').val('');
                     $('#client-phone').val('');
@@ -429,27 +413,25 @@
         });
     </script>
     <script>
-        function formatRupiah(angka) {
-            var number_string = angka.toString().replace(/[^,\d]/g, ""),
+        function formatRupiah(angka, prefix) {
+            var number_string = angka.replace(/[^,\d]/g, "").toString(),
                 split = number_string.split(","),
                 sisa = split[0].length % 3,
                 rupiah = split[0].substr(0, sisa),
                 ribuan = split[0].substr(sisa).match(/\d{3}/gi);
 
             if (ribuan) {
-                separator = sisa ? "." : "";
+                var separator = sisa ? "." : "";
                 rupiah += separator + ribuan.join(".");
             }
-            return rupiah ? "Rp" + rupiah : "Rp0";
-        }
 
+            rupiah = split[1] !== undefined ? rupiah + "," + split[1] : rupiah;
+            return prefix === undefined ? rupiah : "Rp " + rupiah;
+        }
 
         function parseCurrency(value) {
-            // Hapus semua karakter non-angka dan ubah menjadi format angka murni
             return parseFloat(value.replace(/[^0-9]/g, '')) || 0;
         }
-
-
 
         $(document).ready(function() {
             $('#submitForm').on('submit', function(e) {
@@ -497,7 +479,6 @@
                     }
                 });
             });
-
         });
 
         $(document).on('input', 'input[name="qty[]"], input[name="harga[]"]', function() {
@@ -507,101 +488,105 @@
         });
 
         function calculateTotalRow(row) {
-            var qty = row.find('input[name="qty[]"]').val();
-            var harga = parseCurrency(row.find('input[name="harga[]"]').val()); // Mengambil angka murni
-            var subTotal = parseFloat(harga) * parseFloat(qty);
+            var qty = parseFloat(row.find('input[name="qty[]"]').val()) || 0;
+            var harga = parseFloat(row.find('input[name="harga[]"]').val().replace(/[^0-9]/g, "")) || 0;
+            var subTotal = qty * harga;
 
-            // Update tampilan subTotal tanpa koma desimal
-            row.find('.amount').text(formatRupiah(subTotal));
-            row.find('input[name="sub_total[]"]').val(subTotal); // Simpan subTotal dalam input tanpa desimal
+            row.find('.amount').text(formatRupiah(subTotal.toString(), "Rp"));
+            row.find('input[name="sub_total[]"]').val(subTotal);
         }
 
         function calculateTotal() {
             var total = 0;
 
-            // Loop melalui setiap baris dan tambahkan subTotal
             $('table.item-table tbody tr').each(function() {
-                var subTotal = parseCurrency($(this).find('input[name="sub_total[]"]').val());
-                total += subTotal || 0; // Tambahkan nilai subTotal yang valid
+                var subTotal = parseFloat($(this).find('input[name="sub_total[]"]').val()) || 0;
+                total += subTotal;
             });
 
-            // Update tampilan total di dalam elemen <span> dengan id #total-display
-            $('#total-display').text(formatRupiah(total));
-
-            // Update nilai total di dalam input hidden dengan id #total
+            $('#total-display').text(formatRupiah(total.toString(), "Rp"));
             $('#total').val(total);
         }
 
+        $(document).on('input', 'input[name="harga[]"], input[name="qty[]"]', function() {
+            var row = $(this).closest('tr');
+            calculateTotalRow(row);
+            calculateTotal();
+        });
 
+        $(document).on('input', 'input[name="harga[]"]', function() {
+            var value = $(this).val().replace(/[^0-9]/g, "");
+            $(this).val(formatRupiah(value, "Rp"));
+        });
 
         $('.additem').on('click', function(e) {
             e.preventDefault();
             var newRow = `
-    <tr>
-        <td class="delete-item-row">
-            <ul class="table-controls">
-                <li><a href="javascript:void(0);" class="delete-item" title="Delete">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="15" y1="9" x2="9" y2="15"></line>
-                        <line x1="9" y1="9" x2="15" y2="15"></line>
-                    </svg>
-                </a></li>
-            </ul>
-        </td>
-        <td class="description">
-            <select name="kode_barang[]" class="form-control form-control-sm kode_barang_select">
-                <option value="">Pilih Barang</option>
-                @foreach ($barangs as $barang)
-                    <option value="{{ $barang->kode_barang }}">
-                        {{ $barang->nama_barang }}
-                    </option>
-                @endforeach
-            </select>
-             <textarea class="form-control" placeholder="Keterangan Tambahan" name="keterangan_tambahan[]"></textarea>
-        </td>
-        <td class="rate">
-            <input type="text" class="form-control form-control-sm" placeholder="Harga" name="harga[]" readonly />
-        </td>
-        <td class="text-right qty">
-            <input type="text" class="form-control form-control-sm" placeholder="Quantity" name="qty[]" />
-        </td>
-        <input type="hidden" name="sub_total[]" value="" />
-        <td class="text-right">
-            <select name="satuan[]" class="form-control form-control-sm satuan_select">
-                <option value="">Pilih Satuan</option>
-                @foreach ($satuans as $satuan)
-                    <option value="{{ $satuan->satuan }}">
-                        {{ $satuan->satuan }}</option>
-                @endforeach
-            </select>
-        </td>
-        <td class="text-right amount">
-            <span class="currency">Rp</span>
-            <span class="amount">0.00</span>
-        </td>
-    </tr>`;
+            <tr>
+                <td class="delete-item-row">
+                    <ul class="table-controls">
+                        <li><a href="javascript:void(0);" class="delete-item" title="Delete">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                        </a></li>
+                    </ul>
+                </td>
+                <td class="description">
+                    <select name="kode_barang[]" class="form-control form-control-sm kode_barang_select">
+                        <option value="">Pilih Barang</option>
+                        @foreach ($barangs as $barang)
+                            <option value="{{ $barang->kode_barang }}">
+                                {{ $barang->nama_barang }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <textarea class="form-control" placeholder="Keterangan Tambahan" name="keterangan_tambahan[]"></textarea>
+                </td>
+                <td class="rate">
+                    <input type="text" class="form-control form-control-sm" placeholder="Harga" name="harga[]" />
+                </td>
+                <td class="text-right qty">
+                    <input type="text" class="form-control form-control-sm" placeholder="Quantity" name="qty[]" />
+                </td>
+                <input type="hidden" name="sub_total[]" value="" />
+                <td class="text-right">
+                    <select name="satuan[]" class="form-control form-control-sm satuan_select">
+                        <option value="">Pilih Satuan</option>
+                        @foreach ($satuans as $satuan)
+                            <option value="{{ $satuan->satuan }}">
+                                {{ $satuan->satuan }}</option>
+                        @endforeach
+                    </select>
+                </td>
+                <td class="text-right amount">
+                    <span class="currency">Rp</span>
+                    <span class="amount">0.00</span>
+                </td>
+            </tr>`;
 
-            // Tambahkan baris baru ke tabel
             $('table.item-table tbody').append(newRow);
 
-            // Inisialisasi Select2 pada dropdown yang baru ditambahkan
             $('select[name="kode_barang[]"]').last().select2({
                 placeholder: "Pilih Barang",
                 allowClear: true
             });
+
             $('.satuan_select').select2({
                 placeholder: "Pilih Satuan",
                 allowClear: true
             });
+
             $(document).on('click', '.delete-item', function(e) {
                 e.preventDefault();
                 $(this).closest('tr').remove();
                 calculateTotal();
             });
-            // Jika Anda ingin menambahkan penanganan untuk perubahan barang yang baru ditambahkan
+
             $(document).on('change', 'select[name="kode_barang[]"]', function() {
                 var kode_barang = $(this).val();
                 var row = $(this).closest('tr');
@@ -613,20 +598,16 @@
                         dataType: 'json',
                         success: function(data) {
                             if (data && data.barang && data.barang.harga !== undefined) {
-                                row.find('input[name="harga[]"]').val(formatRupiah(data.barang
-                                    .harga_beli));
                                 row.find('select[name="satuan[]"]').val(data.satuan).change();
                                 calculateTotalRow(row);
                                 calculateTotal();
                             }
                         },
                         error: function(xhr, status, error) {
-                            row.find('input[name="harga[]"]').val('');
                             row.find('select[name="satuan[]"]').val('');
                         }
                     });
                 } else {
-                    row.find('input[name="harga[]"]').val('');
                     row.find('select[name="satuan[]"]').val('');
                 }
             });
@@ -637,5 +618,13 @@
             var today = new Date().toISOString().split('T')[0];
             document.getElementById('tgl_buat').value = today;
         });
+
+        $(document).ready(function() {
+            $('table.item-table tbody tr').each(function() {
+                calculateTotalRow($(this));
+            });
+            calculateTotal();
+        });
     </script>
+
 @endsection

@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\StockBarang;
-use App\Http\Requests\StoreStockBarangRequest;
-use App\Http\Requests\UpdateStockBarangRequest;
+use App\Http\Controllers\Controller;
 
-class StockBarangController extends Controller
+use App\Models\StockMovement;
+use App\Http\Requests\StoreStockMovementRequest;
+use App\Http\Requests\UpdateStockMovementRequest;
+
+class StockMovementController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +29,7 @@ class StockBarangController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStockBarangRequest $request)
+    public function store(StoreStockMovementRequest $request)
     {
         //
     }
@@ -35,7 +37,7 @@ class StockBarangController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(StockBarang $stockBarang)
+    public function show(StockMovement $stockMovement)
     {
         //
     }
@@ -43,7 +45,7 @@ class StockBarangController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(StockBarang $stockBarang)
+    public function edit(StockMovement $stockMovement)
     {
         //
     }
@@ -51,7 +53,7 @@ class StockBarangController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateStockBarangRequest $request, StockBarang $stockBarang)
+    public function update(UpdateStockMovementRequest $request, StockMovement $stockMovement)
     {
         //
     }
@@ -59,7 +61,7 @@ class StockBarangController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(StockBarang $stockBarang)
+    public function destroy(StockMovement $stockMovement)
     {
         //
     }

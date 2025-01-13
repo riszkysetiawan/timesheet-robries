@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Produk extends Model
@@ -11,6 +14,15 @@ class Produk extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $guarded = [];
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    public function dailyStockHistories()
+    {
+        return $this->hasMany(DailyStockHistory::class);
+    }
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'id_kategori', 'id');

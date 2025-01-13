@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('pesanan')->nullable();
             $table->string('qty')->nullable();
             $table->string('deskripsi')->nullable();
+            $table->string('note')->nullable();
             $table->timestamps();
             $table->foreign('id_penjualan')->references('id')->on('penjualan')->onDelete('restrict')->onUpdate('cascade');
         });

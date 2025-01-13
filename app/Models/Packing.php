@@ -11,7 +11,7 @@ class Packing extends Model
     protected $table = 'packing';
     protected $guarded = ['id'];
 
-    public function detailPacking()
+    public function detailPackings()
     {
         return $this->hasMany(DetailPacking::class, 'id_packing', 'id');
     }

@@ -10,7 +10,7 @@
                 <div class="nav-logo">
                     <div class="nav-item theme-logo">
                         <a href="{{ route('dashboard.operator-produksi') }}">
-                            <img src="{{ asset('logo.jpg') }}" />
+                            <img src="{{ $logo ? asset('storage/' . $logo->foto) : asset('default-logo.jpg') }}" />
                         </a>
                     </div>
                     <div class="nav-item theme-text">

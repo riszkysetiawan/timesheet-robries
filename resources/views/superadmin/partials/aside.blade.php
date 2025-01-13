@@ -10,7 +10,7 @@
                 <div class="nav-logo">
                     <div class="nav-item theme-logo">
                         <a href="{{ route('dashboard.superadmin') }}">
-                            <img src="{{ asset('logo.jpg') }}" />
+                            <img src="{{ $logo ? asset('storage/' . $logo->foto) : asset('default-logo.jpg') }}" />
                         </a>
                     </div>
                     <div class="nav-item theme-text">
@@ -98,7 +98,7 @@
                 <!-- Supplier Menu -->
                 <li
                     class="menu {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') ? 'active' : '' }}">
-                    <a href="/supplier/admin" aria-expanded="false" class="dropdown-toggle">
+                    <a href="{{ route('supplier.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -113,8 +113,8 @@
                     </a>
                 </li>
                 <li
-                    class="menu {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') ? 'active' : '' }}">
-                    <a href="/supplier/admin" aria-expanded="false" class="dropdown-toggle">
+                    class="menu {{ Request::is('pembelian*') || Request::is('edit/pembelian/admin*') || Request::is('tambah/pembelian/admin*') ? 'active' : '' }}">
+                    <a href="{{ route('pembelian.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -129,8 +129,8 @@
                     </a>
                 </li>
                 <li
-                    class="menu {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') ? 'active' : '' }}">
-                    <a href="/supplier/admin" aria-expanded="false" class="dropdown-toggle">
+                    class="menu {{ Request::is('inbond*') || Request::is('edit/inbond/admin*') || Request::is('tambah/inbond/admin*') ? 'active' : '' }}">
+                    <a href="{{ route('inbond.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -161,8 +161,8 @@
                     </a>
                 </li>
                 <li
-                    class="menu {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') ? 'active' : '' }}">
-                    <a href="/supplier/admin" aria-expanded="false" class="dropdown-toggle">
+                    class="menu {{ Request::is('packing*') || Request::is('edit/packing/admin*') || Request::is('tambah/packing/admin*') ? 'active' : '' }}">
+                    <a href="{{ route('packing.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -177,8 +177,8 @@
                     </a>
                 </li>
                 <li
-                    class="menu {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') ? 'active' : '' }}">
-                    <a href="/supplier/admin" aria-expanded="false" class="dropdown-toggle">
+                    class="menu {{ Request::is('inbond*') || Request::is('edit/inbond/admin*') || Request::is('tambah/inbond/admin*') ? 'active' : '' }}">
+                    <a href="{{ route('inbond.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -239,34 +239,35 @@
 
 
                 <!-- Pembelian Menu -->
-                {{-- <li
-                    class="menu {{ Request::is('pembelian*') || Request::is('edit/pembelian/admin*') || Request::is('tambah/pembelian/admin*') || Request::is('show/pembelian/admin*') ? 'active' : '' }}">
-                    <a href="/pembelian/admin" aria-expanded="false" class="dropdown-toggle">
+                <li
+                    class="menu {{ Request::is('history*') || Request::is('edit/history/admin*') || Request::is('tambah/history/admin*') || Request::is('show/history/admin*') ? 'active' : '' }}">
+                    <a href="{{ route('history.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="feather feather-clipboard">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-clipboard">
                                 <path d="M9 2h6a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
                                 <path d="M9 2v2h6V2"></path>
                             </svg>
-                            <span>Pembelian</span>
+                            <span>history</span>
                         </div>
                     </a>
-                </li> --}}
+                </li>
 
-                {{-- <li class="menu ">
-                    <a href="{{ route('inbound.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
+                <li
+                    class="menu {{ Request::is('oven*') || Request::is('edit/oven/admin*') || Request::is('tambah/oven/admin*') || Request::is('show/oven/admin*') ? 'active' : '' }}">
+                    <a href="{{ route('oven.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
                         <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="feather feather-edit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
-                            <span>Inbond</span>
+                            <span>Oven</span>
                         </div>
                     </a>
-                </li> --}}
+                </li>
 
                 <!-- Barang Menu -->
                 <li
@@ -568,8 +569,10 @@
 
 
                 <!-- Profile Toko Menu -->
-                <li class="menu {{ Request::is('profile*') || Request::is('edit/profile/toko*') ? 'active' : '' }}">
-                    <a href="/profile/toko" aria-expanded="false" class="dropdown-toggle">
+                <li
+                    class="menu {{ Request::is('profile/company*') || Request::is('edit/profile/company*') ? 'active' : '' }}">
+                    <a href="{{ route('profil.company.admin.index') }}" aria-expanded="false"
+                        class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

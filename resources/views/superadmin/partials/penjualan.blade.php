@@ -21,6 +21,7 @@
         type="text/css" />
     <link href="{{ asset('cork/html/layouts/vertical-light-menu/css/dark/plugins.css') }}" rel="stylesheet"
         type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- END GLOBAL MANDATORY STYLES -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <!--  BEGIN CUSTOM STYLE FILE  -->
@@ -57,7 +58,7 @@
     @include('superadmin.partials.navbar')
     @include('superadmin.partials.aside')
     @include('sweetalert::alert')
-
+    @stack('scripts')
     <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
     <script src="{{ asset('cork/html/src/plugins/src/global/vendors.min.js') }}"></script>
     <script src="{{ asset('cork/html/src/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -67,7 +68,7 @@
     <!-- END GLOBAL MANDATORY SCRIPTS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="{{ asset('cork/html/src/plugins/src/filepond/filepond.min.js') }}"></script>
     <script src="{{ asset('cork/html/src/plugins/src/filepond/FilePondPluginFileValidateType.min.js') }}"></script>
     <script src="{{ asset('cork/html/src/plugins/src/filepond/FilePondPluginImageExifOrientation.min.js') }}"></script>

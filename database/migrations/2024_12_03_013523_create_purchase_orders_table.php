@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('purchase_order', function (Blueprint $table) {
             $table->id();
             $table->string('kode_po')->unique();
+            $table->string('kode_pi')->nullable();
             $table->unsignedBigInteger('id_supplier');
             $table->date('tgl_buat');
             $table->date('eta')->nullable();
             $table->string('total');
             $table->string('status');
+            $table->string('catatan');
             $table->foreign('id_supplier')->references('id')->on('supplier')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
