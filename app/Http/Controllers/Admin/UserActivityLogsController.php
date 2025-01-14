@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\user_activity_logs;
 use App\Http\Requests\Storeuser_activity_logsRequest;
@@ -27,30 +29,39 @@ class UserActivityLogsController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            // Ambil parameter start_date dan end_date jika ada
+            $startDate = $request->start_date;
+            $endDate = $request->end_date;
+
             $activities = UserActivityLog::with('user') // Mengambil data relasi user
                 ->select('user_activity_logs.*');
 
+            // Filter berdasarkan rentang tanggal jika ada
+            if ($startDate && $endDate) {
+                $activities->whereBetween('created_at', [$startDate, $endDate]);
+            }
+
             return DataTables::of($activities)
                 ->addIndexColumn() // Tambahkan kolom nomor urut
-                ->addColumn('user', function ($activities) {
+                ->addColumn('user', function ($activity) {
                     // Tampilkan nama user
-                    return $activities->user ? $activities->user->nama : 'Guest';
+                    return $activity->user ? $activity->user->nama : 'Guest';
                 })
-                ->addColumn('model', function ($activities) {
+                ->addColumn('model', function ($activity) {
                     // Nama model yang terlibat
-                    return $activities->model ?? '-';
+                    return $activity->model ?? '-';
                 })
-                ->addColumn('details', function ($activities) {
-                    if ($activities->details) {
+                ->addColumn('details', function ($activity) {
+                    if ($activity->details) {
                         // Escape HTML dan tambahkan line break (untuk teks multi-line)
-                        return nl2br(e($activities->details));
+                        return nl2br(e($activity->details));
                     }
                     return '-'; // Jika tidak ada detail
                 })
-                ->addColumn('actionn', function ($activities) {
-                    $deleteUrl = route('history.admin.destroy', Crypt::encryptString($activities->id));
+                ->addColumn('action', function ($activity) {
+                    $deleteUrl = route('history.admin.destroy', Crypt::encryptString($activity->id));
                     return '
-                        <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)" onclick="confirmDelete(' . $activities->id . ')" type="button">
+                        <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)" onclick="confirmDelete(' . $activity->id . ')" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
                                 <polyline points="3 6 5 6 21 6"></polyline>
                                 <path d="M19 6l-2 14H7L5 6"></path>
@@ -60,12 +71,13 @@ class UserActivityLogsController extends Controller
                             Delete
                         </a>';
                 })
-                ->rawColumns(['details', 'actionn']) // Render kolom details dan action sebagai HTML
+                ->rawColumns(['details', 'action']) // Render kolom details dan action sebagai HTML
                 ->make(true);
         }
 
         return view('superadmin.history.index');
     }
+
 
 
     /**

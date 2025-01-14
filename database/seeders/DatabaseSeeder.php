@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\CompanyProfile;
+use App\Models\DetailPurchaseOrder;
 use App\Models\VendorPengiriman;
 use Illuminate\Database\Seeder;
 
@@ -29,6 +30,12 @@ class DatabaseSeeder extends Seeder
             VendorPengirimanSeeder::class,
             OvenSeeder::class,
             SupplierSeeder::class,
+            BarangSeeder::class,
+            StockSeeder::class,
+            PurchaseOrderSeeder::class,
+            DetailPurchaseOrderSeeder::class,
+            PenjualanSeeder::class,
+            DetailPenjualanSeeder::class,
         ]);
     }
 }

@@ -102,7 +102,7 @@
                                                             <div class="col-md-5">
                                                                 <select name="id_user_{{ $process->id }}"
                                                                     id="id_user_{{ $process->id }}"
-                                                                    class="form-select operator-select select2-dropdown"
+                                                                    class="form-select operator-select"
                                                                     {{ isset($processTimers[$process->id]) ? 'disabled' : '' }}>
                                                                     <option value="">Pilih Operator</option>
                                                                     @foreach ($users as $user)
@@ -182,42 +182,18 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Di bagian head atau sebelum closing body -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+                $('.operator-select').select2()
 
+            })
+        </script>
+    @endpush
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
-            // Inisialisasi Select2 untuk semua dropdown operator
-            $('.select2-dropdown').each(function() {
-                $(this).select2({
-                    placeholder: 'Pilih Operator',
-                    allowClear: true,
-                    width: '100%',
-                    language: {
-                        noResults: function() {
-                            return "Tidak ada hasil yang ditemukan";
-                        },
-                        searching: function() {
-                            return "Mencari...";
-                        }
-                    },
-                    // Custom styling
-                    theme: 'classic',
-                    // Minimum input length before searching
-                    minimumInputLength: 0,
-                    // Custom dropdown parent if needed
-                    dropdownParent: $(this).parent()
-                });
-            });
-
-            // Handle disabled state
-            $('.select2-dropdown').each(function() {
-                if ($(this).prop('disabled')) {
-                    $(this).next('.select2-container').addClass('select2-container--disabled');
-                }
-            });
 
             $('.start-timer').on('click', function(e) {
                 e.preventDefault();
@@ -347,39 +323,4 @@
             });
         });
     </script>
-
-    <style>
-        /* Custom styling for Select2 */
-        .select2-container--classic .select2-selection--single {
-            height: 38px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-        }
-
-        .select2-container--classic .select2-selection--single .select2-selection__rendered {
-            line-height: 36px;
-            padding-left: 12px;
-        }
-
-        .select2-container--classic .select2-selection--single .select2-selection__arrow {
-            height: 36px;
-        }
-
-        .select2-container--classic .select2-search--dropdown .select2-search__field {
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            padding: 6px 12px;
-        }
-
-        .select2-container--classic .select2-results__option--highlighted[aria-selected] {
-            background-color: #007bff;
-        }
-
-        .select2-container--classic.select2-container--disabled .select2-selection--single {
-            background-color: #e9ecef;
-            cursor: not-allowed;
-        }
-    </style>
-
-
 @endsection

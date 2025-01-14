@@ -174,9 +174,9 @@
 
                                                     <div class="col-md-3">
                                                         <div class="form-group mb-4">
-                                                            <label for="eta">Estimasi Kedatangan</label>
-                                                            <input type="date" name="eta"
-                                                                class="form-control form-control-sm" id="eta"
+                                                            <label for="eta">Tanggal Kedatangan</label>
+                                                            <input type="date" name="tgl_kedatangan"
+                                                                class="form-control form-control-sm" id="tgl_kedatangan"
                                                                 value="{{ old('eta', $purchaseOrder->eta) }}" />
                                                         </div>
                                                     </div>
@@ -198,7 +198,6 @@
                                                                     <th>Reject</th>
                                                                     <th>Final Qty</th>
                                                                     <th>Bukti Foto</th>
-                                                                    <th>Tanggal Exp</th>
                                                                     <th>Satuan</th>
                                                                     <th class="text-right">Sub Total</th>
                                                                 </tr>
@@ -284,11 +283,7 @@
                                                                                 class="form-control form-control-sm"
                                                                                 name="gambar[]" />
                                                                         </td>
-                                                                        <td class="text-right qty">
-                                                                            <input type="date"
-                                                                                class="form-control form-control-sm"
-                                                                                name="exp[]" />
-                                                                        </td>
+
                                                                         <input type="hidden" name="sub_total[]"
                                                                             value="{{ old('sub_total.' . $loop->index, $detail->sub_total) }}" />
                                                                         <td class="text-right">
@@ -528,10 +523,10 @@
                     $(document).ready(function() {
                         $('#updateForm').on('submit', function(e) {
                             e.preventDefault();
-                            var formData = new FormData(
-                                this);
+                            var formData = new FormData(this);
+
                             $.ajax({
-                                url: "{{ route('simpan.terima.pembelian.superadmin') }}",
+                                url: "{{ route('inbond.admin.store') }}",
                                 type: 'POST',
                                 data: formData,
                                 contentType: false,
@@ -544,14 +539,42 @@
                                     ).then((result) => {
                                         if (result.isConfirmed) {
                                             window.location.href =
-                                                '{{ route('inbound.admin.index') }}';
+                                                '{{ route('inbond.admin.index') }}';
                                         }
                                     });
                                 },
                                 error: function(xhr) {
-                                    Swal.fire('Gagal',
-                                        'Terjadi kesalahan saat menyimpan data.',
-                                        'error');
+                                    // Mengecek apakah ada error validasi
+                                    if (xhr.responseJSON && xhr.responseJSON
+                                        .errors) {
+                                        var errors = xhr.responseJSON.errors;
+                                        var errorMessages = '';
+
+                                        // Membuat pesan error untuk ditampilkan dalam SweetAlert
+                                        $.each(errors, function(field, messages) {
+                                            $.each(messages, function(index,
+                                                message) {
+                                                errorMessages +=
+                                                    `<p><strong>${field}:</strong> ${message}</p>`;
+                                            });
+                                        });
+
+                                        // Menampilkan error menggunakan SweetAlert
+                                        Swal.fire({
+                                            title: 'Gagal!',
+                                            html: errorMessages, // Menampilkan error sebagai HTML
+                                            icon: 'error'
+                                        });
+                                    } else if (xhr.responseJSON && xhr.responseJSON
+                                        .message) {
+                                        // Jika ada exception atau kesalahan lainnya
+                                        Swal.fire('Gagal', xhr.responseJSON.message,
+                                            'error');
+                                    } else {
+                                        Swal.fire('Gagal',
+                                            'Terjadi kesalahan saat menyimpan data.',
+                                            'error');
+                                    }
                                 }
                             });
                         });
@@ -617,9 +640,6 @@
                     $(this).closest('tr').remove();
                     calculateTotal(); // Hitung ulang total setelah menghapus baris
                 });
-
-
-                // Update harga when selecting barang
                 $(document).on('change', 'select[name="kode_barang[]"]', function() {
                     var kode_barang = $(this).val();
                     var row = $(this).closest('tr');

@@ -12,8 +12,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('app:update-daily-stock')->daily();
+        $schedule->command('app:update-daily-stock')->daily(); // Menjalankan setiap hari
     }
+
 
     /**
      * Register the commands for the application.

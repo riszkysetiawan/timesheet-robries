@@ -21,6 +21,7 @@ use App\Models\Stock;
 use PDF;
 use App\Exports\WastesExport;
 use App\Imports\WasteImport;
+use App\Models\StockMovement;
 use Maatwebsite\Excel\Facades\Excel;
 use DataTables;
 
@@ -123,7 +124,6 @@ class WasteController extends Controller
      * Store a newly created resource in storage.
      */
 
-
     public function store(Request $request)
     {
         try {
@@ -146,31 +146,35 @@ class WasteController extends Controller
                 'foto.*.max' => 'Ukuran gambar tidak boleh lebih dari 2 MB.',
             ]);
 
+            // Jika validasi gagal, kirim response error
             if ($validator->fails()) {
                 return response()->json([
                     'status' => 'error',
                     'errors' => $validator->errors()
                 ], 422);
             }
+
+            // Proses untuk setiap kode_barang
             foreach ($request->kode_barang as $index => $kode_barang) {
                 $stock = Stock::where('kode_barang', $kode_barang)->first();
 
+                // Cek apakah stok ada
                 if (!$stock) {
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Jumlah waste tidak boleh melebihi jumlah stok saat ini!',
+                        'message' => 'Stok untuk barang kode ' . $kode_barang . ' tidak ditemukan!'
                     ], 422);
                 }
 
+                // Cek jika jumlah waste melebihi stok yang ada
                 if ($request->waste[$index] > $stock->stock) {
                     return response()->json([
                         'status' => 'error',
-                        'message' => "Stok untuk barang kode {$kode_barang}
-                         tidak mencukupi untuk menambah waste sebesar {$request->waste[$index]}!
-                          Stok saat ini hanya {$stock->stock}."
+                        'message' => "Stok untuk barang kode {$kode_barang} tidak mencukupi untuk menambah waste sebesar {$request->waste[$index]}! Stok saat ini hanya {$stock->stock}."
                     ], 400);
                 }
 
+                // Proses unggah foto jika ada
                 $filePath = null;
                 if ($request->hasFile("foto.{$index}")) {
                     $file = $request->file("foto.{$index}");
@@ -178,21 +182,33 @@ class WasteController extends Controller
                     $filePath = $file->storeAs('waste_fotos', $filename, 'public');
                 }
 
+                // Kurangi stok barang sesuai dengan jumlah waste
                 $stock->stock -= $request->waste[$index];
                 $stock->save();
+
+                // Menyimpan data waste ke tabel waste
                 $waste = new Waste();
                 $waste->kode_barang = $kode_barang;
                 $waste->jumlah = $request->waste[$index];
                 $waste->id_alasan = $request->id_alasan[$index];
                 $waste->foto = $filePath;
                 $waste->save();
+
+                // Menyimpan pergerakan stok dengan movement type 'out'
+                StockMovement::create([
+                    'kode_barang' => $kode_barang,
+                    'movement_type' => 'out',  // Tipe pergerakan stok adalah 'out'
+                    'quantity' => $request->waste[$index],  // Jumlah yang dibuang sebagai waste
+                ]);
             }
 
+            // Jika berhasil, kirimkan response sukses
             return response()->json([
                 'status' => 'success',
                 'message' => 'Waste berhasil ditambahkan, dan stok telah dikurangi!'
             ]);
         } catch (\Exception $e) {
+            // Menangani exception dan mencatat log error
             Log::error('Error saat menyimpan waste: ' . $e->getMessage(), [
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -205,6 +221,88 @@ class WasteController extends Controller
             ], 500);
         }
     }
+
+    // public function store(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'kode_barang.*' => 'required|exists:barang,kode_barang',
+    //             'id_alasan.*' => 'required|exists:alasan_waste,id',
+    //             'waste.*' => 'required|numeric|min:1',
+    //             'foto.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         ], [
+    //             'kode_barang.*.required' => 'Kode barang wajib diisi.',
+    //             'kode_barang.*.exists' => 'Barang yang dipilih tidak ditemukan dalam database.',
+    //             'id_alasan.*.required' => 'Alasan waste wajib dipilih.',
+    //             'id_alasan.*.exists' => 'Alasan waste yang dipilih tidak valid.',
+    //             'waste.*.required' => 'Jumlah waste wajib diisi.',
+    //             'waste.*.numeric' => 'Jumlah waste harus berupa angka.',
+    //             'waste.*.min' => 'Jumlah waste minimal adalah 1.',
+    //             'foto.*.required' => 'Foto wajib diunggah.',
+    //             'foto.*.image' => 'File harus berupa gambar.',
+    //             'foto.*.mimes' => 'Format gambar harus jpeg, png, jpg, atau gif.',
+    //             'foto.*.max' => 'Ukuran gambar tidak boleh lebih dari 2 MB.',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             return response()->json([
+    //                 'status' => 'error',
+    //                 'errors' => $validator->errors()
+    //             ], 422);
+    //         }
+    //         foreach ($request->kode_barang as $index => $kode_barang) {
+    //             $stock = Stock::where('kode_barang', $kode_barang)->first();
+
+    //             if (!$stock) {
+    //                 return response()->json([
+    //                     'status' => 'error',
+    //                     'message' => 'Jumlah waste tidak boleh melebihi jumlah stok saat ini!',
+    //                 ], 422);
+    //             }
+
+    //             if ($request->waste[$index] > $stock->stock) {
+    //                 return response()->json([
+    //                     'status' => 'error',
+    //                     'message' => "Stok untuk barang kode {$kode_barang}
+    //                      tidak mencukupi untuk menambah waste sebesar {$request->waste[$index]}!
+    //                       Stok saat ini hanya {$stock->stock}."
+    //                 ], 400);
+    //             }
+
+    //             $filePath = null;
+    //             if ($request->hasFile("foto.{$index}")) {
+    //                 $file = $request->file("foto.{$index}");
+    //                 $filename = time() . '_' . $file->getClientOriginalName();
+    //                 $filePath = $file->storeAs('waste_fotos', $filename, 'public');
+    //             }
+
+    //             $stock->stock -= $request->waste[$index];
+    //             $stock->save();
+    //             $waste = new Waste();
+    //             $waste->kode_barang = $kode_barang;
+    //             $waste->jumlah = $request->waste[$index];
+    //             $waste->id_alasan = $request->id_alasan[$index];
+    //             $waste->foto = $filePath;
+    //             $waste->save();
+    //         }
+
+    //         return response()->json([
+    //             'status' => 'success',
+    //             'message' => 'Waste berhasil ditambahkan, dan stok telah dikurangi!'
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error saat menyimpan waste: ' . $e->getMessage(), [
+    //             'file' => $e->getFile(),
+    //             'line' => $e->getLine(),
+    //             'trace' => $e->getTraceAsString()
+    //         ]);
+
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Terjadi kesalahan saat menyimpan data waste. Silakan coba lagi atau hubungi administrator.'
+    //         ], 500);
+    //     }
+    // }
 
     public function uploadFile()
     {
@@ -251,15 +349,80 @@ class WasteController extends Controller
         }
     }
 
-
     /**
      * Update the specified resource in storage.
      */
 
+    // public function update(Request $request, $id)
+    // {
+    //     try {
+    //         $decryptedId = Crypt::decryptString($id);
+    //         $validated = $request->validate([
+    //             'waste_old' => 'required|numeric|min:0',
+    //             'id_alasan' => 'required|exists:alasan_waste,id',
+    //             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         ], [
+    //             'waste_old.required' => 'Jumlah waste wajib diisi.',
+    //             'waste_old.numeric' => 'Jumlah waste harus berupa angka.',
+    //             'waste_old.min' => 'Jumlah waste minimal 0.',
+    //             'id_alasan.required' => 'Alasan waste wajib dipilih.',
+    //             'id_alasan.exists' => 'Alasan waste yang dipilih tidak valid.',
+    //             'foto.image' => 'File harus berupa gambar.',
+    //             'foto.mimes' => 'Format gambar harus jpeg, png, jpg, atau gif.',
+    //             'foto.max' => 'Ukuran gambar tidak boleh lebih dari 2 MB.',
+    //         ]);
+    //         $waste = Waste::where('id', $decryptedId)->firstOrFail();
+    //         $barangStock = Stock::where('kode_barang', $waste->kode_barang)->firstOrFail();
+    //         $newWaste = $request->input('waste_old');
+    //         $wasteDifference = $newWaste - $waste->jumlah;
+    //         if ($newWaste > $barangStock->stock) {
+    //             return response()->json([
+    //                 'status' => 'error',
+    //                 'message' => 'Jumlah waste tidak boleh melebihi jumlah stok saat ini!',
+    //             ], 400);
+    //         }
+    //         $remainingStock = $barangStock->stock - $wasteDifference;
+    //         if ($remainingStock < 0) {
+    //             return response()->json([
+    //                 'status' => 'error',
+    //                 'message' => 'Stock tidak mencukupi untuk perubahan waste!',
+    //             ], 400);
+    //         }
+    //         if ($request->hasFile('foto')) {
+    //             if ($waste->foto && \Storage::exists('public/' . $waste->foto)) {
+    //                 \Storage::delete('public/' . $waste->foto);
+    //             }
+    //             $file = $request->file('foto');
+    //             $filename = time() . '_' . $file->getClientOriginalName();
+    //             $filePath = $file->storeAs('waste_fotos', $filename, 'public');
+    //             $waste->foto = $filePath;
+    //         }
+    //         $waste->jumlah = $newWaste;
+    //         $waste->id_alasan = $request->id_alasan;
+    //         $waste->save();
+    //         $barangStock->stock = $remainingStock;
+    //         $barangStock->save();
+    //         return response()->json([
+    //             'status' => 'success',
+    //             'message' => 'Waste berhasil diperbarui, dan stock telah disesuaikan!',
+    //             'remaining_stock' => $remainingStock,
+    //             'total_waste' => $newWaste
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
     public function update(Request $request, $id)
     {
         try {
+            // Decrypt the ID
             $decryptedId = Crypt::decryptString($id);
+
+            // Validate the input
             $validated = $request->validate([
                 'waste_old' => 'required|numeric|min:0',
                 'id_alasan' => 'required|exists:alasan_waste,id',
@@ -274,16 +437,24 @@ class WasteController extends Controller
                 'foto.mimes' => 'Format gambar harus jpeg, png, jpg, atau gif.',
                 'foto.max' => 'Ukuran gambar tidak boleh lebih dari 2 MB.',
             ]);
+
+            // Get the existing waste record and the related stock
             $waste = Waste::where('id', $decryptedId)->firstOrFail();
             $barangStock = Stock::where('kode_barang', $waste->kode_barang)->firstOrFail();
+
+            // Get the new waste value
             $newWaste = $request->input('waste_old');
             $wasteDifference = $newWaste - $waste->jumlah;
+
+            // Validate if the new waste does not exceed stock
             if ($newWaste > $barangStock->stock) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Jumlah waste tidak boleh melebihi jumlah stok saat ini!',
                 ], 400);
             }
+
+            // Calculate the remaining stock after the update
             $remainingStock = $barangStock->stock - $wasteDifference;
             if ($remainingStock < 0) {
                 return response()->json([
@@ -291,20 +462,40 @@ class WasteController extends Controller
                     'message' => 'Stock tidak mencukupi untuk perubahan waste!',
                 ], 400);
             }
+
+            // Handle file upload if any
             if ($request->hasFile('foto')) {
+                // Delete the old photo if it exists
                 if ($waste->foto && \Storage::exists('public/' . $waste->foto)) {
                     \Storage::delete('public/' . $waste->foto);
                 }
+
+                // Store the new photo
                 $file = $request->file('foto');
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('waste_fotos', $filename, 'public');
                 $waste->foto = $filePath;
             }
+
+            // Update waste quantity and reason
             $waste->jumlah = $newWaste;
             $waste->id_alasan = $request->id_alasan;
             $waste->save();
+
+            // Update stock quantity
             $barangStock->stock = $remainingStock;
             $barangStock->save();
+
+            // Record the stock movement
+            $movementType = $wasteDifference > 0 ? 'out' : 'in'; // 'out' for waste increase, 'in' for waste decrease
+            $quantity = abs($wasteDifference); // Record the absolute difference
+            StockMovement::create([
+                'kode_barang' => $waste->kode_barang,
+                'movement_type' => $movementType,
+                'quantity' => $quantity,
+            ]);
+
+            // Return success response
             return response()->json([
                 'status' => 'success',
                 'message' => 'Waste berhasil diperbarui, dan stock telah disesuaikan!',
@@ -312,13 +503,13 @@ class WasteController extends Controller
                 'total_waste' => $newWaste
             ]);
         } catch (\Exception $e) {
+            // Return error response if any exception occurs
             return response()->json([
                 'status' => 'error',
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
             ], 500);
         }
     }
-
 
     /**
      * Remove the specified resource from storage.

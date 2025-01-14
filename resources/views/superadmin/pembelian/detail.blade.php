@@ -42,6 +42,12 @@
                                                                     <span
                                                                         class="inv-number">{{ $purchaseOrder->kode_po }}</span>
                                                                 </p>
+                                                                <p class="inv-list-number mt-sm-3 pb-sm-2 mt-4">
+                                                                    <span class="inv-title">PI Number :
+                                                                    </span>
+                                                                    <span
+                                                                        class="inv-number">{{ $purchaseOrder->kode_pi }}</span>
+                                                                </p>
                                                                 <p class="inv-created-date mt-sm-5 mt-3">
                                                                     <span class="inv-title">Tanggal Pembuatan :
                                                                     </span>
@@ -212,7 +218,7 @@
                                                 </a>
                                             </div>
                                             <div class="col-xl-12 col-md-3 col-sm-6">
-                                                <a href="{{ route('penjualan.admin.edit', Crypt::encryptString($purchaseOrder->id)) }}"
+                                                <a href="{{ route('pembelian.admin.edit', Crypt::encryptString($purchaseOrder->id)) }}"
                                                     class="btn btn-dark btn-edit">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -228,7 +234,7 @@
                                                 </a>
                                             </div>
                                             <div class="col-xl-12 col-md-3 col-sm-6 pt-2">
-                                                <a href="{{ route('penjualan.admin.index') }}"
+                                                <a href="{{ route('pembelian.admin.index') }}"
                                                     class="btn btn-dark btn-edit">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"

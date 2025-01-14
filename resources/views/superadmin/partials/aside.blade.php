@@ -176,22 +176,61 @@
                         </div>
                     </a>
                 </li>
+
+
                 <li
-                    class="menu {{ Request::is('inbond*') || Request::is('edit/inbond/admin*') || Request::is('tambah/inbond/admin*') ? 'active' : '' }}">
-                    <a href="{{ route('inbond.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
+                    class="menu {{ Request::is('history*') ||
+                    Request::is('history/admin*') ||
+                    Request::is('history-stock*') ||
+                    Request::is('edit/history-stock/admin*') ||
+                    Request::is('tambah/history-stock/admin*') ||
+                    Request::is('show/history-stock/admin*') ||
+                    Request::is('movement/admin*') ||
+                    Request::is('edit/movement/admin*') ||
+                    Request::is('tambah/movement/admin*') ||
+                    Request::is('show/movement/admin*')
+                        ? 'show'
+                        : '' }}">
+                    <a href="#ecommerce" data-bs-toggle="collapse"
+                        aria-expanded="{{ Request::is('history*') || Request::is('history/admin*') ? 'true' : 'false' }}"
+                        class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-truck">
-                                <path d="M1 3h15v13H1z"></path>
-                                <path d="M16 8h5l2 3v5h-7z"></path>
-                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                             </svg>
-                            <span>Pemakaian Produksi</span>
+                            <span>History</span>
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
                         </div>
                     </a>
+                    <ul class="collapse submenu list-unstyled {{ Request::is('history*') || Request::is('history/admin*') ? 'show' : '' }}"
+                        id="ecommerce" data-bs-parent="#accordionExample">
+                        <li
+                            class="menu {{ Request::is('history*') || Request::is('edit/history/admin*') || Request::is('tambah/history/admin*') || Request::is('show/history/admin*') ? 'active' : '' }}">
+                            <a href="{{ route('history.admin.index') }}">
+                                History User
+                            </a>
+                        </li>
+                        <li
+                            class="menu {{ Request::is('history-stock*') || Request::is('edit/history-stock/admin*') || Request::is('tambah/history-stock/admin*') || Request::is('show/history-stock/admin*') ? 'active' : '' }}">
+                            <a href="{{ route('history-stock.admin.index') }}"> History Stock </a>
+                        </li>
+                        <li
+                            class="menu {{ Request::is('movement*') || Request::is('edit/movement/admin*') || Request::is('tambah/movement/admin*') || Request::is('show/movement/admin*') ? 'active' : '' }}">
+                            <a href="{{ route('movement.admin.index') }}"> Stock Movement</a>
+                        </li>
+                    </ul>
                 </li>
+
 
 
                 <li
@@ -238,21 +277,6 @@
                 </li>
 
 
-                <!-- Pembelian Menu -->
-                <li
-                    class="menu {{ Request::is('history*') || Request::is('edit/history/admin*') || Request::is('tambah/history/admin*') || Request::is('show/history/admin*') ? 'active' : '' }}">
-                    <a href="{{ route('history.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
-                        <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-clipboard">
-                                <path d="M9 2h6a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
-                                <path d="M9 2v2h6V2"></path>
-                            </svg>
-                            <span>history</span>
-                        </div>
-                    </a>
-                </li>
 
                 <li
                     class="menu {{ Request::is('oven*') || Request::is('edit/oven/admin*') || Request::is('tambah/oven/admin*') || Request::is('show/oven/admin*') ? 'active' : '' }}">

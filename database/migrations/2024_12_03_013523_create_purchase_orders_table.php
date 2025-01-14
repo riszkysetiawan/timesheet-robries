@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('eta')->nullable();
             $table->string('total');
             $table->string('status');
-            $table->string('catatan');
+            $table->string('catatan')->nullable();
             $table->foreign('id_supplier')->references('id')->on('supplier')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });

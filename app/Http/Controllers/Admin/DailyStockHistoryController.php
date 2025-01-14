@@ -8,6 +8,9 @@ use App\Models\DailyStockHistory;
 use App\Http\Requests\StoreDailyStockHistoryRequest;
 use App\Http\Requests\UpdateDailyStockHistoryRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Crypt;
+use Yajra\DataTables\Facades\DataTables;
 
 class DailyStockHistoryController extends Controller
 {
@@ -16,11 +19,56 @@ class DailyStockHistoryController extends Controller
      */
     public function index(Request $request)
     {
-        $date = $request->input('date', now()->toDateString());
-        $histories = DailyStockHistory::where('date', $date)->with('product')->get();
+        if ($request->ajax()) {
+            // Ambil parameter start_date dan end_date jika ada
+            $startDate = $request->start_date;
+            $endDate = $request->end_date;
 
-        return view('daily-stock-history.index', compact('histories', 'date'));
+            $histories = DailyStockHistory::with('barang') // Relasi dengan tabel barang, jika diperlukan
+                ->select('daily_stock_histories.*');
+
+            // Filter berdasarkan rentang tanggal jika ada
+            if ($startDate && $endDate) {
+                $histories->whereBetween('rekap_date', [$startDate, $endDate]);
+            }
+
+            return DataTables::of($histories)
+                ->addIndexColumn() // Tambahkan kolom nomor urut
+                ->addColumn('kode_barang', function ($history) {
+                    return $history->kode_barang;
+                })
+                ->addColumn('rekap_date', function ($history) {
+                    return $history->rekap_date;
+                })
+                ->addColumn('total_in', function ($history) {
+                    return $history->total_in;
+                })
+                ->addColumn('total_out', function ($history) {
+                    return $history->total_out;
+                })
+                ->addColumn('ending_stock', function ($history) {
+                    return $history->ending_stock;
+                })
+                ->addColumn('action', function ($history) {
+                    $deleteUrl = route('history.stock.destroy', Crypt::encryptString($history->id));
+                    return '
+                        <a class="btn btn-outline-danger btn-rounded mb-2 me-4" href="javascript:void(0)" onclick="confirmDelete(' . $history->id . ')" type="button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6l-2 14H7L5 6"></path>
+                                <path d="M10 11v6"></path>
+                                <path d="M14 11v6"></path>
+                            </svg>
+                            Delete
+                        </a>';
+                })
+                ->rawColumns(['action']) // Render kolom action sebagai HTML
+                ->make(true);
+        }
+
+        return view('superadmin.history-stock.index');
     }
+
 
     /**
      * Show the form for creating a new resource.

@@ -8,8 +8,10 @@ use App\Http\Controllers\Admin\WarnaController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\ProductionController;
 use App\Http\Controllers\Admin\ProdukController;
+use App\Http\Controllers\Admin\StockMovementController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\OvenController;
+use App\Http\Controllers\Admin\UserActivityLogsController;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Admin\ProsesController;
@@ -20,6 +22,7 @@ use App\Http\Controllers\Admin\VendorPengirimanController;
 use App\Http\Controllers\Admin\MappingController;
 use App\Http\Controllers\Admin\InbondController;
 use App\Http\Controllers\Admin\AreaMappingController;
+use App\Http\Controllers\Admin\DailyStockHistoryController;
 use App\Http\Controllers\Admin\AlasanWasteController;
 use App\Http\Controllers\Admin\WasteController;
 use App\Http\Controllers\Admin\PackingController;
@@ -34,8 +37,8 @@ use App\Http\Controllers\StaffProduksi\WarnaStaffProduksiController;
 use App\Http\Controllers\StaffProduksi\ProductionStaffProduksiController;
 use App\Http\Controllers\OperatorProduksi\DashboardOperatorProduksiController;
 use App\Http\Controllers\OperatorProduksi\ProductionOperatorProduksiController;
-use App\Http\Controllers\UserActivityLogsController;
 use App\Models\CompanyProfile;
+use App\Models\DailyStockHistory;
 
 /*
 |--------------------------------------------------------------------------
@@ -336,6 +339,22 @@ Route::middleware(['role:Superadmin', 'log.user.activity'])->group(function () {
     Route::get('/edit/profile/company/{id}', [CompanyProfileController::class, 'edit'])->name('profil.company.admin.edit');
     Route::post('/update/profile/company/{id}', [CompanyProfileController::class, 'update'])->name('profil.company.admin.update');
     //profile company end
+    // history stock
+    Route::get('/history-stock/admin', [DailyStockHistoryController::class, 'index'])->name('history-stock.admin.index');
+    Route::get('/tambah/history-stock/admin', [DailyStockHistoryController::class, 'create'])->name('history-stock.admin.create');
+    Route::post('/simpan/history-stock/admin/store', [DailyStockHistoryController::class, 'store'])->name('history-stock.admin.store');
+    Route::delete('/delete/history-stock/admin/{id}', [DailyStockHistoryController::class, 'destroy'])->name('history-stock.admin.destroy');
+    Route::get('/edit/history-stock/admin/{id}', [DailyStockHistoryController::class, 'edit'])->name('history-stock.admin.edit');
+    Route::post('/update/history-stock/admin/{id}', [DailyStockHistoryController::class, 'update'])->name('history-stock.admin.update');
+    // end history stock
+    // movement stock
+    Route::get('/movement/admin', [StockMovementController::class, 'index'])->name('movement.admin.index');
+    Route::get('/tambah/movement/admin', [StockMovementController::class, 'create'])->name('movement.admin.create');
+    Route::post('/simpan/movement/admin/store', [StockMovementController::class, 'store'])->name('movement.admin.store');
+    Route::delete('/delete/movement/admin/{id}', [StockMovementController::class, 'destroy'])->name('movement.admin.destroy');
+    Route::get('/edit/movement/admin/{id}', [StockMovementController::class, 'edit'])->name('movement.admin.edit');
+    Route::post('/update/movement/admin/{id}', [StockMovementController::class, 'update'])->name('movement.admin.update');
+    // end movement stock
 });
 
 Route::middleware(['role:Staff Produksi',  'log.user.activity'])->group(function () {

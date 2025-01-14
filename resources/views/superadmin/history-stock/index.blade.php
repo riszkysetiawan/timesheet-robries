@@ -1,5 +1,5 @@
 @extends('superadmin.partials.user')
-@section('title', 'User Activity Log')
+@section('title', 'History Stock')
 @section('container')
     <div class="layout-px-spacing">
         <div class="middle-content container-xxl p-0">
@@ -13,15 +13,15 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table id="user-activity-table" class="table table-striped dt-table-hover" style="width:100%">
+                            <table id="stock-history-table" class="table table-striped dt-table-hover" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>User</th>
-                                        <th>Model</th>
-                                        <th>Details</th>
-                                        <th>IP Address</th>
-                                        <th>Timestamp</th>
+                                        <th>Kode Barang</th>
+                                        <th>Tanggal</th>
+                                        <th>Total Masuk</th>
+                                        <th>Total Keluar</th>
+                                        <th>Stok Akhir</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -42,7 +42,7 @@
 
     <script>
         $(document).ready(function() {
-            // Inisialisasi Date Range Picker dengan default value (Select All)
+            // Inisialisasi Date Range Picker
             $('#date-range-picker').daterangepicker({
                 locale: {
                     format: 'YYYY-MM-DD',
@@ -63,12 +63,13 @@
                 $(this).val('');
                 table.draw(); // Memuat ulang tabel tanpa filter tanggal
             });
+
             // Inisialisasi DataTable
-            var table = $('#user-activity-table').DataTable({
+            var table = $('#stock-history-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('history.admin.index') }}",
+                    url: "{{ route('history-stock.admin.index') }}",
                     data: function(d) {
                         // Menambahkan filter tanggal ke parameter DataTables
                         var dateRange = $('#date-range-picker').val();
@@ -86,24 +87,24 @@
                         searchable: false
                     },
                     {
-                        data: 'user',
-                        name: 'user'
+                        data: 'kode_barang',
+                        name: 'kode_barang'
                     },
                     {
-                        data: 'model',
-                        name: 'model'
+                        data: 'rekap_date',
+                        name: 'rekap_date'
                     },
                     {
-                        data: 'details',
-                        name: 'details'
+                        data: 'total_in',
+                        name: 'total_in'
                     },
                     {
-                        data: 'ip_address',
-                        name: 'ip_address'
+                        data: 'total_out',
+                        name: 'total_out'
                     },
                     {
-                        data: 'created_at',
-                        name: 'created_at'
+                        data: 'ending_stock',
+                        name: 'ending_stock'
                     },
                     {
                         data: 'action',
@@ -119,15 +120,12 @@
             $('#date-range-picker').on('apply.daterangepicker', function(ev, picker) {
                 table.draw(); // Redraw tabel saat rentang tanggal dipilih
             });
-
-            // Memastikan data ditampilkan meskipun tanpa memilih tanggal
-            table.draw();
         });
 
         function confirmDelete(id) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',
-                text: "Log ini akan dihapus secara permanen!",
+                text: "History stok ini akan dihapus secara permanen!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -136,28 +134,28 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    deleteLog(id);
+                    deleteHistory(id);
                 }
             })
         }
 
-        function deleteLog(id) {
+        function deleteHistory(id) {
             $.ajax({
-                url: '/delete/history/admin/' + id, // Endpoint untuk delete
+                url: '/delete/history/stock/' + id, // Endpoint untuk delete
                 method: 'DELETE',
                 data: {
                     _token: '{{ csrf_token() }}'
                 },
                 success: function(response) {
                     if (response.status === 'success') {
-                        Swal.fire('Dihapus!', 'Log berhasil dihapus.', 'success')
+                        Swal.fire('Dihapus!', 'History stok berhasil dihapus.', 'success')
                             .then(() => location.reload());
                     } else {
-                        Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus log.', 'error');
+                        Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus history stok.', 'error');
                     }
                 },
                 error: function() {
-                    Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus log.', 'error');
+                    Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus history stok.', 'error');
                 }
             });
         }

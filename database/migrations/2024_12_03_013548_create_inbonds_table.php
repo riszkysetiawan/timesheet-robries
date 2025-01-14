@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('inbound', function (Blueprint $table) {
             $table->string('kode_po')->primary();
             $table->unsignedBigInteger('id_supplier');
-            $table->date('eta')->nullable();
+            $table->date('tgl_kedatangan')->nullable();
             $table->string('catatan')->nullable();
             $table->foreign('id_supplier')->references('id')->on('supplier')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();

@@ -7,14 +7,6 @@
                 <nav class="breadcrumb-style-one" aria-label="breadcrumb"></nav>
             </div>
 
-            <!-- FLASH MESSAGE -->
-            @if (session()->has('message'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('message') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
             <div class="modal fade" id="modalPreview" tabindex="-1" role="dialog" aria-labelledby="modalPreviewLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
@@ -76,7 +68,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('inbound.admin.index') }}",
+                    url: "{{ route('inbond.admin.index') }}",
                     data: function(d) {
                         d.startDate = $('#filterTanggal').data('daterangepicker') ? $('#filterTanggal')
                             .data('daterangepicker').startDate.format('YYYY-MM-DD') : '';
@@ -175,16 +167,16 @@
                                     </thead>
                                     <tbody>
                                         ${data.details.map(detail => `
-                                                                                            <tr>
-                                                                                                <td>${detail.kode_barang}</td>
-                                                                                                <td>${detail.barang ? detail.barang.nama_barang : 'Tidak Ada Nama Barang'}</td>
-                                                                                                <td>${detail.qty_po !== undefined ? detail.qty_po : 'Tidak Ada Qty PO'}</td>
-                                                                                                <td>${detail.qty_actual !== undefined ? detail.qty_actual : 'Tidak Ada Qty Datang'}</td>
-                                                                                                <td>${detail.reject !== undefined ? detail.reject : 'Tidak Ada Qty Reject'}</td>
-                                                                                                <td>${detail.final_qty !== undefined ? detail.final_qty : 'Tidak Ada Final Qty'}</td>
-                                                                                                <td>${detail.satuan ? detail.satuan : 'Tidak Ada Satuan'}</td>
-                                                                                            </tr>
-                                                                                        `).join('')}
+                                                                                                            <tr>
+                                                                                                                <td>${detail.kode_barang}</td>
+                                                                                                                <td>${detail.barang ? detail.barang.nama_barang : 'Tidak Ada Nama Barang'}</td>
+                                                                                                                <td>${detail.qty_po !== undefined ? detail.qty_po : 'Tidak Ada Qty PO'}</td>
+                                                                                                                <td>${detail.qty_actual !== undefined ? detail.qty_actual : 'Tidak Ada Qty Datang'}</td>
+                                                                                                                <td>${detail.reject !== undefined ? detail.reject : 'Tidak Ada Qty Reject'}</td>
+                                                                                                                <td>${detail.final_qty !== undefined ? detail.final_qty : 'Tidak Ada Final Qty'}</td>
+                                                                                                                <td>${detail.satuan ? detail.satuan : 'Tidak Ada Satuan'}</td>
+                                                                                                            </tr>
+                                                                                                        `).join('')}
                                     </tbody>
                                 </table>
                             </div>
