@@ -41,14 +41,14 @@ class ProductionStaffProduksiController extends Controller
         if ($request->ajax()) {
             // Ambil data dari tabel production beserta timers dan proses
             $productions = Production::with(['timers.proses', 'timers.user', 'warna', 'size', 'produk'])
-                ->orderBy('created_at', 'desc')
+                ->orderBy('tgl_production', 'desc')
                 ->select('production.*'); // Pastikan mengambil data dari production table
 
             // Filter berdasarkan tanggal jika ada
             if ($request->has('startDate') && $request->has('endDate')) {
                 $startDate = Carbon::parse($request->input('startDate'))->startOfDay();
                 $endDate = Carbon::parse($request->input('endDate'))->endOfDay();
-                $productions = $productions->whereBetween('created_at', [$startDate, $endDate]);
+                $productions = $productions->whereBetween('tgl_production', [$startDate, $endDate]);
             }
 
             return DataTables::of($productions)
@@ -885,40 +885,6 @@ class ProductionStaffProduksiController extends Controller
     }
 
 
-    // public function timerbarcode($barcode)
-    // {
-    //     // Log barcode yang diterima
-    //     \Log::info("Received Barcode: " . $barcode);
-
-    //     try {
-    //         // Cari data menggunakan barcode yang diterima
-    //         $production = Production::where('barcode', $barcode)->firstOrFail();
-    //         \Log::info("Production Data Found: " . $production->id); // Debugging log
-    //     } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-    //         \Log::error("Production data not found for barcode: " . $barcode);
-    //         return redirect()->back()->with('error', 'Production data not found.');
-    //     }
-
-    //     // Fetch processes and their status
-    //     $prosess = Proses::all()->map(function ($proses) use ($production) {
-    //         $proses->is_done = Timer::where('id_production', $production->id)
-    //             ->where('id_proses', $proses->id)
-    //             ->exists();
-    //         return $proses;
-    //     });
-
-    //     $produks = Produk::all();
-    //     $sizes = Size::all();
-    //     $warnas = Warna::all();
-
-    //     return view('staff-produksi.production.timer', compact(
-    //         'production',
-    //         'produks',
-    //         'sizes',
-    //         'warnas',
-    //         'prosess'
-    //     ));
-    // }
     public function timerbarcode($barcode)
     {
         // Decode the barcode to handle encoded characters
@@ -1014,54 +980,6 @@ class ProductionStaffProduksiController extends Controller
     }
 
 
-    // public function startTimer(Request $request)
-    // {
-    //     try {
-    //         // Validasi input
-    //         $validated = $request->validate([
-    //             'process_id' => 'required|exists:proses,id',
-    //             'production_id' => 'required|exists:production,id',
-    //         ]);
-
-    //         // Cek apakah timer untuk proses dan produksi ini sudah ada
-    //         $timer = Timer::updateOrCreate(
-    //             [
-    //                 'id_proses' => $validated['process_id'],
-    //                 'id_production' => $validated['production_id'],
-    //             ],
-    //             [
-    //                 'id_users' => auth()->id(), // Simpan ID user yang memulai timer
-    //                 'waktu' => now()->format('H:i:s'), // Format waktu sesuai tipe kolom `time`
-    //                 'updated_at' => now(), // Perbarui waktu terakhir
-    //             ]
-    //         );
-
-    //         // Berhasil
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'message' => 'Timer berhasil dimulai!',
-    //             'timer' => $timer, // Kirim data timer ke frontend untuk pembaruan UI
-    //         ]);
-    //     } catch (\Illuminate\Validation\ValidationException $e) {
-    //         // Kesalahan validasi
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Validasi gagal: ' . implode(', ', $e->errors()),
-    //         ], 422);
-    //     } catch (\Illuminate\Database\QueryException $e) {
-    //         // Kesalahan query database
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Kesalahan database: ' . $e->getMessage(),
-    //         ], 500);
-    //     } catch (\Exception $e) {
-    //         // Kesalahan umum lainnya
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Kesalahan: ' . $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
 
     public function startTimer(Request $request)
     {

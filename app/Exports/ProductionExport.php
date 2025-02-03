@@ -20,19 +20,15 @@ class ProductionExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        // Ambil semua nama proses dari database
-        $allProcesses = Production::with('timers.proses')->get()->flatMap(function ($production) {
-            return $production->timers->map(function ($timer) {
-                return optional($timer->proses)->nama;
-            });
-        })->unique()->filter();
+        // Ambil semua proses dari database
+        $allProcesses = \App\Models\Proses::all(); // Ambil semua proses, bukan hanya yang terkait dengan timers
 
-        $query = Production::with(['timers.proses', 'timers.user', 'warna', 'size'])
-            ->orderBy('created_at', 'desc');
+        $query = Production::with(['timers.proses', 'timers.user', 'timers.oven', 'warna', 'size'])
+            ->orderBy('tgl_production', 'desc');
 
         // Terapkan filter tanggal hanya jika $startDate dan $endDate diberikan
         if ($this->startDate && $this->endDate) {
-            $query->whereBetween('created_at', [$this->startDate, $this->endDate]);
+            $query->whereBetween('tgl_production', [$this->startDate, $this->endDate]);
         }
 
         $productions = $query->get();
@@ -41,7 +37,7 @@ class ProductionExport implements FromCollection, WithHeadings
             $result = [
                 'SO Number' => $production->so_number,
                 'Nama Produk' => $production->nama_produk,
-                'Tanggal' => $production->created_at->format('Y-m-d'),
+                'Tanggal' => Carbon::parse($production->tgl_production)->format('Y-m-d'),
                 'Warna' => optional($production->warna)->warna ?? '-',
                 'Size' => optional($production->size)->size ?? '-',
                 'Barcode' => $production->barcode,
@@ -49,15 +45,28 @@ class ProductionExport implements FromCollection, WithHeadings
 
             // Pastikan semua proses termasuk, meskipun tidak ada datanya
             foreach ($allProcesses as $process) {
-                $timer = $production->timers->firstWhere('proses.nama', $process);
-                $result["{$process} Time"] = $timer ? $timer->waktu : 'tidak di scan';
-                $result["{$process} Operator"] = $timer && $timer->user ? $timer->user->nama : 'tidak di scan';
+                $timer = $production->timers->firstWhere('proses.id', $process->id);
+
+                // Validasi untuk memastikan timer dan proses tidak null
+                if ($timer && $timer->proses) {
+                    $processName = $timer->proses->nama;  // Ambil nama proses jika timer dan proses ada
+                } else {
+                    $processName = $process->nama;  // Jika tidak ada timer, gunakan nama proses
+                }
+
+                // Set waktu dan operator
+                $result["{$processName} Time"] = $timer ? $timer->waktu : 'tidak di scan';
+                $result["{$processName} Operator"] = $timer && $timer->user ? $timer->user->nama : 'tidak di scan';
+
+                // Tambahkan nama oven setelah Proses ID 1 dan 2
+                if (in_array($process->id, [1, 2])) {
+                    $result["{$processName} Nomor Oven"] = $timer && $timer->oven ? $timer->oven->nama : '-';
+                }
             }
 
             return $result;
         });
     }
-
 
     public function headings(): array
     {
@@ -71,17 +80,18 @@ class ProductionExport implements FromCollection, WithHeadings
             'Barcode',
         ];
 
-        // Ambil semua nama proses dari database untuk heading dinamis
-        $processes = Production::with('timers.proses')->get()->flatMap(function ($production) {
-            return $production->timers->map(function ($timer) {
-                return optional($timer->proses)->nama;
-            });
-        })->unique()->filter();
+        // Ambil semua proses dari database untuk heading dinamis
+        $processes = \App\Models\Proses::all(); // Ambil semua proses dari tabel proses
 
         foreach ($processes as $process) {
             if ($process) {
-                $headings[] = "{$process} Time";
-                $headings[] = "{$process} Operator";
+                $headings[] = "{$process->nama} Time";
+                $headings[] = "{$process->nama} Operator";
+
+                // Tambahkan heading untuk "Nomor Oven" setelah Proses ID 1 dan 2
+                if (in_array($process->id, [1, 2])) {  // Mengecek ID proses 1 dan 2
+                    $headings[] = "Nomor Oven";
+                }
             }
         }
 

@@ -263,21 +263,6 @@
 
                     // Encode the barcode to ensure special characters like '/' are properly handled
                     const encodedBarcode = encodeURIComponent(decodedText);
-
-                    // Redirect or fetch the view
-                    // $.ajax({
-                    //     url: `/production/admin/timerbarcode/${encodedBarcode}`,
-                    //     method: 'GET',
-                    //     success: function(response) {
-                    //         console.log('Data fetched successfully:', response);
-                    //         // Replace the current page content with the response (render the view)
-                    //         $('body').html(response);
-                    //     },
-                    //     error: function(error) {
-                    //         console.error('Error fetching data:', error);
-                    //         alert('Failed to fetch data. Please try again.');
-                    //     }
-                    // });
                     $.ajax({
                         url: `/production/admin/timerbarcode/${encodedBarcode}`,
                         method: 'GET',

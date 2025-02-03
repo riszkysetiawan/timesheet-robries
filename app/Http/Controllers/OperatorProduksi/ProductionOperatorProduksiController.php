@@ -42,14 +42,14 @@ class ProductionOperatorProduksiController extends Controller
         if ($request->ajax()) {
             // Ambil data dari tabel production beserta timers dan proses
             $productions = Production::with(['timers.proses', 'timers.user', 'warna', 'size', 'produk'])
-                ->orderBy('created_at', 'desc')
+                ->orderBy('tgl_production', 'desc')
                 ->select('production.*'); // Pastikan mengambil data dari production table
 
             // Filter berdasarkan tanggal jika ada
             if ($request->has('startDate') && $request->has('endDate')) {
                 $startDate = Carbon::parse($request->input('startDate'))->startOfDay();
                 $endDate = Carbon::parse($request->input('endDate'))->endOfDay();
-                $productions = $productions->whereBetween('created_at', [$startDate, $endDate]);
+                $productions = $productions->whereBetween('tgl_production', [$startDate, $endDate]);
             }
 
             return DataTables::of($productions)

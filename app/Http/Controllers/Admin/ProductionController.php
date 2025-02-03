@@ -484,13 +484,13 @@ class ProductionController extends Controller
                 'size',
                 'produk'
             ])
-                ->orderBy('created_at', 'desc');
+                ->orderBy('tgl_production', 'desc');
 
             // Filter berdasarkan tanggal jika ada
             if ($request->filled('startDate') && $request->filled('endDate')) {
                 $startDate = Carbon::parse($request->input('startDate'))->startOfDay();
                 $endDate = Carbon::parse($request->input('endDate'))->endOfDay();
-                $productions->whereBetween('created_at', [$startDate, $endDate]);
+                $productions->whereBetween('tgl_production', [$startDate, $endDate]);
             }
 
             return DataTables::of($productions)
