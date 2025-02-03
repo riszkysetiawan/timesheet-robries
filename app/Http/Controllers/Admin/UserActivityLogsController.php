@@ -14,10 +14,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
+use App\Exports\HistoryUserExport;
 use Illuminate\Support\Facades\Crypt;
 use Yajra\DataTables\Facades\DataTables;
 use App\Exports\KategoriExport;
 use App\Models\UserActivityLog;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 
 
@@ -76,6 +78,43 @@ class UserActivityLogsController extends Controller
         }
 
         return view('superadmin.history.index');
+    }
+
+    public function downloadExcel(Request $request)
+    {
+        \Log::info("Request Parameters: ", $request->all());
+
+        $startDate = $request->query('startDate');
+        $endDate = $request->query('endDate');
+
+        if ($startDate && $endDate) {
+            try {
+                $startDate = Carbon::parse($startDate)->startOfDay();
+                $endDate = Carbon::parse($endDate)->endOfDay();
+            } catch (\Exception $e) {
+                alert()->error('Tanggal tidak valid.', 'Error');
+                return redirect()->back();
+            }
+        } else {
+            $startDate = null;
+            $endDate = null;
+        }
+
+        // Ambil data berdasarkan filter tanggal
+        $data = UserActivityLog::query()
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            })
+            ->get();
+
+        // Jika data kosong, tampilkan SweetAlert error
+        if ($data->isEmpty()) {
+            alert()->error('Tidak ada data untuk rentang tanggal yang dipilih.', 'Tidak Ada Data');
+            return redirect()->back();
+        }
+
+        // Panggil export dengan parameter tanggal jika data ditemukan
+        return Excel::download(new HistoryUserExport($startDate, $endDate), 'history_user.xlsx');
     }
 
 

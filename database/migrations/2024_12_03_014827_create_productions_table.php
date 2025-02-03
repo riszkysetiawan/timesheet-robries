@@ -36,8 +36,6 @@ return new class extends Migration
             // $table->foreign('kode_produk')->references('kode_produk')->on('produk')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_color')->references('id')->on('warna')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_size')->references('id')->on('size')->onDelete('restrict')->onUpdate('cascade');
-
-            // $table->foreign('id_proses')->references('id')->on('proses')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }

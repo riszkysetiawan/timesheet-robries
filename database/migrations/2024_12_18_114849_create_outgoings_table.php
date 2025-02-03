@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('outgoing', function (Blueprint $table) {
             $table->id();
-            $table->string('so_number');
-            $table->string('keterangan');
-            $table->date('tgl');
+            $table->string('so_number')->nullable();
+            $table->string('keterangan')->nullable();
+            $table->date('tgl')->nullable();
             $table->timestamps();
         });
     }

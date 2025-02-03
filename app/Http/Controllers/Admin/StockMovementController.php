@@ -8,6 +8,7 @@ use App\Models\StockMovement;
 use App\Http\Requests\StoreStockMovementRequest;
 use App\Http\Requests\UpdateStockMovementRequest;
 use App\Exports\InboundExport;
+use App\Exports\StockMovementExport;
 use App\Models\Barang;
 use App\Models\CompanyProfile;
 use App\Models\DetailInbond;
@@ -88,7 +89,27 @@ class StockMovementController extends Controller
     {
         //
     }
+    public function downloadExcel(Request $request)
+    {
+        $startDate = $request->query('startDate');
+        $endDate = $request->query('endDate');
 
+        // Validasi dan parsing tanggal
+        if ($startDate && $endDate) {
+            try {
+                $startDate = Carbon::parse($startDate)->startOfDay();
+                $endDate = Carbon::parse($endDate)->endOfDay();
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Tanggal tidak valid.');
+            }
+        } else {
+            $startDate = null;
+            $endDate = null;
+        }
+
+        // Download file Excel
+        return Excel::download(new StockMovementExport($startDate, $endDate), 'stock_movements.xlsx');
+    }
     /**
      * Store a newly created resource in storage.
      */

@@ -720,15 +720,18 @@ class ProductionStaffProduksiController extends Controller
         try {
             // Validasi input
             $validated = $request->validate([
-                'timer_id' => 'required|exists:timer,id',
-                'waktu' => 'required|date_format:H:i:s', // Format waktu harus sesuai
+                'timer_id' => 'required|exists:timer,id', // Pastikan nama tabel sesuai
+                'waktu' => 'required|date_format:Y-m-d\TH:i', // Validasi format datetime-local
             ]);
+
+            // Mengubah waktu ke format yang sesuai menggunakan Carbon
+            $waktuBaru = Carbon::createFromFormat('Y-m-d\TH:i', $validated['waktu'])->format('Y-m-d H:i:s');
 
             // Update timer
             $timer = Timer::findOrFail($validated['timer_id']);
-            $timer->waktu = $validated['waktu'];
-            $timer->updated_at = now();
-            $timer->save();
+            $timer->waktu = $waktuBaru; // Simpan waktu baru
+            $timer->updated_at = now(); // Update waktu perubahan
+            $timer->save(); // Simpan perubahan
 
             return response()->json([
                 'status' => 'success',
@@ -1097,7 +1100,7 @@ class ProductionStaffProduksiController extends Controller
                 'id_proses' => $processId,
                 'id_production' => $productionId,
                 'id_users' => $userId,
-                'waktu' => now()->format('H:i:s'),
+                'waktu' => now()->format('Y-m-d H:i:s'),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

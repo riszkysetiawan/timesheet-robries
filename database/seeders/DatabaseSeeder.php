@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             DetailPurchaseOrderSeeder::class,
             PenjualanSeeder::class,
             DetailPenjualanSeeder::class,
+            ProdukSeeder::class,
         ]);
     }
 }

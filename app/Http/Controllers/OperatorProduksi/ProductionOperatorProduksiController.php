@@ -19,6 +19,7 @@ use PDF;
 use Illuminate\Support\Facades\Validator;
 use App\Exports\ProductionExport;
 use App\Imports\ProductionImport;
+use App\Models\Oven;
 use App\Models\Proses;
 use App\Models\Size;
 use App\Models\Timer;
@@ -447,20 +448,6 @@ class ProductionOperatorProduksiController extends Controller
     }
 
 
-
-    // public function downloadLaporan($id)
-    // {
-    //     $decryptedId = Crypt::decryptString($id);
-    //     $productions = Production::with('detailProductions')->findOrFail($decryptedId);
-    //     $produks = Produk::all();
-    //     $warna = Warna::all();
-    //     $productions = Penjualan::with('detailProductions.produk')->findOrFail($decryptedId);
-    //     $pdf = PDF::loadView('operator-produksi.laporan.penjualan_pdf', ['penjualan' => $penjualan, 'profile' => $profile, 'penjualans' => $penjualans]);
-    //     return $pdf->download('penjualan_' . $penjualan->kode_invoice . '.pdf');
-    // }
-    // PenjualanController.php
-
-
     public function downloadExcel(Request $request)
     {
         \Log::info("Request Parameters: ", $request->all()); // Logging
@@ -502,25 +489,7 @@ class ProductionOperatorProduksiController extends Controller
         return response()->json(null);
     }
 
-    // public function generatePDF($id)
-    // {
-    //     try {
-    //         $decryptedId = Crypt::decryptString($id);
-    //         $penjualans = Penjualan::with('detailPenjualans')->findOrFail($decryptedId);
-    //         $barangs = Barang::all();
-    //         $satuans = SatuanBarang::all();
-    //         $profile = ProfileCompany::first();
-    //         $pdf = PDF::loadView('operator-produksi.penjualan.pdf', compact('penjualans', 'barangs', 'satuans', 'profile'));
-    //         $fileName = 'invoice-' . $penjualans->kode_invoice . '.pdf';
-    //         Storage::put('public/pdfs/' . $fileName, $pdf->output());
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'url' => Storage::url('public/pdfs/' . $fileName),
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['status' => 'error', 'message' => 'Unable to generate PDF.'], 500);
-    //     }
-    // }
+
     public function getProduk($kode_produk)
     {
         $produk = Produk::with('warna')->where('kode_produk', $kode_produk)->first();
@@ -558,8 +527,8 @@ class ProductionOperatorProduksiController extends Controller
             'so_number.*' => 'required',
             'tgl_production' => 'required|date',
             // 'kode_produk.*' => 'required|exists:produk,kode_produk', // Pastikan kode produk ada di tabel produk
-            'nama_produk.*' => 'required', // Pastikan kode produk ada di tabel produk
             'qty.*' => 'required|string',
+            'nama_produk.*' => 'required|string',
             'warna.*' => 'required|string',
             'size.*' => 'required|string',
             'barcode.*' => 'required|string',
@@ -567,6 +536,8 @@ class ProductionOperatorProduksiController extends Controller
             'so_number.*.required' => 'Nomor SO wajib diisi.',
             'tgl_production.required' => 'Tanggal produksi wajib diisi.',
             'tgl_production.date' => 'Tanggal produksi harus berupa tanggal yang valid.',
+            // 'kode_produk.*.required' => 'Kode produk wajib diisi.',
+            // 'kode_produk.*.exists' => 'Kode produk tidak ditemukan di dalam database.',
             'nama_produk.*.required' => 'Kode produk wajib diisi.',
             'qty.*.required' => 'Kuantitas wajib diisi.',
             'warna.*.required' => 'Warna wajib diisi.',
@@ -693,7 +664,7 @@ class ProductionOperatorProduksiController extends Controller
             // Validasi input
             $validated = $request->validate([
                 'timer_id' => 'required|exists:timer,id',
-                'waktu' => 'required|date_format:H:i:s', // Format waktu harus sesuai
+                'waktu' => 'required|date_format:Y-m-d H:i:s', // Format waktu harus sesuai
             ]);
 
             // Update timer
@@ -784,41 +755,6 @@ class ProductionOperatorProduksiController extends Controller
 
 
 
-    // public function timerbarcode($barcode)
-    // {
-    //     // Log barcode yang diterima
-    //     \Log::info("Received Barcode: " . $barcode);
-
-    //     try {
-    //         // Cari data menggunakan barcode yang diterima
-    //         $production = Production::where('barcode', $barcode)->firstOrFail();
-    //         \Log::info("Production Data Found: " . $production->id); // Debugging log
-    //     } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-    //         \Log::error("Production data not found for barcode: " . $barcode);
-    //         return redirect()->back()->with('error', 'Production data not found.');
-    //     }
-
-    //     // Fetch processes and their status
-    //     $prosess = Proses::all()->map(function ($proses) use ($production) {
-    //         $proses->is_done = Timer::where('id_production', $production->id)
-    //             ->where('id_proses', $proses->id)
-    //             ->exists();
-    //         return $proses;
-    //     });
-
-    //     $produks = Produk::all();
-    //     $sizes = Size::all();
-    //     $warnas = Warna::all();
-
-    //     return view('operator-produksi.production.timer', compact(
-    //         'production',
-    //         'produks',
-    //         'sizes',
-    //         'warnas',
-    //         'prosess'
-    //     ));
-    // }
-
     public function timer($id)
     {
         $decryptedId = Crypt::decryptString($id);
@@ -885,7 +821,7 @@ class ProductionOperatorProduksiController extends Controller
         $users = User::whereHas('role', function ($query) {
             $query->whereIn('nama', ['Operator Produksi', 'Quality Control']);
         })->get();
-
+        $ovens =  Oven::all();
         return view('operator-produksi.production.timer', compact(
             'production',
             'produks',
@@ -893,6 +829,7 @@ class ProductionOperatorProduksiController extends Controller
             'sizes',
             'warnas',
             'prosess',
+            'ovens',
             'processTimers'
         ));
     }
@@ -963,14 +900,14 @@ class ProductionOperatorProduksiController extends Controller
                 ->with('user')
                 ->get()
                 ->keyBy('id_proses');
-
-            $produks = Produk::all();
-            $sizes = Size::all();
-            $warnas = Warna::all();
             $users = User::whereHas('role', function ($query) {
                 $query->whereIn('nama', ['Operator Produksi', 'Quality Control']);
             })->get();
 
+            $produks = Produk::all();
+            $sizes = Size::all();
+            $warnas = Warna::all();
+            $ovens =  Oven::all();
 
             // Return the desired view
             return view('operator-produksi.production.timer', compact(
@@ -980,6 +917,7 @@ class ProductionOperatorProduksiController extends Controller
                 'warnas',
                 'prosess',
                 'users',
+                'ovens',
                 'processTimers'
             ));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -991,32 +929,33 @@ class ProductionOperatorProduksiController extends Controller
         }
     }
 
+
     public function startTimer(Request $request)
     {
         try {
-            // Validasi input
             $validated = $request->validate([
                 'process_id' => 'required|exists:proses,id',
                 'production_id' => 'required|exists:production,id',
                 'id_user' => 'required|exists:users,id',
+                'id_oven' => 'nullable|exists:oven,id',
+                'manual_time' => 'nullable|date', // Validasi waktu manual jika ada
             ]);
 
             $productionId = $validated['production_id'];
             $processId = $validated['process_id'];
             $userId = $validated['id_user'];
+            $ovenId = $validated['id_oven'] ?? null;
 
-            // Cek apakah proses sudah selesai
+            // Gunakan waktu manual jika ada, jika tidak gunakan `now()`
+            $time = $validated['manual_time']
+                ? Carbon::parse($validated['manual_time'])->setTimezone('Asia/Jakarta')
+                : now()->setTimezone('Asia/Jakarta');
+
             $existingTimer = Timer::where('id_production', $productionId)
                 ->where('id_proses', $processId)
                 ->exists();
 
             if ($existingTimer) {
-                Log::info('Timer sudah ada', [
-                    'production_id' => $productionId,
-                    'process_id' => $processId,
-                    'user_id' => $userId
-                ]);
-
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Timer untuk proses ini sudah dimulai sebelumnya.',
@@ -1024,51 +963,14 @@ class ProductionOperatorProduksiController extends Controller
             }
 
             // Simpan timer baru
-            $timer = Timer::create([
+            Timer::create([
                 'id_proses' => $processId,
                 'id_production' => $productionId,
                 'id_users' => $userId,
-                'waktu' => now()->format('H:i:s'),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            // Hitung progress
-            $totalProses = 18;
-            $production = Production::findOrFail($productionId);
-
-            if ($production->finish_rework === 'Rework') {
-                $totalProses += 2;
-            }
-
-            $completedProses = Timer::where('id_production', $productionId)
-                ->distinct('id_proses')
-                ->count('id_proses');
-
-            $progress = ($completedProses / $totalProses) * 100;
-
-            if ($production->finish_rework === 'Rework') {
-                $progress -= 30;
-            }
-
-            $isFinishingFinished = Timer::where('id_production', $productionId)
-                ->where('id_proses', 18)
-                ->exists();
-
-            if ($isFinishingFinished) {
-                $progress += 30;
-            }
-
-            $progress = max(0, min(100, $progress));
-
-            $production->progress = $progress;
-            $production->save();
-
-            Log::info('Timer berhasil dimulai', [
-                'production_id' => $productionId,
-                'process_id' => $processId,
-                'user_id' => $userId,
-                'progress' => $progress
+                'id_oven' => $ovenId,
+                'waktu' => $time,
+                'created_at' => $time,
+                'updated_at' => $time,
             ]);
 
             return response()->json([
@@ -1076,31 +978,18 @@ class ProductionOperatorProduksiController extends Controller
                 'message' => 'Timer berhasil dimulai!',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation Error', [
-                'message' => $e->getMessage(),
-                'errors' => $e->errors(),
-                'request_data' => $request->all()
-            ]);
-
             return response()->json([
                 'status' => 'error',
                 'message' => 'Validasi gagal: ' . implode(', ', $e->errors()),
             ], 422);
         } catch (\Exception $e) {
-            Log::error('System Error', [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
-                'request_data' => $request->all()
-            ]);
-
             return response()->json([
                 'status' => 'error',
                 'message' => 'Kesalahan: ' . $e->getMessage(),
             ], 500);
         }
     }
+
 
 
     /**

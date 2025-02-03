@@ -87,47 +87,71 @@
                                 </div>
 
                                 <div class="row mb-4">
-                                    <div class="col-sm-12">
-                                        <label for="unfinished_processes" class="form-label">Proses yang Belum
-                                            Dikerjakan</label>
-                                        <ul class="list-group">
-                                            @php
-                                                $enableNext = true; // Variabel untuk mengaktifkan tombol pertama
-                                            @endphp
-                                            @foreach ($prosess as $process)
-                                                @php
-                                                    // Ambil timer yang sesuai dengan proses
-                                                    $timer = $production->timers->firstWhere('id_proses', $process->id);
-                                                @endphp
-                                                <li class="list-group-item">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <!-- Nama Proses -->
-                                                        <div class="d-flex align-items-center">
-                                                            <strong class="me-3">{{ $process->nama }}</strong>
-                                                            <!-- Nama proses -->
-                                                            <input type="text"
-                                                                class="form-control form-control-sm d-inline-block timer-input"
-                                                                style="width: 100px;"
-                                                                value="{{ $timer ? $timer->waktu : '' }}"
-                                                                data-timer-id="{{ $timer->id ?? '' }}" placeholder="Waktu"
-                                                                readonly />
+                                    <div class="row mb-4">
+                                        <div class="col-sm-12">
+                                            <label for="unfinished_processes" class="form-label">Proses yang Belum
+                                                Dikerjakan</label>
+                                            <ul class="list-group">
+                                                @foreach ($prosess as $process)
+                                                    @php
+                                                        // Ambil timer yang sesuai dengan proses
+                                                        $timer = $production->timers->firstWhere(
+                                                            'id_proses',
+                                                            $process->id,
+                                                        );
+                                                    @endphp
+                                                    <li class="list-group-item">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <!-- Nama Proses -->
+                                                            <div class="d-flex align-items-center">
+                                                                <strong class="me-3">{{ $process->nama }}</strong>
+                                                                <!-- Nama proses -->
+                                                                <input type="text"
+                                                                    class="form-control form-control-sm d-inline-block timer-input"
+                                                                    style="width: 100px;"
+                                                                    value="{{ $timer ? $timer->waktu : '' }}"
+                                                                    data-timer-id="{{ $timer->id ?? '' }}"
+                                                                    placeholder="Waktu" readonly />
+                                                            </div>
+
+                                                            <button class="btn btn-success btn-sm update-timer"
+                                                                data-process-id="{{ $process->id }}"
+                                                                data-timer-id="{{ $timer->id ?? '' }}">
+                                                                Update Timer
+                                                            </button>
                                                         </div>
+                                                    </li>
 
-                                                        <button class="btn btn-success btn-sm update-timer"
-                                                            data-process-id="{{ $process->id }}"
-                                                            data-timer-id="{{ $timer->id ?? '' }}">
-                                                            Update Timer
-                                                        </button>
+                                                    @if (in_array($process->id, [1, 2]))
+                                                        <!-- Hanya tampilkan oven pada proses ID 1 dan 2 -->
+                                                        <div class="col-md-5">
+                                                            <select name="id_oven_{{ $process->id }}"
+                                                                id="id_oven_{{ $process->id }}"
+                                                                class="form-select oven-select"
+                                                                {{ isset($processTimers[$process->id]) && $processTimers[$process->id]->id_oven ? 'disabled' : '' }}>
+                                                                <option value="">Pilih Oven</option>
+                                                                @foreach ($ovens as $oven)
+                                                                    <option value="{{ $oven->id }}"
+                                                                        {{ isset($processTimers[$process->id]) && $processTimers[$process->id]->id_oven == $oven->id ? 'selected' : '' }}>
+                                                                        {{ $oven->nama }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
 
-                                                    </div>
-                                                </li>
-                                                @php
-                                                    if (!$process->is_done) {
-                                                        $enableNext = false; // Nonaktifkan tombol berikutnya setelah tombol pertama ditemukan
-                                                    }
-                                                @endphp
-                                            @endforeach
-                                        </ul>
+                                                            @if (isset($processTimers[$process->id]) && $processTimers[$process->id]->oven)
+                                                                <small class="text-muted">
+                                                                    Oven:
+                                                                    {{ $processTimers[$process->id]->oven->nama }}
+                                                                    <br>
+                                                                    Waktu:
+                                                                    {{ $processTimers[$process->id]->created_at->format('d/m/Y H:i') }}
+                                                                </small>
+                                                            @endif
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -149,7 +173,8 @@
                                     onclick="window.location.href='{{ route('production.admin.index') }}'">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+                                        stroke-linecap="round" stroke-linejoin="round"
+                                        class="feather feather-arrow-left">
                                         <line x1="19" y1="12" x2="5" y2="12"></line>
                                         <polyline points="12 19 5 12 12 5"></polyline>
                                     </svg>
@@ -166,6 +191,23 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        $(document).ready(function() {
+            // Inisialisasi select2 untuk operator dan oven
+            $('.operator-select').select2();
+            $('.oven-select').select2();
+
+            // Menonaktifkan dropdown oven setelah dipilih
+            $('.oven-select').on('change', function() {
+                var selectedOven = $(this).val();
+                if (selectedOven) {
+                    $(this).prop('disabled', true); // Menonaktifkan dropdown oven setelah dipilih
+                } else {
+                    $(this).prop('disabled', false); // Mengaktifkan dropdown oven jika belum dipilih
+                }
+            });
+        });
+
+
         $(document).ready(function() {
             // Event listener untuk tombol Hapus Timer
             $(document).on('click', '.start-timer', function(e) {
@@ -231,7 +273,8 @@
                 e.preventDefault(); // Mencegah aksi default tombol
 
                 var timerId = $(this).data('timer-id'); // Ambil ID timer
-                var processId = $(this).data('process-id'); // Ambil ID proses (opsional, jika diperlukan)
+                var processId = $(this).data('process-id'); // Ambil ID proses
+                var ovenId = $('#id_oven_' + processId).val(); // Ambil ID oven yang dipilih
 
                 // Validasi apakah timer ID tersedia
                 if (!timerId) {
@@ -242,25 +285,16 @@
                 // Minta waktu baru dari pengguna melalui SweetAlert
                 Swal.fire({
                     title: 'Update Timer',
-                    input: 'text',
-                    inputPlaceholder: 'Contoh: 01:30:00',
-                    inputLabel: 'Masukkan waktu baru (format HH:MM:SS)',
-                    inputValue: new Date().toLocaleTimeString('en-GB', {
-                        hour12: false
-                    }),
-
+                    input: 'datetime-local', // Menggunakan input datetime-local
+                    inputLabel: 'Masukkan waktu baru (format YYYY-MM-DD HH:MM:SS)',
+                    inputValue: new Date().toISOString().slice(0,
+                        16), // Format ISO untuk datetime-local
                     showCancelButton: true,
                     confirmButtonText: 'Update',
                     cancelButtonText: 'Batal',
                     preConfirm: (newTime) => {
-                        // Validasi format waktu (HH:MM:SS)
-                        const timeRegex = /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/;
-                        if (!timeRegex.test(newTime)) {
-                            Swal.showValidationMessage(
-                                'Format waktu tidak valid. Gunakan format HH:MM:SS'
-                            );
-                        }
-                        return newTime; // Kembalikan waktu baru jika valid
+                        // Kembalikan waktu baru jika valid
+                        return newTime; // Kembalikan waktu baru
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -273,7 +307,8 @@
                             data: {
                                 _token: "{{ csrf_token() }}", // CSRF Token
                                 timer_id: timerId, // ID timer yang akan diperbarui
-                                waktu: newTime // Waktu baru
+                                waktu: newTime, // Waktu baru dalam format datetime
+                                id_oven: ovenId // Kirim ID oven yang dipilih
                             },
                             success: function(response) {
                                 if (response.status === 'success') {
@@ -298,8 +333,7 @@
                     }
                 });
             });
+
         });
     </script>
-
-
 @endsection

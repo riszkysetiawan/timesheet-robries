@@ -12,6 +12,11 @@ class Timer extends Model
     {
         return $this->belongsTo(Proses::class, 'id_proses', 'id');
     }
+    // Dalam model Timer
+    public function oven()
+    {
+        return $this->belongsTo(Oven::class, 'id_oven');
+    }
 
     public function production()
     {

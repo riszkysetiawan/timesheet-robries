@@ -14,7 +14,7 @@ class KategoriSeeder extends Seeder
     public function run()
     {
         $kategori_barang = [
-            ['nama_kategori' => 'Raw Materials', 'keterangan' => 'Produk dengan kemasan kering', 'created_at' => now(), 'updated_at' => now()],
+            ['nama_kategori' => 'Raw Material', 'keterangan' => 'Produk dengan kemasan kering', 'created_at' => now(), 'updated_at' => now()],
             ['nama_kategori' => 'Finished Good', 'keterangan' => 'Produk sensitif seperti kosmetik atau elektronik', 'created_at' => now(), 'updated_at' => now()],
             ['nama_kategori' => 'Consumable', 'keterangan' => 'Produk makanan siap saji dan bahan masakan', 'created_at' => now(), 'updated_at' => now()],
         ];

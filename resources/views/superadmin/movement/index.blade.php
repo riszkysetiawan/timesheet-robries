@@ -30,7 +30,7 @@
                             </table>
                         </div>
                     </div>
-                    <button id="downloadExcel" class="btn btn-success">Download Excel</button>
+                    <button id="downloadExcel" class="btn btn-success mt-3 ">Download Excel</button>
                 </div>
             </div>
         </div>
@@ -41,6 +41,44 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment/moment.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" defer></script>
+    <script>
+        $(document).ready(function() {
+            // Inisialisasi Date Range Picker
+            $('#date-range-picker').daterangepicker({
+                locale: {
+                    format: 'YYYY-MM-DD',
+                    cancelLabel: 'Clear'
+                },
+                autoUpdateInput: false
+            });
+
+            // Event untuk rentang tanggal yang dipilih
+            $('#date-range-picker').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format(
+                    'YYYY-MM-DD'));
+            });
+
+            // Event untuk clear tanggal
+            $('#date-range-picker').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+
+            // Event untuk tombol download Excel
+            $('#downloadExcel').click(function() {
+                var dateRange = $('#date-range-picker').val();
+                var url = "{{ route('stock_movement.download') }}";
+
+                if (dateRange) {
+                    var dates = dateRange.split(' - ');
+                    var startDate = dates[0];
+                    var endDate = dates[1];
+                    url += `?startDate=${startDate}&endDate=${endDate}`;
+                }
+
+                window.location.href = url; // Redirect untuk memulai download
+            });
+        });
+    </script>
     <script>
         $(document).ready(function() {
             // Initialize Date Range Picker

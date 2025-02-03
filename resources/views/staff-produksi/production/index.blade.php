@@ -250,39 +250,7 @@
                 console.log('Selected Rows:', Array.from(selectedRows));
             });
         });
-        // $(document).ready(function() {
-        //     $('#scanButton').on('click', function() {
-        //         $('#scanModal').modal('show');
 
-        //         const html5QrCode = new Html5Qrcode("reader");
-        //         const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        //             console.log(`QR Code detected: ${decodedText}`);
-
-        //             const cleanedBarcode = decodedText.replace(/\//g, '.');
-        //             window.location.href = `/production/production-staff/timerbarcode/${cleanedBarcode}`;
-
-        //             $('#scanModal').modal('hide');
-        //             html5QrCode.stop().catch(err => console.log(err));
-        //         };
-
-        //         const config = {
-        //             fps: 10,
-        //             qrbox: {
-        //                 width: 500,
-        //                 height: 500
-        //             }
-        //         };
-
-        //         html5QrCode.start({
-        //                 facingMode: "environment"
-        //             }, config, qrCodeSuccessCallback)
-        //             .catch(err => console.log(`Error starting camera: ${err}`));
-
-        //         $('#scanModal').on('hidden.bs.modal', function() {
-        //             html5QrCode.stop().catch(err => console.log(err));
-        //         });
-        //     });
-        // });
         $(document).ready(function() {
             $('#scanButton').on('click', function() {
                 $('#scanModal').modal('show');

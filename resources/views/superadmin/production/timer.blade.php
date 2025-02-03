@@ -91,7 +91,6 @@
                                         <label for="unfinished_processes" class="form-label">Proses yang Belum
                                             Dikerjakan</label>
                                         <ul class="list-group">
-                                            <!-- Ganti bagian ini di dalam foreach prosess -->
                                             @foreach ($prosess as $process)
                                                 @if (!in_array($process->id, [19, 20]) || $production->finish_rework === 'Rework')
                                                     <li class="list-group-item mb-3">
@@ -117,7 +116,7 @@
                                                                         Operator:
                                                                         {{ $processTimers[$process->id]->user->nama }}
                                                                         <br>
-                                                                        Waktu :
+                                                                        Waktu:
                                                                         {{ $processTimers[$process->id]->created_at->format('d/m/Y H:i') }}
                                                                     </small>
                                                                 @endif
@@ -132,12 +131,42 @@
                                                                 </button>
                                                             </div>
                                                         </div>
+
+                                                        <!-- Tambahkan pengecekan untuk proses ID 1 dan 2 untuk menampilkan Oven -->
+                                                        @if (in_array($process->id, [1, 2]))
+                                                            <div class="text-center">
+                                                                <div class="col-md-12 pt-3">
+                                                                    <select name="id_oven_{{ $process->id }}"
+                                                                        id="id_oven_{{ $process->id }}"
+                                                                        class="form-select oven-select"
+                                                                        {{ isset($processTimers[$process->id]) && $processTimers[$process->id]->id_oven ? 'disabled' : '' }}>
+                                                                        <option value="">Pilih Oven</option>
+                                                                        @foreach ($ovens as $oven)
+                                                                            <option value="{{ $oven->id }}"
+                                                                                {{ isset($processTimers[$process->id]) && $processTimers[$process->id]->id_oven == $oven->id ? 'selected' : '' }}>
+                                                                                {{ $oven->nama }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    @if (isset($processTimers[$process->id]) && $processTimers[$process->id]->oven)
+                                                                        <small class="text-muted">
+                                                                            Oven:
+                                                                            {{ $processTimers[$process->id]->oven->nama }}
+                                                                            <br>
+                                                                            Waktu:
+                                                                            {{ $processTimers[$process->id]->created_at->format('d/m/Y H:i') }}
+                                                                        </small>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        @endif
                                                     </li>
                                                 @endif
                                             @endforeach
                                         </ul>
                                     </div>
                                 </div>
+
 
                                 <div class="row mb-4">
                                     <div class="col-sm-12">
@@ -186,15 +215,24 @@
     @push('scripts')
         <script>
             $(document).ready(function() {
-                $('.operator-select').select2()
+                function initializeSelect2() {
+                    $('.operator-select').select2();
+                    $('.oven-select').select2();
+                }
 
-            })
+                // Panggil pertama kali saat halaman load
+                initializeSelect2();
+
+                // Panggil lagi setelah AJAX sukses
+                $(document).ajaxComplete(function() {
+                    initializeSelect2();
+                });
+            });
         </script>
     @endpush
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
-
             $('.start-timer').on('click', function(e) {
                 e.preventDefault();
 
@@ -203,6 +241,20 @@
                 var selectId = button.data('select-id');
                 var userId = $('#' + selectId).val();
                 var productionId = "{{ $production->id }}";
+
+                // Cek apakah proses membutuhkan oven dan pastikan oven telah dipilih
+                var ovenId = $('#id_oven_' + processId).val(); // Mengambil nilai oven
+                if (processId === 1 || processId === 2) { // Hanya proses 1 dan 2 yang memerlukan oven
+                    if (!ovenId) { // Jika oven belum dipilih
+                        Swal.fire({
+                            title: 'Perhatian!',
+                            text: 'Silakan pilih oven terlebih dahulu!',
+                            icon: 'warning',
+                            confirmButtonText: 'OK'
+                        });
+                        return false;
+                    }
+                }
 
                 // Validasi pemilihan operator
                 if (!userId) {
@@ -230,7 +282,8 @@
                             _token: "{{ csrf_token() }}",
                             process_id: processId,
                             production_id: productionId,
-                            id_user: userId
+                            id_user: userId,
+                            id_oven: ovenId // Kirim juga ovenId
                         };
 
                         // Kirim request AJAX
@@ -283,6 +336,7 @@
                     }
                 });
             });
+
 
             // Script untuk update Finish/Rework tetap sama seperti sebelumnya
             $('#updateFinishReworkButton').on('click', function() {

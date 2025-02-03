@@ -232,24 +232,15 @@
                 // Minta waktu baru dari pengguna melalui SweetAlert
                 Swal.fire({
                     title: 'Update Timer',
-                    input: 'text',
-                    inputPlaceholder: 'Contoh: 01:30:00',
-                    inputLabel: 'Masukkan waktu baru (format HH:MM:SS)',
-                    inputValue: new Date().toLocaleTimeString('en-GB', {
-                        hour12: false
-                    }),
-
+                    input: 'datetime-local', // Menggunakan input datetime-local
+                    inputLabel: 'Masukkan waktu baru (format YYYY-MM-DD HH:MM:SS)',
+                    inputValue: new Date().toISOString().slice(0,
+                        16), // Format ISO untuk datetime-local
                     showCancelButton: true,
                     confirmButtonText: 'Update',
                     cancelButtonText: 'Batal',
                     preConfirm: (newTime) => {
-                        // Validasi format waktu (HH:MM:SS)
-                        const timeRegex = /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/;
-                        if (!timeRegex.test(newTime)) {
-                            Swal.showValidationMessage(
-                                'Format waktu tidak valid. Gunakan format HH:MM:SS'
-                            );
-                        }
+                        // Tidak perlu validasi manual karena 'datetime-local' sudah memvalidasi
                         return newTime; // Kembalikan waktu baru jika valid
                     }
                 }).then((result) => {
@@ -263,7 +254,7 @@
                             data: {
                                 _token: "{{ csrf_token() }}", // CSRF Token
                                 timer_id: timerId, // ID timer yang akan diperbarui
-                                waktu: newTime // Waktu baru
+                                waktu: newTime // Waktu baru dalam format datetime
                             },
                             success: function(response) {
                                 if (response.status === 'success') {
@@ -290,6 +281,4 @@
             });
         });
     </script>
-
-
 @endsection

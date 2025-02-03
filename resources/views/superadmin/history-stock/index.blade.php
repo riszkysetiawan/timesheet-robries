@@ -28,7 +28,7 @@
                             </table>
                         </div>
                     </div>
-                    <button id="downloadExcel" class="btn btn-success">Download Excel</button>
+                    <button id="downloadExcel" class="btn btn-success mt-3 ">Download Excel</button>
                 </div>
             </div>
         </div>
@@ -40,6 +40,23 @@
     <script src="https://cdn.jsdelivr.net/npm/moment/moment.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" defer></script>
 
+    <script>
+        $(document).ready(function() {
+            $('#downloadExcel').click(function() {
+                var dateRange = $('#date-range-picker').val();
+                var url = "{{ route('history-stock.admin.download') }}";
+
+                if (dateRange) {
+                    var dates = dateRange.split(' - ');
+                    var startDate = dates[0];
+                    var endDate = dates[1];
+                    url += `?startDate=${startDate}&endDate=${endDate}`;
+                }
+
+                window.location.href = url; // Redirect untuk memulai unduhan
+            });
+        });
+    </script>
     <script>
         $(document).ready(function() {
             // Inisialisasi Date Range Picker

@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\OvenController;
 use App\Http\Controllers\Admin\UserActivityLogsController;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\BomController;
+use App\Http\Controllers\Admin\PenggunaanOvenController;
 use App\Http\Controllers\Admin\ProsesController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\PurchaseOrderController;
@@ -317,6 +319,7 @@ Route::middleware(['role:Superadmin', 'log.user.activity'])->group(function () {
     Route::delete('/delete/history/admin/{id}', [UserActivityLogsController::class, 'destroy'])->name('history.admin.destroy');
     Route::get('/edit/history/admin/{id}', [UserActivityLogsController::class, 'edit'])->name('history.admin.edit');
     Route::post('/update/history/admin/{id}', [UserActivityLogsController::class, 'update'])->name('history.admin.update');
+    Route::get('/download/history-user/admin', [UserActivityLogsController::class, 'downloadExcel'])->name('history.admin.download');
     // end history
     // oven
     Route::get('/oven/admin', [OvenController::class, 'index'])->name('oven.admin.index');
@@ -326,6 +329,22 @@ Route::middleware(['role:Superadmin', 'log.user.activity'])->group(function () {
     Route::get('/edit/oven/admin/{id}', [OvenController::class, 'edit'])->name('oven.admin.edit');
     Route::post('/update/oven/admin/{id}', [OvenController::class, 'update'])->name('oven.admin.update');
     // end oven
+    // penggunaan oven
+    Route::get('/penggunaan-elpiji/admin', [PenggunaanOvenController::class, 'index'])->name('penggunaan-elpiji.admin.index');
+    Route::get('/tambah/penggunaan-elpiji/admin', [PenggunaanOvenController::class, 'create'])->name('penggunaan-elpiji.admin.create');
+    Route::post('/simpan/penggunaan-elpiji/admin/store', [PenggunaanOvenController::class, 'store'])->name('penggunaan-elpiji.admin.store');
+    Route::delete('/delete/penggunaan-elpiji/admin/{id}', [PenggunaanOvenController::class, 'destroy'])->name('penggunaan-elpiji.admin.destroy');
+    Route::get('/edit/penggunaan-elpiji/admin/{id}', [PenggunaanOvenController::class, 'edit'])->name('penggunaan-elpiji.admin.edit');
+    Route::post('/update/penggunaan-elpiji/admin/{id}', [PenggunaanOvenController::class, 'update'])->name('penggunaan-elpiji.admin.update');
+    // end penggunaaan oven
+    // bom
+    Route::get('/bom/admin', [BomController::class, 'index'])->name('bom.admin.index');
+    Route::get('/tambah/bom/admin', [BomController::class, 'create'])->name('bom.admin.create');
+    Route::post('/simpan/bom/admin/store', [BomController::class, 'store'])->name('bom.admin.store');
+    Route::delete('/delete/bom/admin/{id}', [BomController::class, 'destroy'])->name('bom.admin.destroy');
+    Route::get('/edit/bom/admin/{id}', [BomController::class, 'edit'])->name('bom.admin.edit');
+    Route::post('/update/bom/admin/{id}', [BomController::class, 'update'])->name('bom.admin.update');
+    // end bom
     // suppllier
     Route::get('/supplier/admin', [SupplierController::class, 'index'])->name('supplier.admin.index');
     Route::get('/tambah/supplier/admin', [SupplierController::class, 'create'])->name('supplier.admin.create');
@@ -346,6 +365,7 @@ Route::middleware(['role:Superadmin', 'log.user.activity'])->group(function () {
     Route::delete('/delete/history-stock/admin/{id}', [DailyStockHistoryController::class, 'destroy'])->name('history-stock.admin.destroy');
     Route::get('/edit/history-stock/admin/{id}', [DailyStockHistoryController::class, 'edit'])->name('history-stock.admin.edit');
     Route::post('/update/history-stock/admin/{id}', [DailyStockHistoryController::class, 'update'])->name('history-stock.admin.update');
+    Route::get('/download/history-stock/admin', [DailyStockHistoryController::class, 'downloadExcel'])->name('history-stock.admin.download');
     // end history stock
     // movement stock
     Route::get('/movement/admin', [StockMovementController::class, 'index'])->name('movement.admin.index');
@@ -354,6 +374,7 @@ Route::middleware(['role:Superadmin', 'log.user.activity'])->group(function () {
     Route::delete('/delete/movement/admin/{id}', [StockMovementController::class, 'destroy'])->name('movement.admin.destroy');
     Route::get('/edit/movement/admin/{id}', [StockMovementController::class, 'edit'])->name('movement.admin.edit');
     Route::post('/update/movement/admin/{id}', [StockMovementController::class, 'update'])->name('movement.admin.update');
+    Route::get('/download/stock-movement/admin', [StockMovementController::class, 'downloadExcel'])->name('stock_movement.download');
     // end movement stock
 });
 

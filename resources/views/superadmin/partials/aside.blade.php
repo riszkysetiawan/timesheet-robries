@@ -49,36 +49,41 @@
 
                 <!-- User Menu -->
                 <li
-                    class="menu {{ Request::is('users*') || Request::is('edit/user*') || Request::is('tambah/user/admin*') ? 'active' : '' }}">
-                    <a href="{{ route('users.index') }}" aria-expanded="false" class="dropdown-toggle">
+                    class="menu {{ Request::is('users*') || Request::is('edit/user*') || Request::is('tambah/user/admin*') || Request::is('role/admin*') || Request::is('edit/role/admin*') || Request::is('tambah/role/admin*') ? 'active' : '' }}">
+                    <a href="#users" data-bs-toggle="collapse"
+                        aria-expanded="{{ Request::is('users*') || Request::is('edit/user*') || Request::is('tambah/user/admin*') || Request::is('role/admin*') || Request::is('edit/role/admin*') || Request::is('tambah/role/admin*') ? 'true' : 'false' }}"
+                        class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="feather feather-user">
-                                <path d="M20.7 17.29a10.94 10.94 0 0 0-9.7-6.29 10.94 10.94 0 0 0-9.7 6.29"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
+                                stroke-linejoin="round" class="feather feather-shopping-cart">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                             </svg>
-                            <span>User</span>
+                            <span>Manajemen User</span>
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-chevron-right">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
                         </div>
                     </a>
+                    <ul class="collapse submenu list-unstyled {{ Request::is('users*') || Request::is('edit/user*') || Request::is('tambah/user/admin*') || Request::is('role/admin*') || Request::is('edit/role/admin*') || Request::is('tambah/role/admin*') ? 'show' : '' }}"
+                        id="users" data-bs-parent="#accordionExample">
+                        <li
+                            class="menu {{ Request::is('users*') || Request::is('edit/user*') || Request::is('tambah/user/admin*') ? 'active' : '' }}">
+                            <a href="{{ route('users.index') }}"> User </a>
+                        </li>
+                        <li
+                            class="menu {{ Request::is('role/admin*') || Request::is('edit/role/admin*') || Request::is('tambah/role/admin*') ? 'active' : '' }}">
+                            <a href="{{ route('role.admin.index') }}"> Role User </a>
+                        </li>
+                    </ul>
                 </li>
-                <li
-                    class="menu {{ Request::is('role/admin*') || Request::is('edit/role/admin*') || Request::is('tambah/role/admin*') ? 'active' : '' }}">
-                    <a href="{{ route('role.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
-                        <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="feather feather-award">
-                                <circle cx="12" cy="8" r="7"></circle>
-                                <path
-                                    d="M8.21 13.89l-1.2 4.36a2 2 0 0 0 2.89 2.28L12 19.12l2.1 1.41a2 2 0 0 0 2.89-2.28l-1.2-4.36">
-                                </path>
-                            </svg>
 
-                            <span>Role </span>
-                        </div>
-                    </a>
-                </li>
                 <li
                     class="menu {{ Request::is('proses/admin*') || Request::is('edit/proses/admin/*') || Request::is('tambah/proses/admin*') ? 'active' : '' }}">
                     <a href="{{ route('proses.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
@@ -93,25 +98,43 @@
                         </div>
                     </a>
                 </li>
-
-
-                <!-- Supplier Menu -->
                 <li
-                    class="menu {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') ? 'active' : '' }}">
-                    <a href="{{ route('supplier.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
+                    class="menu {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') || Request::is('vendor-pengiriman/admin*') || Request::is('edit/vendor-pengiriman/admin*') || Request::is('tambah/vendor-pengiriman/admin*') ? 'active' : '' }}">
+                    <a href="#vendor" data-bs-toggle="collapse"
+                        aria-expanded="{{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') || Request::is('vendor-pengiriman/admin*') || Request::is('edit/vendor-pengiriman/admin*') || Request::is('tambah/vendor-pengiriman/admin*') ? 'true' : 'false' }}"
+                        class="dropdown-toggle">
                         <div class="">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-truck">
-                                <path d="M1 3h15v13H1z"></path>
-                                <path d="M16 8h5l2 3v5h-7z"></path>
-                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                             </svg>
-                            <span>Supplier</span>
+                            <span>Vendor</span>
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
                         </div>
                     </a>
+                    <ul class="collapse submenu list-unstyled {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') || Request::is('vendor-pengiriman/admin*') || Request::is('edit/vendor-pengiriman/admin*') || Request::is('tambah/vendor-pengiriman/admin*') ? 'show' : '' }}"
+                        id="vendor" data-bs-parent="#accordionExample">
+                        <li
+                            class="menu {{ Request::is('supplier*') || Request::is('edit/supplier/admin*') || Request::is('tambah/supplier/admin*') ? 'active' : '' }}">
+                            <a href="{{ route('supplier.admin.index') }}"> Supplier Bahan </a>
+                        </li>
+                        <li
+                            class="menu {{ Request::is('vendor-pengiriman/admin*') || Request::is('edit/vendor-pengiriman/admin*') || Request::is('tambah/vendor-pengiriman/admin*') ? 'active' : '' }}">
+                            <a href="{{ route('vendor-pengiriman.admin.index') }}"> Vendor Pengiriman </a>
+                        </li>
+                    </ul>
                 </li>
+
+
                 <li
                     class="menu {{ Request::is('pembelian*') || Request::is('edit/pembelian/admin*') || Request::is('tambah/pembelian/admin*') ? 'active' : '' }}">
                     <a href="{{ route('pembelian.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
@@ -176,6 +199,53 @@
                         </div>
                     </a>
                 </li>
+                <li
+                    class="menu {{ Request::is('production/admin*') || Request::is('tambah/production/admin*') || Request::is('edit/production/admin*') || Request::is('edit-timer/production/admin*') || Request::is('mulai-timer/production/admin*') || Request::is('production/admin/timerbarcode*') || Request::is('show/production/admin*') || Request::is('get-produk/admin*') || Request::is('get-ukuran/admin*') || Request::is('oven*') || Request::is('edit/oven/admin*') || Request::is('tambah/oven/admin*') || Request::is('show/oven/admin*') ? 'active' : '' }}">
+                    <a href="#productions" data-bs-toggle="collapse"
+                        aria-expanded="{{ Request::is('production/admin*') || Request::is('tambah/production/admin*') || Request::is('edit/production/admin*') || Request::is('edit-timer/production/admin*') || Request::is('mulai-timer/production/admin*') || Request::is('production/admin/timerbarcode*') || Request::is('show/production/admin*') || Request::is('get-produk/admin*') || Request::is('get-ukuran/admin*') || Request::is('oven*') || Request::is('edit/oven/admin*') || Request::is('tambah/oven/admin*') || Request::is('show/oven/admin*') ? 'true' : 'false' }}"
+                        class="dropdown-toggle">
+                        <div class="">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span>Produksi</span>
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    </a>
+                    <ul class="collapse submenu list-unstyled {{ Request::is('production/admin*') || Request::is('tambah/production/admin*') || Request::is('edit/production/admin*') || Request::is('edit-timer/production/admin*') || Request::is('mulai-timer/production/admin*') || Request::is('production/admin/timerbarcode*') || Request::is('show/production/admin*') || Request::is('get-produk/admin*') || Request::is('get-ukuran/admin*') || Request::is('oven*') || Request::is('edit/oven/admin*') || Request::is('tambah/oven/admin*') || Request::is('show/oven/admin*') ? 'show' : '' }}"
+                        id="productions" data-bs-parent="#accordionExample">
+                        <li
+                            class="menu {{ Request::is('production/admin*') || Request::is('tambah/production/admin*') || Request::is('edit/production/admin*') || Request::is('edit-timer/production/admin*') || Request::is('mulai-timer/production/admin*') || Request::is('production/admin/timerbarcode*') || Request::is('show/production/admin*') || Request::is('get-produk/admin*') || Request::is('get-ukuran/admin*') ? 'active' : '' }}">
+                            <a href="{{ route('production.admin.index') }}"> Timesheet </a>
+                        </li>
+                        <li
+                            class="menu {{ Request::is('production/admin*') || Request::is('tambah/production/admin*') || Request::is('edit/production/admin*') || Request::is('edit-timer/production/admin*') || Request::is('mulai-timer/production/admin*') || Request::is('production/admin/timerbarcode*') || Request::is('show/production/admin*') || Request::is('get-produk/admin*') || Request::is('get-ukuran/admin*') ? 'active' : '' }}">
+                            <a href="./app-ecommerce-product.html"> Pemakaian Produksi </a>
+                        </li>
+                        <li
+                            class="menu {{ Request::is('penggunaan-elpiji/admin*') ||
+                            Request::is('tambah/penggunaan-elpiji/admin*') ||
+                            Request::is('edit/penggunaan-elpiji/admin*')
+                                ? 'active'
+                                : '' }}">
+                            <a href="{{ route('penggunaan-elpiji.admin.index') }}"> Pemakaian LPG </a>
+                        </li>
+                        <li
+                            class="menu {{ Request::is('oven*') || Request::is('edit/oven/admin*') || Request::is('tambah/oven/admin*') || Request::is('show/oven/admin*') ? 'active' : '' }}">
+                            <a href="{{ route('oven.admin.index') }}"> Oven </a>
+                        </li>
+                    </ul>
+                </li>
 
 
                 <li
@@ -233,65 +303,6 @@
 
 
 
-                <li
-                    class="menu {{ Request::is('vendor-pengiriman/admin*') || Request::is('edit/vendor-pengiriman/admin*') || Request::is('tambah/vendor-pengiriman/admin*') ? 'active' : '' }}">
-                    <a href="{{ route('vendor-pengiriman.admin.index') }}" aria-expanded="false"
-                        class="dropdown-toggle">
-                        <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-truck">
-                                <path d="M1 3h15v13H1z"></path>
-                                <path d="M16 8h5l2 3v5h-7z"></path>
-                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                            </svg>
-                            <span>Vendor Pengiriman</span>
-                        </div>
-                    </a>
-                </li>
-                <li
-                    class="menu  {{ Request::is('production/admin*') ||
-                    Request::is('tambah/production/admin*') ||
-                    Request::is('edit/production/admin*') ||
-                    Request::is('edit-timer/production/admin*') ||
-                    Request::is('mulai-timer/production/admin*') ||
-                    Request::is('production/admin/timerbarcode*') ||
-                    Request::is('show/production/admin*') ||
-                    Request::is('get-produk/admin*') ||
-                    Request::is('get-ukuran/admin*')
-                        ? 'active'
-                        : '' }}">
-                    <a href="{{ route('production.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
-                        <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-home">
-                                <path d="M3 9.5V22a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9.5"></path>
-                                <path d="M9 22V12h6v10"></path>
-                                <path d="M2 10l10-7 10 7"></path>
-                            </svg>
-                            <span>Production</span>
-                        </div>
-                    </a>
-                </li>
-
-
-
-                <li
-                    class="menu {{ Request::is('oven*') || Request::is('edit/oven/admin*') || Request::is('tambah/oven/admin*') || Request::is('show/oven/admin*') ? 'active' : '' }}">
-                    <a href="{{ route('oven.admin.index') }}" aria-expanded="false" class="dropdown-toggle">
-                        <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                            <span>Oven</span>
-                        </div>
-                    </a>
-                </li>
 
                 <!-- Barang Menu -->
                 <li
@@ -424,7 +435,10 @@
                     Request::is('size/produk/admin*') ||
                     Request::is('tambah/size/produk/admin*') ||
                     Request::is('upload/files/size/admin*') ||
-                    Request::is('edit/size/produk/admin*')
+                    Request::is('edit/size/produk/admin*') ||
+                    Request::is('bom/admin*') ||
+                    Request::is('tambah/bom/admin*') ||
+                    Request::is('edit/bom/admin*')
                         ? 'show'
                         : '' }} "
                         id="produk" data-bs-parent="#accordionExample">
@@ -451,6 +465,12 @@
                                 ? 'active'
                                 : '' }}">
                             <a href="{{ route('size-produk.admin.index') }}"> Size Produk </a>
+                        </li>
+                        <li
+                            class="{{ Request::is('bom/admin*') || Request::is('tambah/bom/admin*') || Request::is('edit/bom/admin*')
+                                ? 'active'
+                                : '' }}">
+                            <a href="{{ route('bom.admin.index') }}"> BOM Produk </a>
                         </li>
                     </ul>
                 </li>

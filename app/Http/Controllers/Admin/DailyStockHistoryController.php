@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use Yajra\DataTables\Facades\DataTables;
+use App\Exports\HistoryStockExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 class DailyStockHistoryController extends Controller
 {
@@ -68,7 +71,42 @@ class DailyStockHistoryController extends Controller
 
         return view('superadmin.history-stock.index');
     }
+    public function downloadExcel(Request $request)
+    {
+        \Log::info("Request Parameters: ", $request->all());
 
+        $startDate = $request->query('startDate');
+        $endDate = $request->query('endDate');
+
+        if ($startDate && $endDate) {
+            try {
+                $startDate = Carbon::parse($startDate)->startOfDay();
+                $endDate = Carbon::parse($endDate)->endOfDay();
+            } catch (\Exception $e) {
+                alert()->error('Tanggal tidak valid.', 'Error');
+                return redirect()->back();
+            }
+        } else {
+            $startDate = null;
+            $endDate = null;
+        }
+
+        // Ambil data berdasarkan filter tanggal
+        $data = DailyStockHistory::query()
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('rekap_date', [$startDate, $endDate]);
+            })
+            ->get();
+
+        // Jika data kosong, tampilkan pesan SweetAlert
+        if ($data->isEmpty()) {
+            alert()->error('Tidak ada data untuk rentang tanggal yang dipilih.', 'Tidak Ada Data');
+            return redirect()->back();
+        }
+
+        // Panggil export dengan parameter tanggal jika data ditemukan
+        return Excel::download(new HistoryStockExport($startDate, $endDate), 'history_stock.xlsx');
+    }
 
     /**
      * Show the form for creating a new resource.

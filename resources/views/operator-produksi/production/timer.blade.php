@@ -31,15 +31,7 @@
                                         <label for="kode_produk" class="form-label">Nama Produk</label>
                                         <input type="text" id="nama_produk" name="nama_produk" class="form-control"
                                             value="{{ old('nama_produk', $production->nama_produk) }}" readonly />
-                                        {{-- <select id="kode_produk" name="kode_produk" class="form-control" disabled>
-                                            <option value="">Pilih Produk</option>
-                                            @foreach ($produks as $produk)
-                                                <option value="{{ $produk->kode_produk }}"
-                                                    {{ $production->kode_produk == $produk->kode_produk ? 'selected' : '' }}>
-                                                    {{ $produk->nama_barang }}
-                                                </option>
-                                            @endforeach
-                                        </select> --}}
+
                                     </div>
                                 </div>
                                 <div class="row mb-4">
@@ -91,7 +83,6 @@
                                         <label for="unfinished_processes" class="form-label">Proses yang Belum
                                             Dikerjakan</label>
                                         <ul class="list-group">
-                                            <!-- Ganti bagian ini di dalam foreach prosess -->
                                             @foreach ($prosess as $process)
                                                 @if (!in_array($process->id, [19, 20]) || $production->finish_rework === 'Rework')
                                                     <li class="list-group-item mb-3">
@@ -100,22 +91,10 @@
                                                                 <strong>{{ $process->nama }}</strong>
                                                             </div>
                                                             <div class="col-md-5">
-                                                                {{-- <select name="id_user_{{ $process->id }}"
-                                                                    id="id_user_{{ $process->id }}"
-                                                                    class="form-select operator_select"
-                                                                    {{ $process->is_done ? 'disabled' : '' }}>
-                                                                    <option value="">Pilih Operator</option>
-                                                                    @foreach ($users as $user)
-                                                                        <option value="{{ $user->id }}"
-                                                                            {{ isset($processTimers[$process->id]) && $processTimers[$process->id]->id_users == $user->id ? 'selected' : '' }}>
-                                                                            {{ $user->nama }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select> --}}
                                                                 <select name="id_user_{{ $process->id }}"
                                                                     id="id_user_{{ $process->id }}"
-                                                                    class="form-select operator_select"
-                                                                    {{ $process->is_done ? 'disabled' : '' }}>
+                                                                    class="form-select operator-select"
+                                                                    {{ isset($processTimers[$process->id]) ? 'disabled' : '' }}>
                                                                     <option value="">Pilih Operator</option>
                                                                     @foreach ($users as $user)
                                                                         <option value="{{ $user->id }}"
@@ -127,7 +106,8 @@
                                                                 @if (isset($processTimers[$process->id]))
                                                                     <small class="text-muted">
                                                                         Operator:
-                                                                        {{ $processTimers[$process->id]->user->nama }}<br>
+                                                                        {{ $processTimers[$process->id]->user->nama }}
+                                                                        <br>
                                                                         Waktu:
                                                                         {{ $processTimers[$process->id]->created_at->format('d/m/Y H:i') }}
                                                                     </small>
@@ -143,6 +123,37 @@
                                                                 </button>
                                                             </div>
                                                         </div>
+
+                                                        <!-- Tambahkan pengecekan untuk proses ID 1 dan 2 untuk menampilkan Oven -->
+                                                        @if (in_array($process->id, [1, 2]))
+                                                            <div class="text-center">
+                                                                <div class="col-md-12 pt-3">
+                                                                    <select name="id_oven_{{ $process->id }}"
+                                                                        id="id_oven_{{ $process->id }}"
+                                                                        class="form-select oven-select"
+                                                                        {{ isset($processTimers[$process->id]) && $processTimers[$process->id]->id_oven ? 'disabled' : '' }}>
+                                                                        <option value="">Pilih Oven</option>
+                                                                        @foreach ($ovens as $oven)
+                                                                            <option value="{{ $oven->id }}"
+                                                                                {{ isset($processTimers[$process->id]) && $processTimers[$process->id]->id_oven == $oven->id ? 'selected' : '' }}>
+                                                                                {{ $oven->nama }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    @if (isset($processTimers[$process->id]) && $processTimers[$process->id]->oven)
+                                                                        <small class="text-muted">
+                                                                            Oven:
+                                                                            {{ $processTimers[$process->id]->oven->nama }}
+                                                                            <br>
+                                                                            Waktu:
+                                                                            {{ $processTimers[$process->id]->created_at->format('d/m/Y H:i') }}
+                                                                        </small>
+                                                                    @endif
+                                                                </div>
+
+
+                                                            </div>
+                                                        @endif
                                                     </li>
                                                 @endif
                                             @endforeach
@@ -150,38 +161,29 @@
                                     </div>
                                 </div>
 
-                                @if (auth()->check() && auth()->user()->role->nama === 'Quality Control')
-                                    <div class="row mb-4">
-                                        <div class="col-sm-12">
-                                            <label for="finish_rework" class="form-label">Rework/ Finish</label>
-                                            <select name="finish_rework" id="finish_rework" class="form-control">
-                                                <option value="">Pilih</option>
-                                                <option value="Finish"
-                                                    {{ old('finish_rework', $production->finish_rework) === 'Finish' ? 'selected' : '' }}>
-                                                    Finish</option>
-                                                <option value="Rework"
-                                                    {{ old('finish_rework', $production->finish_rework) === 'Rework' ? 'selected' : '' }}>
-                                                    Rework</option>
-                                                <option value="Reject"
-                                                    {{ old('finish_rework', $production->finish_rework) === 'Reject' ? 'selected' : '' }}>
-                                                    Reject</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-4">
-                                        <div class="col-sm-12">
-                                            <label for="catatan" class="form-label">Catatan</label>
-                                            <input type="text" id="catatan" name="catatan" class="form-control"
-                                                value="{{ old('catatan', $production->catatan) }}"
-                                                placeholder="Catatan" />
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn btn-success btn-rounded mb-2 me-4"
-                                        id="updateFinishReworkButton">
-                                        Update
-                                    </button>
-                                @endif
 
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="size" class="form-label">Rework/ Finish</label>
+                                        <select name="finish_rework" id="finish_rework" class="form-control">
+                                            <option value="">Pilih</option>
+                                            <option value="Finish">Finish</option>
+                                            <option value="Rework">Rework</option>
+                                            <option value="Reject">Reject</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-sm-12">
+                                        <label for="size" class="form-label">Catatan</label>
+                                        <input type="text" id="catatan" name="catatan" class="form-control"
+                                            placeholder="Catatan" />
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-success btn-rounded mb-2 me-4"
+                                    id="updateFinishReworkButton">
+                                    Update
+                                </button>
                                 <!-- Tombol Kembali -->
                                 <button type="button" class="btn btn-outline-dark btn-rounded mb-2 me-4"
                                     onclick="window.location.href='{{ route('production.operator-produksi.index') }}'">
@@ -203,28 +205,28 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+                function initializeSelect2() {
+                    $('.operator-select').select2();
+                    $('.oven-select').select2();
+                }
+
+                // Panggil pertama kali saat halaman load
+                initializeSelect2();
+
+                // Panggil lagi setelah AJAX sukses
+                $(document).ajaxComplete(function() {
+                    initializeSelect2();
+                });
+            });
+        </script>
+    @endpush
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
-            $('.operator_select').select2({
-                placeholder: "Pilih Operator",
-                allowClear: true
-            });
-        });
-
-        // Re-init Select2 for dynamically added elements
-        $(document).on('change', '.operator_select', function() {
-            $(this).select2({
-                placeholder: "Pilih Operator",
-                allowClear: true
-            });
-        });
-    </script>
-
-    <script>
-        $(document).ready(function() {
-
             $('.start-timer').on('click', function(e) {
                 e.preventDefault();
 
@@ -233,8 +235,8 @@
                 var selectId = button.data('select-id');
                 var userId = $('#' + selectId).val();
                 var productionId = "{{ $production->id }}";
+                var ovenId = $('#id_oven_' + processId).val(); // Ambil ID oven jika diperlukan
 
-                // Validasi pemilihan operator
                 if (!userId) {
                     Swal.fire({
                         title: 'Perhatian!',
@@ -245,80 +247,104 @@
                     return false;
                 }
 
-                // Konfirmasi sebelum memulai timer
-                Swal.fire({
-                    title: 'Konfirmasi',
-                    text: 'Apakah Anda yakin ingin memulai timer untuk proses ini?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, Mulai',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Data yang akan dikirim
-                        var requestData = {
-                            _token: "{{ csrf_token() }}",
-                            process_id: processId,
-                            production_id: productionId,
-                            id_user: userId
-                        };
+                // Jika proses adalah ID 1 atau 2, tampilkan SweetAlert untuk input waktu manual
+                if (processId === 1 || processId === 2) {
+                    // Ambil waktu sekarang dalam zona Asia/Jakarta
+                    let now = new Date();
+                    let jakartaTime = new Intl.DateTimeFormat('id-ID', {
+                        timeZone: 'Asia/Jakarta',
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    }).format(now);
 
-                        // Kirim request AJAX
-                        $.ajax({
-                            url: "{{ route('production.startTimer.operator-produksi') }}",
-                            method: 'POST',
-                            data: requestData,
-                            beforeSend: function() {
-                                // Disable button dan tampilkan loading
-                                button.prop('disabled', true);
-                                button.html(
-                                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...'
-                                );
-                            },
-                            success: function(response) {
-                                if (response.status === 'success') {
-                                    Swal.fire({
-                                        title: 'Berhasil!',
-                                        text: response.message,
-                                        icon: 'success',
-                                        confirmButtonText: 'OK'
-                                    }).then((result) => {
-                                        // Refresh halaman atau redirect
-                                        window.location.href =
-                                            "{{ route('production.operator-produksi.index') }}";
-                                    });
-                                } else {
-                                    Swal.fire('Error!', response.message, 'error');
-                                    button.prop('disabled', false);
-                                    button.html('Mulai Timer');
-                                }
-                            },
-                            error: function(xhr) {
-                                let errorMessage = 'Terjadi kesalahan!';
-                                if (xhr.responseJSON && xhr.responseJSON.message) {
-                                    errorMessage = xhr.responseJSON.message;
-                                }
+                    // Format ke input datetime-local yang valid
+                    let formattedTime = now.toISOString().slice(0, 16);
 
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: errorMessage,
-                                    icon: 'error',
-                                    confirmButtonText: 'OK'
-                                });
-
-                                button.prop('disabled', false);
-                                button.html('Mulai Timer');
+                    Swal.fire({
+                        title: 'Masukkan Waktu Timer',
+                        html: `<input type="datetime-local" id="manual_time_input" class="swal2-input" value="${formattedTime}">`,
+                        showCancelButton: true,
+                        confirmButtonText: 'Mulai Timer',
+                        cancelButtonText: 'Batal',
+                        preConfirm: () => {
+                            const manualTime = document.getElementById('manual_time_input')
+                                .value;
+                            if (!manualTime) {
+                                Swal.showValidationMessage('Waktu manual harus diisi!');
                             }
+                            return manualTime;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            sendTimerRequest(processId, productionId, userId, ovenId, result.value);
+                        }
+                    });
+                } else {
+                    // Jika bukan proses 1 atau 2, langsung jalankan timer tanpa waktu manual
+                    sendTimerRequest(processId, productionId, userId, ovenId, null);
+                }
+            });
+
+            // Fungsi untuk mengirim request ke server
+            function sendTimerRequest(processId, productionId, userId, ovenId, manualTime) {
+                var requestData = {
+                    _token: "{{ csrf_token() }}",
+                    process_id: processId,
+                    production_id: productionId,
+                    id_user: userId,
+                    id_oven: ovenId,
+                    manual_time: manualTime // Kirim waktu manual jika ada
+                };
+
+                $.ajax({
+                    url: "{{ route('production.startTimer.operator-produksi') }}",
+                    method: 'POST',
+                    data: requestData,
+                    beforeSend: function() {
+                        Swal.fire({
+                            title: 'Memulai Timer...',
+                            text: 'Harap tunggu...',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            willOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href =
+                                "{{ route('production.operator-produksi.index') }}";
+                        });
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Terjadi kesalahan!';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorMessage,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
                         });
                     }
                 });
-            });
-
+            }
             // Script untuk update Finish/Rework tetap sama seperti sebelumnya
             $('#updateFinishReworkButton').on('click', function() {
                 // Get the value of the finish_rework field
                 var finishRework = $('#finish_rework').val();
-                var catatan = $('#catatan').val();
 
                 // Check if a valid option is selected
                 if (!finishRework) {
@@ -326,11 +352,10 @@
                     return;
                 }
 
-                // Prepare data for submission
+                // Submit the form to update the finish_rework
                 var formData = {
                     _token: "{{ csrf_token() }}", // CSRF Token
                     finish_rework: finishRework, // Value of finish_rework dropdown
-                    catatan: catatan, // Value of catatan input
                 };
 
                 // Send AJAX request to update the finish_rework
@@ -338,35 +363,21 @@
                     url: "{{ route('production.updateFinishRework.operator-produksi', Crypt::encryptString($production->id)) }}", // Adjust this route
                     method: 'POST',
                     data: formData,
-                    beforeSend: function() {
-                        $('#updateFinishReworkButton').prop('disabled', true).text(
-                            'Updating...');
-                    },
                     success: function(response) {
                         if (response.status === 'success') {
                             Swal.fire('Updated!', 'Finish/Rework status has been updated.',
-                                'success').then(() => {
-                                window.location.reload(); // Refresh the page
-                            });
+                                'success');
                         } else {
                             Swal.fire('Error!', response.message, 'error');
                         }
                     },
                     error: function(xhr) {
+                        // Handle any errors
                         var errorMessage = xhr.responseJSON?.message || 'Something went wrong.';
                         Swal.fire('Error!', errorMessage, 'error');
-                    },
-                    complete: function() {
-                        $('#updateFinishReworkButton').prop('disabled', false).text('Update');
                     }
                 });
             });
-
-
         });
     </script>
-
-
-
-
 @endsection

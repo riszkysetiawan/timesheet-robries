@@ -47,8 +47,7 @@
                                                         <div class="form-group mb-4">
                                                             <label for="tgl_buat">Tanggal</label>
                                                             <input type="date" name="tgl_production"
-                                                                class="form-control form-control-sm" id="tgl_production"
-                                                                readonly />
+                                                                class="form-control form-control-sm" id="tgl_production" />
                                                         </div>
                                                     </div>
                                                 </div>

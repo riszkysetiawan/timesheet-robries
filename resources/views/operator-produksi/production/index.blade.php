@@ -177,39 +177,7 @@
                 console.log('Selected Rows:', Array.from(selectedRows));
             });
         });
-        // $(document).ready(function() {
-        //     $('#scanButton').on('click', function() {
-        //         $('#scanModal').modal('show');
 
-        //         const html5QrCode = new Html5Qrcode("reader");
-        //         const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        //             console.log(`QR Code detected: ${decodedText}`);
-
-        //             const cleanedBarcode = decodedText.replace(/\//g, '.');
-        //             window.location.href = `/production/operator-produksi/timerbarcode/${cleanedBarcode}`;
-
-        //             $('#scanModal').modal('hide');
-        //             html5QrCode.stop().catch(err => console.log(err));
-        //         };
-
-        //         const config = {
-        //             fps: 10,
-        //             qrbox: {
-        //                 width: 500,
-        //                 height: 500
-        //             }
-        //         };
-
-        //         html5QrCode.start({
-        //                 facingMode: "environment"
-        //             }, config, qrCodeSuccessCallback)
-        //             .catch(err => console.log(`Error starting camera: ${err}`));
-
-        //         $('#scanModal').on('hidden.bs.modal', function() {
-        //             html5QrCode.stop().catch(err => console.log(err));
-        //         });
-        //     });
-        // });
         $(document).ready(function() {
             $('#scanButton').on('click', function() {
                 $('#scanModal').modal('show');
@@ -221,21 +189,26 @@
                     // Encode the barcode to ensure special characters like '/' are properly handled
                     const encodedBarcode = encodeURIComponent(decodedText);
 
-                    // Redirect or fetch the view
                     $.ajax({
                         url: `/production/operator-produksi/timerbarcode/${encodedBarcode}`,
                         method: 'GET',
                         success: function(response) {
                             console.log('Data fetched successfully:', response);
-                            // Replace the current page content with the response (render the view)
+
+                            // Ganti seluruh halaman dengan response baru
                             $('body').html(response);
+
+                            // Inisialisasi ulang Select2 setelah AJAX selesai
+                            setTimeout(function() {
+                                $('.operator-select').select2();
+                                $('.oven-select').select2();
+                            }, 100);
                         },
                         error: function(error) {
                             console.error('Error fetching data:', error);
                             alert('Failed to fetch data. Please try again.');
                         }
                     });
-
                     $('#scanModal').modal('hide');
                     html5QrCode.stop().catch(err => console.log(err));
                 };

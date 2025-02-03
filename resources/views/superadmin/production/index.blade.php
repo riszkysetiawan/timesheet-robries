@@ -152,6 +152,7 @@
                                         <th>Catatan</th>
                                         <th class="text-center">Action</th>
                                     </tr>
+
                                 </thead>
                                 <tbody></tbody>
                             </table>
@@ -251,56 +252,7 @@
             });
         });
 
-        // $(document).ready(function() {
-        //     $('#scanButton').on('click', function() {
-        //         $('#scanModal').modal('show');
 
-        //         const html5QrCode = new Html5Qrcode("reader");
-        //         const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        //             console.log(`QR Code detected: ${decodedText}`);
-
-        //             // Encode the barcode to ensure special characters like '/' are properly handled
-        //             const encodedBarcode = encodeURIComponent(decodedText);
-
-        //             // Redirect or fetch the view
-        //             $.ajax({
-        //                 url: `/production/admin/timerbarcode/${encodedBarcode}`,
-        //                 method: 'GET',
-        //                 success: function(response) {
-        //                     console.log('Data fetched successfully:', response);
-        //                     // Replace the current page content with the response (render the view)
-        //                     $('body').html(response);
-        //                 },
-        //                 error: function(error) {
-        //                     console.error('Error fetching data:', error);
-        //                     alert('Failed to fetch data. Please try again.');
-        //                 }
-        //             });
-
-        //             $('#scanModal').modal('hide');
-        //             html5QrCode.stop().catch(err => console.log(err));
-        //         };
-
-        //         const config = {
-        //             fps: 10,
-        //             qrbox: {
-        //                 width: 500,
-        //                 height: 500
-        //             }
-        //         };
-
-        //         html5QrCode.start({
-        //                 facingMode: "environment"
-        //             },
-        //             config,
-        //             qrCodeSuccessCallback
-        //         ).catch(err => console.log(`Error starting camera: ${err}`));
-
-        //         $('#scanModal').on('hidden.bs.modal', function() {
-        //             html5QrCode.stop().catch(err => console.log(err));
-        //         });
-        //     });
-        // });
         $(document).ready(function() {
             $('#scanButton').on('click', function() {
                 $('#scanModal').modal('show');
@@ -313,13 +265,33 @@
                     const encodedBarcode = encodeURIComponent(decodedText);
 
                     // Redirect or fetch the view
+                    // $.ajax({
+                    //     url: `/production/admin/timerbarcode/${encodedBarcode}`,
+                    //     method: 'GET',
+                    //     success: function(response) {
+                    //         console.log('Data fetched successfully:', response);
+                    //         // Replace the current page content with the response (render the view)
+                    //         $('body').html(response);
+                    //     },
+                    //     error: function(error) {
+                    //         console.error('Error fetching data:', error);
+                    //         alert('Failed to fetch data. Please try again.');
+                    //     }
+                    // });
                     $.ajax({
                         url: `/production/admin/timerbarcode/${encodedBarcode}`,
                         method: 'GET',
                         success: function(response) {
                             console.log('Data fetched successfully:', response);
-                            // Replace the current page content with the response (render the view)
+
+                            // Ganti seluruh halaman dengan response baru
                             $('body').html(response);
+
+                            // Inisialisasi ulang Select2 setelah AJAX selesai
+                            setTimeout(function() {
+                                $('.operator-select').select2();
+                                $('.oven-select').select2();
+                            }, 100);
                         },
                         error: function(error) {
                             console.error('Error fetching data:', error);
@@ -662,6 +634,80 @@
                         searchable: false
                     }
                 ],
+                // columns: [{
+                //         data: null,
+                //         orderable: false,
+                //         searchable: false,
+                //         render: function(data, type, row) {
+                //             const isChecked = selectedRows.has(row.id) ? "checked" : "";
+                //             return `<input type="checkbox" class="rowCheckbox" data-id="${row.id}" ${isChecked}>`;
+                //         },
+                //     },
+                //     {
+                //         data: 'DT_RowIndex',
+                //         name: 'DT_RowIndex',
+                //         orderable: false,
+                //         searchable: false
+                //     },
+                //     {
+                //         data: 'tgl_production',
+                //         name: 'tgl_production'
+                //     },
+                //     {
+                //         data: 'so_number',
+                //         name: 'so_number'
+                //     },
+                //     {
+                //         data: 'nama_produk',
+                //         name: 'nama_produk'
+                //     },
+                //     {
+                //         data: 'size',
+                //         name: 'size',
+                //         defaultContent: '-'
+                //     },
+                //     {
+                //         data: 'qty',
+                //         name: 'qty',
+                //         defaultContent: '-'
+                //     },
+                //     {
+                //         data: 'warna',
+                //         name: 'warna',
+                //         defaultContent: '-'
+                //     },
+                //     {
+                //         data: 'barcode',
+                //         name: 'barcode',
+                //         defaultContent: '-'
+                //     },
+                //     {
+                //         data: 'oven_start',
+                //         name: 'oven_start'
+                //     }, {
+                //         data: 'oven_start_operator',
+                //         name: 'oven_start_operator'
+                //     },
+                //     {
+                //         data: 'oven_finish',
+                //         name: 'oven_finish'
+                //     },
+                //     {
+                //         data: 'oven_duration',
+                //         name: 'oven_duration'
+                //     },
+
+                //     {
+                //         data: 'progress',
+                //         name: 'progress'
+                //     },
+                //     {
+                //         data: 'action',
+                //         name: 'action',
+                //         orderable: false,
+                //         searchable: false
+                //     },
+                // ],
                 drawCallback: function() {
                     // Ensure checkboxes reflect selected state after page change
                     $('.rowCheckbox').each(function() {
